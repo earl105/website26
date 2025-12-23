@@ -1,0 +1,61 @@
+export default function About() {
+  return (
+    <section id="about" className="min-h-screen px-8 pt-16 flex items-center justify-center">
+      <div className="flex flex-col space-y-6 md:space-y-0 md:grid md:grid-cols-6 md:grid-rows-2 md:gap-4">
+        {/* Left: Name block (2x2) */}
+        <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <h2 className="text-xl font-bold">Dylan Earl</h2>
+          <ul className="list-disc ml-5 mt-2">
+            <li>Software Developer</li>
+            <li>Computer Science and Engineering</li>
+            <li>The Ohio State University</li>
+            <li>Looking for internship experience</li>
+            <li>Favorite Language is Java</li>
+            <li>Eagle Scout</li>
+          </ul>
+
+          <img
+            src="images/osucoeLogo.png"
+            alt="The Ohio State University College of Engineering Logo"
+          
+          />
+        </div>
+
+        {/* Middle top: Involvement (2x1) */}
+        <div className="col-start-3 col-span-2 row-start-1 row-span-1 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <h2 className="text-xl font-bold">Involvement</h2>
+          <ul className="list-disc ml-5 mt-2">
+            <li>AI Robotics Club</li>
+            <li>Block O Club</li>
+            <li>Buck-I-Watch Club</li>
+            <li>Choose Ohio First @ OSU</li>
+          </ul>
+        </div>
+
+        {/* Middle bottom left: Location (1x1) */}
+        <div className="hidden md:flex md:col-start-3 md:col-span-1 md:row-start-2 md:row-span-1 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md items-center justify-center hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          Columbus, Ohio
+        </div>
+
+        {/* Middle bottom right: Eagle Scout image (1x1) */}
+        <div className="hidden md:flex md:col-start-4 md:col-span-1 md:row-start-2 md:row-span-1 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md items-center justify-center hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <img src="images/eagleScoutLogo.png" alt="Eagle Scout Logo" width={100}  />
+        </div>
+
+        {/* Right: About Me (2x2) */}
+        <div className="col-start-5 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <h2 className="text-xl font-bold">About Me</h2>
+          <p className="mt-2">
+            As a third-year student at The Ohio State University majoring in
+            Computer Science and Engineering, I am currently completing a Summer
+            2026 internship at CoverMyMeds and am seeking post-graduation job
+            opportunities beginning Summer 2027. Additionally, I am well-versed in
+            software such as Git, Autodesk Inventor, Fusion 360, Onshape, and the
+            Arduino IDE. Outside of tech, I enjoy camping, kayaking, canoeing,
+            rock climbing, and sharpshooting.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}

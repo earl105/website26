@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  /* Backgrounds */
+  --bg: #1e1e1e;        /* VS Code editor background */
+  --bg-alt: #252526;    /* panels / sections */
+  --surface: #2a2a2a;   /* elevated surfaces */
+  --card: #303030;      /* cards */
+  --chip: #3a3a3a;      /* pills / tags */
+
+  /* Text */
+  --fg: #d4d4d4;        /* primary text */
+  --muted: #9da0a6;     /* secondary text */
+  --muted-2: #7a7d81;   /* tertiary text */
+
+  /* Accent (pure VS Code blue) */
+  --accent: #3794ff;
+  --accent-400: #5aa6ff;
+  --accent-600: #1f6feb;
+
+  /* UI */
+  --border: rgba(255,255,255,0.08);
+  --card-muted: rgba(255,255,255,0.04);
+}
+
+
+
+
+/* Default to dark-first palette */
+html { color-scheme: dark; }
+
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* links / accents */
+  a {
+    color: var(--accent);
+  }
+
+  /* headings spacing / size consistency */
+  h2 {
+    @apply text-3xl font-bold mb-6;
+  }
+
+  /* utility tokens for borders and subtle surfaces */
+  .border-theme { border-color: var(--border); }
+}
+
+/* dark class kept for compatibility; variables already use dark palette */
+.dark {}
+
+
+

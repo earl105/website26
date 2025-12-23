@@ -1,0 +1,78 @@
+/* Project carousel animations */
+@keyframes slideInFromLeft {
+	from {
+		transform: translateX(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideInFromRight {
+	from {
+		transform: translateX(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+
+}
+
+.animate-slide-left {
+	animation: slideInFromLeft 300ms ease;
+	animation-fill-mode: both;
+	will-change: transform, opacity;
+}
+
+.animate-slide-right {
+	animation: slideInFromRight 300ms ease;
+	animation-fill-mode: both;
+	will-change: transform, opacity;
+}
+
+/* Alternating section backgrounds: subtly distinguish every other section */
+main > * {
+	transition: background-color 200ms ease, color 200ms ease;
+	position: relative;
+	overflow: visible;
+}
+
+/* Soft fade at top/bottom of each section to blend into neighbors */
+main > *::before,
+main > *::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 40px;
+	pointer-events: none;
+}
+
+/* Odd sections (bg-alt) fade into the page background (var(--bg)) */
+/* main > *:nth-child(odd)::before {
+	top: -1px;
+	background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+} */
+main > *:nth-child(odd)::after {
+	bottom: -1px;
+	background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+}
+
+/* Even sections fade into the alternate background (var(--bg-alt))
+main > *:nth-child(even)::before {
+	top: -1px;
+	background: linear-gradient(to bottom, var(--bg-alt) 0%, transparent 100%);
+} */
+main > *:nth-child(even)::after {
+	bottom: -1px;
+	background: linear-gradient(to top, var(--bg-alt) 0%, transparent 100%);
+}
+
+/* Light subtle stripe for odd sections */
+main > *:nth-child(odd) {
+	background-color: var(--bg-alt);
+}
