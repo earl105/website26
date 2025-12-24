@@ -17,7 +17,7 @@ export default function LaptopSection() {
         <div className="md:col-span-3 flex items-center justify-center">
   <div
     className="relative rounded-xl overflow-hidden bg-[#0f0f14] shadow-lg"
-    style={{ width: 320, height: 320 }}   // HARD SIZE
+    style={{ width: 480, height: 480 }}   // 150% of original (320 -> 480)
   >
     <LaptopScene />
   </div>

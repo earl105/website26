@@ -1,10 +1,37 @@
+//LaptopModel.tsx
 import { useGLTF } from '@react-three/drei'
-import { Group } from 'three'
+import { useLayoutEffect } from 'react'
+import { Mesh, MeshStandardMaterial } from 'three'
 
-const laptopUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb' 
+const laptopUrl = '/models/laptop.glb' 
 
 export default function LaptopModel() {
-  const { scene } = useGLTF(laptopUrl) as { scene: Group }
+  const { scene } = useGLTF(laptopUrl)
+
+  // This ensures that even if the keys have tricky transparency, they render
+  useLayoutEffect(() => {
+    scene.traverse((obj) => {
+      if (obj instanceof Mesh) {
+        const applyToMat = (mat: MeshStandardMaterial) => {
+          // Fixes potential "disappearing" keys due to transparency sorting
+          mat.depthWrite = true
+          mat.transparent = false // Try toggling this if keys are glass-like
+  
+          // Boost roughness if keys look too 'wet'
+          if (obj.name.toLowerCase().includes('key')) {
+            mat.roughness = 0.8
+          }
+        }
+  
+        const material = obj.material as MeshStandardMaterial | MeshStandardMaterial[]
+        if (Array.isArray(material)) {
+          material.forEach((m) => applyToMat(m))
+        } else {
+          applyToMat(material)
+        }
+      }
+    })
+  }, [scene])
 
   return (
     <primitive 
@@ -14,3 +41,5 @@ export default function LaptopModel() {
     />
   )
 }
+
+useGLTF.preload(laptopUrl)

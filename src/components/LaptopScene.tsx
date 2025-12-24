@@ -1,30 +1,29 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Center, Grid, Stats } from '@react-three/drei'
+import { OrbitControls, Center, Environment, ContactShadows } from '@react-three/drei'
 import { Suspense } from 'react'
 import LaptopModel from './LaptopModel'
 
 export default function LaptopScene() {
   return (
-    <div style={{ width: '100%', height: '500px', border: '2px solid white' }}>
-      <Canvas
-  // Removed 'legacy' to allow WebGL 2 (standard)
-  // Removed 'low-power' to give the GPU some room to breathe
-  camera={{ position: [0, 1, 3], fov: 45 }}
-  onCreated={({ gl }) => {
-    gl.setClearColor('#1a1a20', 1)
-  }}
->
-  <ambientLight intensity={1.5} />
-  <pointLight position={[10, 10, 10]} />
-  
-  <Suspense fallback={<mesh><boxGeometry /><meshBasicMaterial color="orange" /></mesh>}>
-    <Center>
-      <LaptopModel />
-    </Center>
-  </Suspense>
+    <div style={{ width: '100%', height: '500px', background: '#1a1a20' }}>
+      <Canvas camera={{ position: [1.4, 0.45, 1.6], fov: 45 }}>
+        <ambientLight intensity={0.5} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+        
+        <Suspense fallback={null}>
+          <Center>
+            <group rotation={[0, Math.PI, 0]}>
+              <LaptopModel />
+            </group>
+          </Center>
+          {/* Preset "city" or "apartment" usually matches GLTF viewers best */}
+          <Environment preset="city" />
+          {/* Adds a nice soft shadow under the laptop */}
+          <ContactShadows position={[0, -0.5, 0]} opacity={0.4} scale={10} blur={2} far={1} />
+        </Suspense>
 
-  <OrbitControls />
-</Canvas>
+        <OrbitControls makeDefault />
+      </Canvas>
     </div>
   )
 }
