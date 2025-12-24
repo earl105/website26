@@ -84,12 +84,12 @@ export default function Jobs() {
               <div className="mt-4 md:mt-0 flex-1">
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-xl font-medium">{job.position}</h3>
-                  <span className="hidden md:inline text-sm" style={{ color: 'var(--muted)' }}>{job.dates}</span>
+                  {/* <span className="hidden md:inline text-sm" style={{ color: 'var(--muted)' }}>{job.dates}</span> */}
                 </div>
 
-                <ul className="list-disc list-inside mt-3 space-y-2" style={{ color: 'var(--fg)' }}>
+                <ul className="list-disc list-inside mt-3 space-y-2 text-sm" style={{ color: 'var(--fg)' }}>
                   {job.bullets.map((b, i) => (
-                    <li key={i}>{b}</li>
+                  <li key={i}>{b}</li>
                   ))}
                 </ul>
               </div>
