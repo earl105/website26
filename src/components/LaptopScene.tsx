@@ -1,37 +1,30 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Center } from '@react-three/drei'
+import { OrbitControls, Center, Grid, Stats } from '@react-three/drei'
 import { Suspense } from 'react'
 import LaptopModel from './LaptopModel'
 
 export default function LaptopScene() {
   return (
-    <div style={{ width: 320, height: 320 }}>
+    <div style={{ width: '100%', height: '500px', border: '2px solid white' }}>
       <Canvas
-        // 🔒 force safest renderer config
-        gl={{
-          antialias: false,
-          alpha: false,
-          powerPreference: 'low-power',
-          preserveDrawingBuffer: false,
-        }}
-        // 🔒 force WebGL1 (prevents Firefox crashes)
-        legacy
-        camera={{ position: [0, 1.6, 3], fov: 45 }}
-        onCreated={({ gl }) => {
-          gl.setClearColor('#0f0f14', 1)
-        }}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} />
+  // Removed 'legacy' to allow WebGL 2 (standard)
+  // Removed 'low-power' to give the GPU some room to breathe
+  camera={{ position: [0, 1, 3], fov: 45 }}
+  onCreated={({ gl }) => {
+    gl.setClearColor('#1a1a20', 1)
+  }}
+>
+  <ambientLight intensity={1.5} />
+  <pointLight position={[10, 10, 10]} />
+  
+  <Suspense fallback={<mesh><boxGeometry /><meshBasicMaterial color="orange" /></mesh>}>
+    <Center>
+      <LaptopModel />
+    </Center>
+  </Suspense>
 
-        <Suspense fallback={null}>
-          <Center>
-            <LaptopModel />
-          </Center>
-        </Suspense>
-
-        <OrbitControls enablePan={false} enableZoom={false} />
-      </Canvas>
+  <OrbitControls />
+</Canvas>
     </div>
   )
 }
