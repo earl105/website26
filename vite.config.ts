@@ -7,4 +7,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Treat .glb files as static assets so Vite won't try to parse them as JS
+  assetsInclude: ['**/*.glb'],
 })
