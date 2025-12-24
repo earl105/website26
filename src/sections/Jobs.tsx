@@ -1,5 +1,3 @@
-import React from "react";
-
 type Job = {
   company: string;
   position: string;

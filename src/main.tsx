@@ -9,5 +9,7 @@ import App from './App.tsx'
 //   </StrictMode>,
 // )
 createRoot(document.getElementById('root')!).render(
-  <App />
+  <StrictMode>
+    <App />
+  </StrictMode>
 )

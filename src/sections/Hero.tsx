@@ -1,5 +1,3 @@
-import LaptopScene from '../components/LaptopScene'
-
 export default function Hero() {
   return (
     <section
