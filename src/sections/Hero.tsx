@@ -1,3 +1,7 @@
+import linkedinLogo from "../assets/buttons/linkedinLogo.png";
+import githubLogo from "../assets/buttons/githubLogo.png";
+import emailLogo from "../assets/buttons/emailLogo.png";
+
 export default function Hero() {
   return (
     <section
@@ -15,26 +19,26 @@ export default function Hero() {
           Dylan Earl
         </h1>
 
-        <div className="flex gap-6 mt-6">
+        <div className="flex gap-2.5 mt-6">
           <a
             href="https://www.linkedin.com/in/dylanearl/"
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
-            <img src="assets/buttons/linkedinLogo.png" alt="LinkedIn" />
+            <img src={linkedinLogo} alt="LinkedIn" className="w-10 h-auto" />
           </a>
 
           <a
             href="https://github.com/earl105"
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
-            <img src="assets/buttons/githubLogo.png" alt="GitHub" />
+            <img src={githubLogo} alt="GitHub" className="w-10 h-auto" />
           </a>
 
           <a
             href="mailto:earl.105@osu.edu"
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
-            <img src="assets/buttons/emailLogo.png" alt="Email" />
+            <img src={emailLogo} alt="Email" className="w-10 h-auto" />
           </a>
         </div>
       </div>

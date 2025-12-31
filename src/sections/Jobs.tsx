@@ -1,3 +1,8 @@
+import lowesLogo from '../assets/lowesLogo.png';
+import gojoLogo from '../assets/gojoLogo.png';
+import dicksLogo from '../assets/dicksLogo.png';
+
+
 type Job = {
   company: string;
   position: string;
@@ -12,8 +17,8 @@ const jobs: Job[] = [
     company: "Lowes",
     position: "Cashier and Customer Service",
     dates: "May 2025 - July 2025",
-    color: "#0b217a",
-    img: { src: "/images/work/lowesLogo.png", alt: "Lowes Logo" },
+    color: "#283061",
+    img: { src: lowesLogo, alt: "Lowes Logo" }, 
     bullets: [
       "Operated registers and processed high-volume transactions accurately while delivering friendly customer service.",
       "Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.",
@@ -25,8 +30,8 @@ const jobs: Job[] = [
     company: "GOJO Industries Inc.",
     position: "Warehouse Associate",
     dates: "May 2024 - July 2024",
-    color: "#3498db",
-    img: { src: "/images/work/gojoLogo.png", alt: "GOJO Logo" },
+    color: "#027cb7",
+    img: { src: gojoLogo, alt: "GOJO Logo" },
     bullets: [
       "Performed tasks in two-stage blow molding, including box preparation, filling, labeling, and palletizing.",
       "Collaborated in a 6-person assembly line to efficiently process and package Purell soap and sanitizer bottles.",
@@ -38,8 +43,8 @@ const jobs: Job[] = [
     company: "Dicks Sporting Goods",
     position: "Footwear Sales Associate and Cashier",
     dates: "August 2021 - 2023",
-    color: "#2ecc71",
-    img: { src: "/images/work/dicksLogo.png", alt: "DSG Logo" },
+    color: "#006753",
+    img: { src: dicksLogo, alt: "DSG Logo" },
     bullets: [
       "Cross-trained across 4 departments (footwear, outerwear, apparel, and cashier) to provide adaptable service.",
       "Managed and updated inventory for a department with over 250+ UPCs weekly.",
@@ -64,13 +69,13 @@ export default function Jobs() {
             >
                 <div className="flex items-center md:w-40 md:flex-col md:items-start">
                 <div
-                  className="w-20 h-20 rounded-md flex items-center justify-center mr-4 md:mr-0"
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-md flex items-center justify-center mr-4 md:mr-0 overflow-hidden"
                   style={{ backgroundColor: job.color }}
                 >
                   <img
                     src={job.img.src}
                     alt={job.img.alt}
-                    className="max-w-[70%] max-h-[70%] object-contain"
+                    className="w-11/12 h-11/12 object-contain"
                   />
                 </div>
                 <div className="mt-2 md:mt-4">
