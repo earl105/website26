@@ -1,3 +1,5 @@
+//portfolio\src\sections\Laptop.tsx
+
 import LaptopScene from '../components/LaptopScene'
 
 export default function LaptopSection() {

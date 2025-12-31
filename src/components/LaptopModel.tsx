@@ -1,44 +1,110 @@
-//LaptopModel.tsx
-import { useGLTF } from '@react-three/drei'
-import { useLayoutEffect } from 'react'
-import { Mesh, MeshStandardMaterial } from 'three'
+import { useGLTF, Text } from '@react-three/drei'
+import { useLayoutEffect, useRef } from 'react'
+import { useTypewriter } from '../hooks/useTypewriter'
+import { Mesh, MeshStandardMaterial, Color, Group } from 'three'
 
 const laptopUrl = '/models/laptop.glb' 
+const TARGET_MESH = 'Object_13'
+
 
 export default function LaptopModel() {
   const { scene } = useGLTF(laptopUrl)
+  const textGroupRef = useRef<Group>(null)
+  const screenMeshRef = useRef<Mesh | null>(null)
+  
+  const typedText = useTypewriter('Dylan Earl', {
+    speed: 150,
+    deleteSpeed: 80,
+    pauseDuration: 1500
+  })
 
-  // This ensures that even if the keys have tricky transparency, they render
+  //  Find and style the screen mesh
   useLayoutEffect(() => {
+    const materialsToCleanup: MeshStandardMaterial[] = []
+
     scene.traverse((obj) => {
-      if (obj instanceof Mesh) {
-        const applyToMat = (mat: MeshStandardMaterial) => {
-          // Fixes potential "disappearing" keys due to transparency sorting
-          mat.depthWrite = true
-          mat.transparent = false // Try toggling this if keys are glass-like
-  
-          // Boost roughness if keys look too 'wet'
-          if (obj.name.toLowerCase().includes('key')) {
-            mat.roughness = 0.8
-          }
-        }
-  
-        const material = obj.material as MeshStandardMaterial | MeshStandardMaterial[]
-        if (Array.isArray(material)) {
-          material.forEach((m) => applyToMat(m))
-        } else {
-          applyToMat(material)
-        }
+      if (obj instanceof Mesh && obj.name === TARGET_MESH) {
+        console.log('Found screen mesh:', obj.name)
+        
+        // Clone material to break sharing
+        const originalMat = obj.material as MeshStandardMaterial
+        const screenMat = originalMat.clone()
+        
+        // Style as dark glass screen
+        screenMat.color = new Color('#0a0a0f')
+        screenMat.roughness = 0.15
+        screenMat.metalness = 0.9
+        screenMat.emissive = new Color('#000000')
+        
+        obj.material = screenMat
+        materialsToCleanup.push(screenMat)
+        obj.renderOrder = 10
+        
+        screenMeshRef.current = obj
       }
+      
+      
     })
+    
+    return () => {
+      materialsToCleanup.forEach(mat => mat.dispose())
+    }
+  }, [scene])
+
+  // Attach text group directly to screen mesh
+  useLayoutEffect(() => {
+    if (!screenMeshRef.current || !textGroupRef.current) return
+    
+    const screenMesh = screenMeshRef.current
+    const textGroup = textGroupRef.current
+    
+    console.log('Attaching text group to screen mesh')
+    
+    // Remove from scene and add to screen mesh
+    if (textGroup.parent) {
+      textGroup.parent.remove(textGroup)
+    }
+    screenMesh.add(textGroup)
+    
+   
+    textGroup.position.set(1.25, 0.09, -1.5) //left, offset from screen, up but inverse
+    
+  
+  textGroup.rotation.set(-Math.PI / 2, Math.PI, 0)
+    
+    console.log('Text attached. Screen local position:', textGroup.position.toArray())
   }, [scene])
 
   return (
-    <primitive 
-      object={scene} 
-      scale={1.5} 
-      position={[0, -0.5, 0]} 
-    />
+    <>
+      <primitive 
+        object={scene} 
+        scale={1.5} 
+        position={[0, -0.5, 0]} 
+      />
+      
+      {/* Text group that will be reparented to screen mesh */}
+      <group ref={textGroupRef}>
+        <Text
+          fontSize={0.15}
+          maxWidth={0.8}
+          lineHeight={1}
+          letterSpacing={0.02}
+          textAlign="left"
+          anchorX="left"
+          anchorY="middle"
+          renderOrder={11}
+        >
+          {typedText}
+          <meshStandardMaterial 
+            color="#4cb84b"
+            emissive="#2b7229ff"
+            emissiveIntensity={4}
+            toneMapped={false}
+          />
+        </Text>
+      </group>
+    </>
   )
 }
 

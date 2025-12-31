@@ -1,3 +1,5 @@
+//portfolio\src\components\LaptopScene.tsx
+
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Center, Environment, ContactShadows } from '@react-three/drei'
 import { Suspense } from 'react'
