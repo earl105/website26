@@ -1,6 +1,7 @@
 import linkedinLogo from "../assets/buttons/linkedinLogo.png";
 import githubLogo from "../assets/buttons/githubLogo.png";
 import emailLogo from "../assets/buttons/emailLogo.png";
+import LaptopScene from "../components/LaptopScene";
 
 export default function Hero() {
   return (
@@ -40,6 +41,16 @@ export default function Hero() {
           >
             <img src={emailLogo} alt="Email" className="w-10 h-auto" />
           </a>
+        </div>
+      </div>
+
+      {/* 3D Laptop Card (constrained) - placed to the right of the left content in column 4 */}
+      <div className="relative z-10 md:col-start-4 md:col-span-2 flex items-center justify-center">
+        <div
+          className="relative rounded-xl overflow-hidden"
+          style={{ width: 480, height: 480, background: 'var(--bg-alt)' }}
+        >
+          <LaptopScene />
         </div>
       </div>
     </section>

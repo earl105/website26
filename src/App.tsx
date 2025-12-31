@@ -3,9 +3,9 @@ import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Jobs from "./sections/Jobs";
 import Projects from "./sections/Projects";
-import Laptop from "./sections/Laptop";
+
 import "./App.css";
-// import Contact from "./sections/Contact";
+import Contact from "./sections/Contact";
 
 function App() {
   return (
@@ -16,8 +16,8 @@ function App() {
         <About />
         <Jobs />
         <Projects />
-        <Laptop />
-        {/* <Contact /> */}
+     
+        <Contact />
       </main>
     </>
   );
