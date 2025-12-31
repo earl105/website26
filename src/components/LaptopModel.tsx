@@ -5,6 +5,7 @@ import { Mesh, MeshStandardMaterial, Color, Group } from 'three'
 
 const laptopUrl = '/models/laptop.glb' 
 const TARGET_MESH = 'Object_13'
+const FONT_URL = '/fonts/JetBrainsMono-Regular.ttf'
 
 
 export default function LaptopModel() {
@@ -12,10 +13,10 @@ export default function LaptopModel() {
   const textGroupRef = useRef<Group>(null)
   const screenMeshRef = useRef<Mesh | null>(null)
   
-  const typedText = useTypewriter('Dylan Earl', {
-    speed: 150,
-    deleteSpeed: 80,
-    pauseDuration: 1500
+  const typedText = useTypewriter('> Dylan Earl\n\n> Computer Science and Engineering\n\n> Student @ The Ohio State University', {
+    speed: 100,
+    deleteSpeed: 50,
+    pauseDuration: 4000
   })
 
   //  Find and style the screen mesh
@@ -86,13 +87,14 @@ export default function LaptopModel() {
       {/* Text group that will be reparented to screen mesh */}
       <group ref={textGroupRef}>
         <Text
+          font={FONT_URL}
           fontSize={0.15}
-          maxWidth={0.8}
+          maxWidth={2.3}
           lineHeight={1}
           letterSpacing={0.02}
           textAlign="left"
           anchorX="left"
-          anchorY="middle"
+          anchorY="top"
           renderOrder={11}
         >
           {typedText}
