@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface TechIcon {
   id: string;
   name: string;
