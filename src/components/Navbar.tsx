@@ -73,7 +73,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-[var(--surface)]/90 backdrop-blur-md border border-[var(--border)] rounded-full px-3 py-2 md:top-4 md:bottom-auto">
+    <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-[var(--surface)]/90 backdrop-blur-md border border-[var(--border)] rounded-2xl px-3 py-2 md:top-4 md:bottom-auto">
       <div ref={navRef} className="h-12 flex items-center justify-center">
         <ul className="relative flex gap-4 text-sm justify-center">
           <span

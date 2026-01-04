@@ -11,14 +11,16 @@ export default function Contact() {
           <div className="p-4 flex flex-col justify-between">
             <div>
               <p className="mt-0">
-                Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              </p>
+                I am always open to discussing new opportunities, projects, or collaborations.
+The best way to reach me is via email.
+You can also find my work on GitHub and connect with me on LinkedIn.
+I look forward to hearing from you.
+ </p>
 
               <h3 className="font-semibold mt-4">Get in touch</h3>
-              <p className="mt-2 text-sm text-[var(--muted)]">Email: example@example.com</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">Phone: (000) 000-0000</p>
+              <p className="mt-2 text-sm text-[var(--muted)]">Email: earl.105@osu.edu</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Phone: (330) 690-2393</p>
 
-              <h3 className="font-semibold mt-4">Socials</h3>
               <div className="flex gap-2.5 mt-3">
                 <a
                   href="https://www.linkedin.com/in/dylanearl/"

@@ -28,7 +28,7 @@ const jobs: Job[] = [
     ],
   },
   {
-    company: "GOJO Industries Inc.",
+    company: "GOJO Industries",
     position: "Warehouse Associate",
     dates: "May 2024 - July 2024",
     color: "#027cb7",
@@ -42,8 +42,8 @@ const jobs: Job[] = [
   },
   {
     company: "Dicks Sporting Goods",
-    position: "Footwear Sales Associate and Cashier",
-    dates: "August 2021 - 2023",
+    position: "Footwear/Apparrel Sales Associate and Cashier",
+    dates: "August 2021 - August 2023",
     color: "#006753",
     img: { src: dicksLogo, alt: "DSG Logo" },
     bullets: [
@@ -82,7 +82,7 @@ export default function Jobs() {
         {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
         <div className="space-y-4">
-          {jobs.map((job, idx) => {
+          {jobs.slice(0, 3).map((job, idx) => {
             const isOpen = openIndex === idx;
             return (
               <article

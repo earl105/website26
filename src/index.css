@@ -30,8 +30,13 @@
   --project-color-4: #1d67c9;
   --project-color-5: #7a6eb2;
   --project-color-6: #f08ad6;
+  --project-color-7: #4db5ff;
+  --project-color-8: #20c997;
+  --project-color-9: #ff616e;
+  --project-color-10: #ffc58e;
+
   /* Convenience comma-separated list (readable by JS) */
-  --project-colors: var(--project-color-0),var(--project-color-1),var(--project-color-2),var(--project-color-3),var(--project-color-4),var(--project-color-5),var(--project-color-6);
+  --project-colors: var(--project-color-0),var(--project-color-1),var(--project-color-2),var(--project-color-3),var(--project-color-4),var(--project-color-5),var(--project-color-6),var(--project-color-7),var(--project-color-8),var(--project-color-9),var(--project-color-10);
 }
 
 

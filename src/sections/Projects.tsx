@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TechCarousel from "../components/TechCarousel";
 
 type Project = {
@@ -11,31 +11,94 @@ type Project = {
 
 const sampleProjects: Project[] = [
 	{
-		name: "Personal Portfolio Website",
-		description: "A personal website to showcase my projects and skills.",
-		technologies: ["HTML", "CSS", "JavaScript"],
-		link: "https://www.example.com",
+		name: "Java Tag Cloud Generator",
+		description: "Generates a tag cloud from text using Java.",
+		technologies: ["Java"],
+		link: "#",
 		image: undefined,
 	},
 	{
-		name: "Another Project",
-		description: "Description of another project.",
-		technologies: ["Python", "Django"],
-		link: "https://www.anotherexample.com",
+		name: "Trip Planner",
+		description: "CRUD for users, trips, and expenses; computes minimum transactions to settle balances. Tailwind included.",
+		technologies: ["Ruby on Rails", "Tailwind CSS", "SQLite", "JavaScript", "HTML", "CSS", "Git"],
+		link: "#",
 		image: undefined,
 	},
 	{
-		name: "Personal Portfolio Website 2",
-		description: "A personal website to showcase my projects and skills.",
-		technologies: ["HTML", "CSS", "JavaScript"],
-		link: "https://www.example.com",
+		name: "Schedule Preview",
+		description: "Shows full prereq, postreq, and concurrent classes required for a given class on hover.",
+		technologies: ["Ruby on Rails", "JavaScript", "Git", "HTML", "CSS"],
+		link: "#",
 		image: undefined,
 	},
 	{
-		name: "Another Project 3",
-		description: "Description of another project.",
-		technologies: ["Python", "Django"],
-		link: "https://www.anotherexample.com",
+		name: "Eagle Scout Project",
+		description: "Built and donated a flag retirement box to the local American Legion in Barberton, Ohio.",
+		technologies: ["Community Project", "Woodworking"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "BillSplit App",
+		description: "React + TypeScript + Tailwind app to simplify splitting bills between roommates; deployed on Vercel.",
+		technologies: ["React", "TypeScript", "Tailwind CSS", "Vercel", "HTML"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "ESP32 Control Deck Macropad",
+		description: "ESP32-based macropad controlling smart lights, per-app volume, audio output switching, and media controls.",
+		technologies: ["ESP32", "C/C++", "Embedded"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Unit Converter",
+		description: "Java Spring Boot unit converter with a GUI frontend.",
+		technologies: ["Java", "Spring Boot"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "NaturalNumber Calculator",
+		description: "Implementation of a natural-number calculator in Java.",
+		technologies: ["Java"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Glossary Generator",
+		description: "Generates glossary entries from source text.",
+		technologies: ["Java"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Memory Allocation Study",
+		description: "Used fork/exec/wait to analyze alloca vs malloc trends and recommend usage patterns.",
+		technologies: ["C", "Memory Management", "Concurrency"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Campus Cloud Computing Task Scheduler",
+		description: "Scheduler implementing FCFS, SJF, RR, and PRI using a thread-safe circular queue and per-job condition variables.",
+		technologies: ["C", "Concurrency", "Threading", "Scheduling", "Unix"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Data Structures and Algorithms Implementations",
+		description: "Collection of data-structure assignments and algorithms implemented in Java (heapsort, BST, queues, maps, etc.).",
+		technologies: ["Java", "Data Structures", "Algorithms"],
+		link: "#",
+		image: undefined,
+	},
+	{
+		name: "Portfolio Website",
+		description: "Personal portfolio built with TypeScript, React, and Tailwind; deployed on Vercel.",
+		technologies: ["TypeScript", "React", "Tailwind CSS", "Vercel", "HTML", "CSS", "Git", "Three.js"],
+		link: "#",
 		image: undefined,
 	},
 ];
@@ -81,9 +144,8 @@ export default function Projects() {
 			const [colors, setColors] = useState<string[]>([]);
 
 			// Predetermined shuffled order of indices (ensures a random-looking but fixed permutation).
-			// This order is used to map project indices to colors; a color won't repeat until every
-			// color has been used at least once.
-			const shuffledIndices = [4, 1, 6, 0, 3, 2, 5];
+			// Generate a deterministic, repeated shuffle of the color indices so the palette can
+			// cover a larger number of projects without early repeats.
 
 			useEffect(() => {
 				// Read CSS custom properties from :root. Try numbered vars first, then fallback
@@ -113,6 +175,37 @@ export default function Projects() {
 			}, []);
 
 			const n = projects.length;
+
+			const shuffledIndices = useMemo(() => {
+				if (colors.length === 0) return [];
+
+				const seedBase = 1337;
+				const mulberry32 = (a: number) => {
+					return function () {
+						let t = (a += 0x6d2b79f5);
+						t = Math.imul(t ^ (t >>> 15), t | 1);
+						t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+						return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+					};
+				};
+
+				const base = Array.from({ length: colors.length }, (_, k) => k);
+				const result: number[] = [];
+				let iter = 0;
+				const targetLen = Math.max(n, colors.length);
+				while (result.length < targetLen) {
+					const arr = base.slice();
+					const rnd = mulberry32(seedBase + iter);
+					for (let i = arr.length - 1; i > 0; i--) {
+						const j = Math.floor(rnd() * (i + 1));
+						[arr[i], arr[j]] = [arr[j], arr[i]];
+					}
+					result.push(...arr);
+					iter++;
+					if (iter > 100) break;
+				}
+				return result;
+			}, [colors.length, n]);
 
 			const handlePrev = () => {
 				setAnimating("left");
@@ -158,7 +251,7 @@ export default function Projects() {
 										const actualIndex = (index + i) % n;
 										let bg = "#e24646"; // fallback
 										if (colors.length) {
-											const order = shuffledIndices.length === colors.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
+											const order = shuffledIndices.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
 											const colorIndex = order[actualIndex % order.length] % colors.length;
 											bg = colors[colorIndex];
 										}
@@ -185,7 +278,6 @@ export default function Projects() {
 													<p className="text-sm mb-4 flex-grow" style={{ color: 'var(--muted)' }}>{p.description}</p>
 
 													<div className="mb-4">
-														<div className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>Technologies</div>
 														<div className="mt-2 flex flex-wrap gap-2">
 															{p.technologies.map((t) => (
 																<span
