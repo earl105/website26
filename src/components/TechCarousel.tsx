@@ -56,9 +56,8 @@ export default function TechCarousel({
               style={{ width: 56 }}
             >
               <div aria-hidden="false" className="icon-wrap p-1 rounded">
-                {icon.svg}
+                <img src={icon.src} alt={icon.name} className="w-10 h-10 object-contain" />
               </div>
-              <span className="sr-only">{icon.name}</span>
             </div>
           ))}
         </div>

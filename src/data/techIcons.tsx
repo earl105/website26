@@ -3,151 +3,85 @@ import React from "react";
 export interface TechIcon {
   id: string;
   name: string;
-  // svg as a React node so it's easy to render and still driven by data
-  svg: React.ReactNode;
+  // URL to the image asset (png/svg) resolved by Vite
+  src: string;
 }
 
-// Simple, small SVG placeholders for each technology. Replace `svg` with
-// proper SVG content or import SVG files when available.
+// Use Vite's import.meta.glob to eagerly load all images in the techIcons folder
+// and return them as URL strings. This keeps imports DRY and allows bundler
+// optimizations. The path keys are relative to this file.
+const iconModules = import.meta.glob('../assets/techIcons/*.{png,svg}', { eager: true, as: 'url' }) as Record<string, string>;
+
+// Map tech id to a base filename (no extension). getSrc will prefer `.svg`.
+const fileMap: Record<string, string> = {
+  arduino: 'arduino',
+  asm: 'asm',
+  c: 'c',
+  css3: 'css3',
+  excel: 'excel',
+  fusion: 'fusion',
+  html5: 'html5',
+  inventor: 'inventor',
+  ruby: 'ruby',
+  ror: 'rails',
+  java: 'java',
+  matlab: 'matlab',
+  onshape: 'onshape',
+  xml: 'xml',
+  python: 'python',
+  javascript: 'javascript',
+  typescript: 'typescript',
+  react: 'react',
+  tailwind: 'tailwind',
+  vercel: 'vercel',
+  eclipse: 'eclipse',
+  npm: 'npm',
+  github: 'github',
+  sqlite: 'sqlite',
+};
+
+const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'>
+  <rect width='48' height='48' rx='8' fill='%23E5E7EB' />
+  <text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='10' fill='%234B5563'>Icon</text>
+</svg>`;
+const placeholderDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(placeholderSvg)}`;
+
+const getSrc = (id: string) => {
+  const base = fileMap[id];
+  if (!base) return placeholderDataUrl;
+  // Prefer SVG when both svg and png exist
+  const svgKey = `../assets/techIcons/${base}.svg`;
+  const pngKey = `../assets/techIcons/${base}.png`;
+  if (iconModules[svgKey]) return iconModules[svgKey];
+  if (iconModules[pngKey]) return iconModules[pngKey];
+  return placeholderDataUrl;
+};
+
 export const techIcons: TechIcon[] = [
-  { id: "arduino", name: "Arduino IDE", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#00979D"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">ARD</text>
-    </svg>
-  )},
-  { id: "asm", name: "x86-64 Assembly", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#6B7280"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="9" fill="white">ASM</text>
-    </svg>
-  )},
-  { id: "c", name: "C", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#A8B9CC"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="14" fill="#0B4F6C">C</text>
-    </svg>
-  )},
-  { id: "css3", name: "CSS3", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#264DE4"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">CSS</text>
-    </svg>
-  )},
-  { id: "excel", name: "Excel", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#217346"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="9" fill="white">XLS</text>
-    </svg>
-  )},
-  { id: "fusion", name: "Fusion 360", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#F36F21"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="white">Fusion</text>
-    </svg>
-  )},
-  { id: "html5", name: "HTML5", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#E34F26"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">HTML</text>
-    </svg>
-  )},
-  { id: "inventor", name: "Inventor", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#0073A8"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="white">Inv</text>
-    </svg>
-  )},
-  { id: "ruby", name: "Ruby", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#CC342D"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">Rb</text>
-    </svg>
-  )},
-  { id: "ror", name: "Ruby on Rails", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#CC0000"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="6" fill="white">Rails</text>
-    </svg>
-  )},
-  { id: "java", name: "Java", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#007396"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">Java</text>
-    </svg>
-  )},
-  { id: "matlab", name: "MATLAB", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#0076A8"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="white">MAT</text>
-    </svg>
-  )},
-  { id: "onshape", name: "Onshape", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#2C2F33"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="7" fill="white">Ons</text>
-    </svg>
-  )},
-  { id: "xml", name: "XML", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#0066A1"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="10" fill="white">XML</text>
-    </svg>
-  )},
-  { id: "python", name: "Python", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#3776AB"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="9" fill="white">Py</text>
-    </svg>
-  )},
-  { id: "js", name: "JavaScript", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#F7DF1E"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="9" fill="#111">JS</text>
-    </svg>
-  )},
-  { id: "ts", name: "TypeScript", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#3178C6"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="9" fill="white">TS</text>
-    </svg>
-  )},
-  { id: "react", name: "React", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#61DAFB"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="#0B1626">React</text>
-    </svg>
-  )},
-  { id: "tailwind", name: "Tailwind CSS", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#06B6D4"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="7" fill="#023047">TW</text>
-    </svg>
-  )},
-  { id: "vercel", name: "Vercel", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#111827"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="white">Vercel</text>
-    </svg>
-  )},
-  { id: "eclipse", name: "Eclipse IDE", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#2C2C54"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="7" fill="white">Ecl</text>
-    </svg>
-  )},
-  { id: "g-suite", name: "Google Suite", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#4285F4"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="8" fill="white">G</text>
-    </svg>
-  )},
-  { id: "ms-suite", name: "Microsoft Suite", svg: (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-      <rect rx="8" width="48" height="48" fill="#0078D4"/>
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="7" fill="white">MS</text>
-    </svg>
-  )},
+  { id: 'arduino', name: 'Arduino IDE', src: getSrc('arduino') },
+  { id: 'asm', name: 'x86-64 Assembly', src: getSrc('asm') },
+  { id: 'c', name: 'C', src: getSrc('c') },
+  { id: 'css3', name: 'CSS3', src: getSrc('css3') },
+  { id: 'excel', name: 'Excel', src: getSrc('excel') },
+  { id: 'fusion', name: 'Fusion 360', src: getSrc('fusion') },
+  { id: 'html5', name: 'HTML5', src: getSrc('html5') },
+  { id: 'inventor', name: 'Inventor', src: getSrc('inventor') },
+  { id: 'ruby', name: 'Ruby', src: getSrc('ruby') },
+  { id: 'ror', name: 'Ruby on Rails', src: getSrc('ror') },
+  { id: 'sqlite', name: 'SQLite', src: getSrc('sqlite') },
+  { id: 'java', name: 'Java', src: getSrc('java') },
+  { id: 'matlab', name: 'MATLAB', src: getSrc('matlab') },
+  { id: 'onshape', name: 'Onshape', src: getSrc('onshape') },
+  { id: 'xml', name: 'XML', src: getSrc('xml') },
+  { id: 'python', name: 'Python', src: getSrc('python') },
+  { id: 'javascript', name: 'JavaScript', src: getSrc('javascript') },
+  { id: 'typescript', name: 'TypeScript', src: getSrc('typescript') },
+  { id: 'react', name: 'React', src: getSrc('react') },
+  { id: 'tailwind', name: 'Tailwind CSS', src: getSrc('tailwind') },
+  { id: 'vercel', name: 'Vercel', src: getSrc('vercel') },
+  { id: 'eclipse', name: 'Eclipse IDE', src: getSrc('eclipse') },
+  { id: 'npm', name: 'npm', src: getSrc('npm') },
+  { id: 'github', name: 'GitHub', src: getSrc('github') },
 ];
 
 export default techIcons;
