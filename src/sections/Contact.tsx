@@ -1,6 +1,6 @@
 export default function Contact() {
   return (
-    <section id="contact" className="min-h-screen px-8 pt-16 flex items-center justify-center">
+    <section id="contact" className="min-h-screen px-8 pt-0 md:pt-16 flex items-center justify-center">
       <div className="w-full max-w-4xl rounded-lg bg-[var(--card)] text-[var(--text)] p-6 shadow-md">
         <h2 className="text-xl font-bold">Contact</h2>
         <p className="mt-4">

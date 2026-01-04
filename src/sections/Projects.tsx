@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import TechCarousel from "../components/TechCarousel";
 
 type Project = {
 	name: string;
@@ -76,13 +77,34 @@ export default function Projects() {
 			const [animating, setAnimating] = useState<"left" | "right" | null>(null);
 
 			// Palette for project cards — one color per project (wraps if fewer colors)
-			const colors = [
-				"#FEF3C7", // warm yellow
-				"#DBEAFE", // light blue
-				"#FEE2E2", // light red/pink
-				"#D1FAE5", // light green
-				"#EDE9FE", // light purple
-			];
+			// Palette for project cards — moved to CSS as variables. We'll read them at runtime.
+			const [colors, setColors] = useState<string[]>([]);
+
+			// Predetermined shuffled order of indices (ensures a random-looking but fixed permutation).
+			// This order is used to map project indices to colors; a color won't repeat until every
+			// color has been used at least once.
+			const shuffledIndices = [4, 1, 6, 0, 3, 2, 5];
+
+			useEffect(() => {
+				// Read CSS custom properties from :root. Try numbered vars first, then fallback
+				// to the comma-separated list `--project-colors`.
+				const root = typeof window !== "undefined" ? getComputedStyle(document.documentElement) : null;
+				if (!root) return;
+				const cols: string[] = [];
+				for (let i = 0; i < 20; i++) {
+					const v = root.getPropertyValue(`--project-color-${i}`);
+					if (!v) break;
+					const t = v.trim();
+					if (t) cols.push(t);
+				}
+				if (cols.length === 0) {
+					const list = root.getPropertyValue("--project-colors");
+					if (list) cols.push(...list.split(",").map((s) => s.trim()).filter(Boolean));
+				}
+				if (cols.length) setColors(cols);
+			}, []);
+
+			
 			useEffect(() => {
 				const update = () => setPerPage(window.innerWidth >= 768 ? 3 : 1);
 				update();
@@ -111,8 +133,12 @@ export default function Projects() {
 			const visible = Array.from({ length: perPage }, (_, i) => projects[(index + i) % n]);
 
 			return (
-				<section id="projects" className="py-12 min-h-screen flex items-center justify-center">
-					<div className="max-w-6xl mx-auto px-4 transform translate-y-12">
+				<section id="projects" className="min-h-screen flex flex-col items-center justify-center py-8 md:py-12">
+					<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0">
+						{/* Render tech carousel on mobile above projects */}
+						<div className="block md:hidden mb-6">
+							<TechCarousel speed={"slow"} pauseOnHover={false} />
+						</div>
 						<h2 className="text-2xl font-semibold mb-6">Projects</h2>
 
 						<div className="relative">
@@ -130,7 +156,12 @@ export default function Projects() {
 									{visible.map((p, i) => {
 										const cardAnim = animating === "left" ? "animate-slide-left" : animating === "right" ? "animate-slide-right" : "";
 										const actualIndex = (index + i) % n;
-										const bg = colors[actualIndex % colors.length];
+										let bg = "#e24646"; // fallback
+										if (colors.length) {
+											const order = shuffledIndices.length === colors.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
+											const colorIndex = order[actualIndex % order.length] % colors.length;
+											bg = colors[colorIndex];
+										}
 										return (
 											<a
 												key={`${p.name}-${i}`}

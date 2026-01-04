@@ -1,14 +1,15 @@
 import osucoeLogo from "../assets/osucoeLogo.png";
 import eagleScoutLogo from "../assets/eagleScoutLogo.png";
+import TechCarousel from "../components/TechCarousel";
 
 export default function About() {
   return (
-    <section id="about" className="min-h-screen px-8 pt-16 flex items-center justify-center">
+    <section id="about" className="min-h-screen px-8 pt-0 md:pt-16 flex flex-col items-center justify-center pb-20 md:pb-0">
       <div className="flex flex-col space-y-6 md:space-y-0 md:grid md:grid-cols-6 md:grid-rows-2 md:gap-4">
         {/* Left: Name block (2x2) */}
-        <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200 flex flex-col justify-between">
-          <h2 className="text-xl font-bold">Dylan Earl</h2>
-          <ul className="list-disc ml-5 mt-2">
+        <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-3 md:p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200 flex flex-col md:justify-between">
+          <h2 className="text-xl font-bold mb-0 md:mb-2">Dylan Earl</h2>
+          <ul className="list-disc ml-5">
             <li>Software Developer</li>
             <li>Computer Science and Engineering</li>
             <li>The Ohio State University</li>
@@ -19,14 +20,14 @@ export default function About() {
           <img
             src={osucoeLogo}
             alt="The Ohio State University College of Engineering Logo"
-            className="mt-4 w-3/4 max-w-[300px] self-center"
+            className="w-3/4 max-w-[300px] self-center"
           />
         </div>
 
-        {/* Middle top: Involvement (2x1) */}
-        <div className="col-start-3 col-span-2 row-start-1 row-span-1 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
-          <h2 className="text-xl font-bold">Involvement</h2>
-          <ul className="list-disc ml-5 mt-2">
+        {/* Middle top: Involvement (2x1) - hidden on mobile */}
+        <div className="hidden md:block col-start-3 col-span-2 row-start-1 row-span-1 rounded-lg bg-[var(--card)] text-[var(--text)] p-3 md:p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <h2 className="text-xl font-bold mb-0 md:mb-2">Involvement</h2>
+          <ul className="list-disc ml-5">
             <li>AI Robotics Club</li>
             <li>Block O Club</li>
             <li>Buck-I-Watch Club</li>
@@ -50,18 +51,29 @@ export default function About() {
         </div>
 
         {/* Right: About Me (2x2) */}
-        <div className="col-start-5 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
-          <h2 className="text-xl font-bold">About Me</h2>
-          <p className="mt-2">
+        <div className="col-start-5 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-3 md:p-4 shadow-md hover:shadow-lg transition-shadow transform hover:scale-103 transition-transform duration-200">
+          <h2 className="text-xl font-bold mb-0 md:mb-2">About Me</h2>
+          <p className="block md:hidden">
             As a third-year student at The Ohio State University majoring in
             Computer Science and Engineering, I am currently completing a Summer
             2026 internship at CoverMyMeds and am seeking post-graduation job
-            opportunities beginning Summer 2027. <br></br><br></br> I am well-versed in
-            software such as Git, Autodesk Inventor, Fusion 360, Onshape, and the
-            Arduino IDE. Outside of tech, I enjoy camping, kayaking, canoeing,
-            rock climbing, and sharpshooting.
+            opportunities beginning Summer 2027.
+          </p>
+          <p className="hidden md:block">
+            As a third-year student at The Ohio State University majoring in
+            Computer Science and Engineering, I am currently completing a Summer
+            2026 internship at CoverMyMeds and am seeking post-graduation job
+            opportunities beginning Summer 2027.
+
+            I am well-versed in software such as Git, Autodesk Inventor, Fusion
+            360, Onshape, and the Arduino IDE. Outside of tech, I enjoy camping,
+            kayaking, canoeing, rock climbing, and sharpshooting.
           </p>
         </div>
+      </div>
+      {/* Show carousel only on md+; hidden on mobile (will be rendered above projects on mobile) */}
+      <div className="w-full mt-2 md:mt-6 hidden md:block">
+        <TechCarousel speed={"slow"} pauseOnHover />
       </div>
     </section>
   );

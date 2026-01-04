@@ -21,10 +21,61 @@
   /* UI */
   --border: rgba(255,255,255,0.08);
   --card-muted: rgba(255,255,255,0.04);
+
+  /* Project palette (moved from Projects.tsx) */
+  --project-color-0: #e24646;
+  --project-color-1: #f28b4a;
+  --project-color-2: #f0c827;
+  --project-color-3: #12712a;
+  --project-color-4: #1d67c9;
+  --project-color-5: #7a6eb2;
+  --project-color-6: #f08ad6;
+  /* Convenience comma-separated list (readable by JS) */
+  --project-colors: var(--project-color-0),var(--project-color-1),var(--project-color-2),var(--project-color-3),var(--project-color-4),var(--project-color-5),var(--project-color-6);
 }
 
 
 
+
+
+/* Conveyor belt animation for TechCarousel */
+@keyframes conveyor-scroll {
+  0% { transform: translate3d(0, -50%, 0); }
+  100% { transform: translate3d(-50%, -50%, 0); }
+}
+
+.conveyor {
+  /* ensure the visible area clips overflowing icons */
+  overflow: hidden;
+}
+
+.conveyor-track {
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  /* We translate the track by -50% horizontally; keyframes include vertical centering */
+  animation: conveyor-scroll var(--conveyor-duration, 40s) linear infinite;
+  will-change: transform;
+  white-space: nowrap;
+}
+
+/* Pause on hover */
+.conveyor:hover .conveyor-track {
+  animation-play-state: paused;
+}
+
+/* Low-motion preference: disable animation */
+@media (prefers-reduced-motion: reduce) {
+  .conveyor-track {
+    animation: none;
+  }
+}
+
+/* small helper for icon sizing if needed */
+.icon-wrap svg { display: block; }
 
 /* Default to dark-first palette */
 html { color-scheme: dark; }

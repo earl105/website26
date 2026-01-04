@@ -58,36 +58,36 @@ export default function Jobs() {
   return (
     <section id="jobs" className="min-h-screen flex flex-col px-6 py-12 pt-16">
       <div className="max-w-5xl mx-auto w-full">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2>
+        {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
         <div className="space-y-4">
           {jobs.map((job) => (
             <article
               key={job.company + job.position}
-              className="flex flex-col md:flex-row md:items-start md:gap-6 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-102 transition-transform duration-200"
+              className="flex flex-col md:flex-row md:items-center md:gap-6 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-102 transition-transform duration-200"
               style={{ backgroundColor: 'var(--card)' }}
             >
-                <div className="flex items-center md:w-40 md:flex-col md:items-start">
-                <div
-                  className="w-24 h-24 md:w-32 md:h-32 rounded-md flex items-center justify-center mr-4 md:mr-0 overflow-hidden"
-                  style={{ backgroundColor: job.color }}
-                >
-                  <img
-                    src={job.img.src}
-                    alt={job.img.alt}
-                    className="w-11/12 h-11/12 object-contain"
-                  />
+                <div className="flex items-center md:w-40 md:flex-col md:items-center">
+                  <div
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-md flex items-center justify-center mr-4 md:mr-0 overflow-hidden"
+                    style={{ backgroundColor: job.color }}
+                  >
+                    <img
+                      src={job.img.src}
+                      alt={job.img.alt}
+                      className="w-11/12 h-11/12 object-contain"
+                    />
+                  </div>
                 </div>
-                <div className="mt-2 md:mt-4">
+
+              <div className="mt-4 md:mt-0 flex-1">
+                <div className="flex items-center justify-between">
                   <div className="font-semibold">{job.company}</div>
                   <div className="text-sm" style={{ color: 'var(--muted)' }}>{job.dates}</div>
                 </div>
-              </div>
 
-              <div className="mt-4 md:mt-0 flex-1">
-                <div className="flex items-baseline justify-between">
+                <div className="mt-2">
                   <h3 className="text-xl font-medium">{job.position}</h3>
-                  {/* <span className="hidden md:inline text-sm" style={{ color: 'var(--muted)' }}>{job.dates}</span> */}
                 </div>
 
                 <ul className="list-disc list-inside mt-3 space-y-2 text-sm" style={{ color: 'var(--fg)' }}>
