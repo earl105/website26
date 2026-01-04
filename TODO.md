@@ -3,11 +3,12 @@ make project cards width consistent (even when rotating between projects) on mob
 add laptop scroll animation
 
 make contact form
-
-make job history scrollable
+    -add picture to contact
 
 make mobile hero screen centered and vertically stacked
 
-fix animations for carousel
+fix animations for project carousel
 
-make about me sections fit properly
+make spacebar nav consistent with navbar spacing
+
+add images for tech carousel
