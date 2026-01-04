@@ -1,4 +1,3 @@
-import React from "react";
 import techIcons from "../data/techIcons";
 import type { TechIcon } from "../data/techIcons";
 
