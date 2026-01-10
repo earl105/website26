@@ -2,11 +2,9 @@
 
 add laptop scroll animation
 
-add picture to contact
+fix left/right animations for project carousel
 
-make mobile hero screen centered and vertically stacked
-
-fix animations for project carousel
+fix zoom animations for project carousel
 
 make spacebar nav consistent with navbar spacing
 

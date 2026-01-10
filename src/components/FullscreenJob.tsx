@@ -62,7 +62,7 @@ export default function FullscreenJob({ job, index, length, onClose, navbarHeigh
             ref={closeRef}
             onClick={onClose}
             aria-label="Close job details"
-            className="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="px-3 py-2 rounded bg-red-500 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Close
           </button>
