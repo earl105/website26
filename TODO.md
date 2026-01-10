@@ -4,6 +4,7 @@ make project cards width consistent (even when rotating between projects) on mob
 add laptop scroll animation
 make laptop more zoomed out on mobile
 
+
 add picture to contact
 
 make mobile hero screen centered and vertically stacked

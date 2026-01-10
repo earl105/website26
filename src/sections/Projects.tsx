@@ -238,8 +238,8 @@ export default function Projects() {
 							<button
 								aria-label="Previous projects"
 								onClick={handlePrev}
-								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow transform hover:scale-103 transition-transform duration-150"
-								style={{ left: '-2.5rem', backgroundColor: 'var(--card)' }}
+								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow transform hover:scale-103 transition-transform duration-150 left-[-6px] md:left-[-2.5rem]"
+								style={{ backgroundColor: 'var(--card)' }}
 							>
 								<ArrowLeft className="w-6 h-6 text-[var(--muted)]" />
 							</button>
@@ -304,8 +304,8 @@ export default function Projects() {
 							<button
 								aria-label="Next projects"
 								onClick={handleNext}
-								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow transform hover:scale-103 transition-transform duration-150"
-								style={{ right: '-2.5rem', backgroundColor: 'var(--card)' }}
+								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow transform hover:scale-103 transition-transform duration-150 right-[-6px] md:right-[-2.5rem]"
+								style={{ backgroundColor: 'var(--card)' }}
 							>
 								<ArrowRight className="w-6 h-6 text-[var(--muted)]" />
 							</button>

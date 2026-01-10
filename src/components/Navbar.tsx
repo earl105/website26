@@ -52,24 +52,72 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            if (id) setActiveId(id);
-          }
-        });
-      },
-      { root: null, threshold: 0.6 }
-    );
+    // Use a scroll-center detector instead of IntersectionObserver.
+    // It finds the section whose vertical center is closest to the viewport center
+    // and throttles updates to avoid rapid toggling while scrolling on mobile.
+    let rafId: number | null = null;
+    let pendingTimeout: number | null = null;
+    let lastSetTime = 0;
+    let lastActive = activeId;
+    const minChangeDelay = 120; // ms
 
-    items.forEach((it) => {
-      const el = document.querySelector<HTMLElement>(`#${it.id}`);
-      if (el) observer.observe(el);
-    });
+    const checkNearest = () => {
+      rafId = null;
+      const viewportCenter = window.innerHeight / 2;
+      let nearestId: string | null = null;
+      let nearestDistance = Infinity;
 
-    return () => observer.disconnect();
+      items.forEach((it) => {
+        const el = document.getElementById(it.id);
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const dist = Math.abs(center - viewportCenter);
+        if (dist < nearestDistance) {
+          nearestDistance = dist;
+          nearestId = it.id;
+        }
+      });
+
+      if (!nearestId || nearestId === lastActive) return;
+
+      const now = Date.now();
+      const elapsed = now - lastSetTime;
+
+      const apply = () => {
+        setActiveId(nearestId as string);
+        lastSetTime = Date.now();
+        lastActive = nearestId as string;
+      };
+
+      if (elapsed > minChangeDelay) {
+        apply();
+      } else {
+        if (pendingTimeout) window.clearTimeout(pendingTimeout);
+        pendingTimeout = window.setTimeout(() => {
+          apply();
+          pendingTimeout = null;
+        }, minChangeDelay - elapsed);
+      }
+    };
+
+    const onScroll = () => {
+      if (rafId == null) rafId = requestAnimationFrame(checkNearest);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    // run once to initialize
+    onScroll();
+
+    return () => {
+      if (rafId != null) cancelAnimationFrame(rafId);
+      if (pendingTimeout) clearTimeout(pendingTimeout);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+    // intentionally omit deps to keep listener stable; items are static
   }, []);
 
   return (
