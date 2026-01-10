@@ -17,7 +17,7 @@ export type Job = {
 
 const jobs: Job[] = [
   {
-    company: 'Lowes',
+    company: "Lowe's Home Improvement",
     position: 'Cashier and Customer Service',
     dates: 'May 2025 - July 2025',
     color: '#283061',
@@ -30,7 +30,7 @@ const jobs: Job[] = [
     ],
   },
   {
-    company: 'GOJO Industries',
+    company: 'GOJO Industries Inc.',
     position: 'Warehouse Associate',
     dates: 'May 2024 - July 2024',
     color: '#027cb7',
