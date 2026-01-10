@@ -1,6 +1,8 @@
-make project cards width consistent (even when rotating between projects) on mobile
+make project cards width consistent (even when rotating between projects) on mobile 
+    -fix arrows mobile
 
 add laptop scroll animation
+make laptop more zoomed out on mobile
 
 make contact form
     -add picture to contact

@@ -291,9 +291,9 @@ export default function Projects() {
 														</div>
 													</div>
 
-													<div className="mt-4">
+													{/* <div className="mt-4">
 														<span className="text-sm text-accent">Visit project →</span>
-													</div>
+													</div> */}
 												</article>
 											</a>
 										);
