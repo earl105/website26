@@ -1,7 +1,6 @@
 
 
 add laptop scroll animation
-make laptop more zoomed out on mobile
 
 add picture to contact
 

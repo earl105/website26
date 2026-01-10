@@ -53,7 +53,11 @@ export default function Hero() {
         >
           <div
             className="rounded-xl overflow-hidden"
-            style={{ width: 480, height: 480, background: 'var(--bg-alt)' }}
+            style={{
+              width: 'min(480px, 90vw)',
+              height: 'min(480px, 90vw)',
+              background: 'var(--bg-alt)'
+            }}
           >
             <LaptopScene />
           </div>
