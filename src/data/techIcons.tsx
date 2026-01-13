@@ -61,7 +61,7 @@ const getSrc = (id: string) => {
 
 export const techIcons: TechIcon[] = [
 
-  // Programming Languages
+// Programming Languages
   { id: 'java', name: 'Java', src: getSrc('java') },
   { id: 'asm', name: 'x86-64 Assembly', src: getSrc('asm') },
   { id: 'c', name: 'C', src: getSrc('c') },
@@ -73,6 +73,7 @@ export const techIcons: TechIcon[] = [
   { id: 'javascript', name: 'JavaScript', src: getSrc('javascript') },
   { id: 'typescript', name: 'TypeScript', src: getSrc('typescript') },
   { id: 'matlab', name: 'MATLAB', src: getSrc('matlab') },
+
 // Web Development Tools
   { id: 'react', name: 'React', src: getSrc('react') },
   { id: 'tailwind', name: 'Tailwind CSS', src: getSrc('tailwind') },
@@ -92,7 +93,7 @@ export const techIcons: TechIcon[] = [
 
 
 
-// IDEs and Package Managers
+// IDEs, Version Control, and Package Managers
   { id: 'eclipse', name: 'Eclipse IDE', src: getSrc('eclipse') },
   { id: 'vscode', name: 'Visual Studio Code', src: getSrc('vscode') },
   { id: 'vim', name: 'Vim', src: getSrc('vim') },
@@ -100,10 +101,6 @@ export const techIcons: TechIcon[] = [
   { id: 'npm', name: 'npm', src: getSrc('npm') },
   { id: 'github', name: 'GitHub', src: getSrc('github') },
   { id: 'git', name: 'Git', src: getSrc('git') },
-
-
-
-
 
 ];
 

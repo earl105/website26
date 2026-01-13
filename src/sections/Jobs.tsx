@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import lowesLogo from '../assets/lowesLogo.png';
-import gojoLogo from '../assets/gojoLogo.png';
-import dicksLogo from '../assets/dicksLogo.png';
-import cmmLogo from '../assets/cmmLogo.png';
+import lowesLogo from '../assets/jobIcons/lowesLogo.png';
+import gojoLogo from '../assets/jobIcons/gojoLogo.png';
+import dicksLogo from '../assets/jobIcons/dicksLogo.png';
+import cmmLogo from '../assets/jobIcons/cmmLogo.png';
 import { AnimatePresence, useReducedMotion } from 'framer-motion';
 import JobCard from '../components/JobCard';
 import FullscreenJob from '../components/FullscreenJob';
@@ -38,7 +38,7 @@ const jobs: Job[] = [
     bullets: [
       'Operated registers and processed high-volume transactions accurately while delivering friendly customer service.',
       'Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.',
-      'Supported Lawn & Garden and Lumber departments by managing heavy inventory, outdoor sales, and seasonal product.',
+      'Supported Lawn & Garden and Lumber departments by managing inventory, outdoor sales, and seasonal product.',
       'Fulfilled and organized online orders, ensuring timely pick-up and delivery accuracy for customers.',
     ],
   },
