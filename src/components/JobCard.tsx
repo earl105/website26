@@ -4,7 +4,6 @@ import type { Job } from '../sections/Jobs';
 
 type Props = {
   job: Job;
-  index: number;
   isSelected: boolean;
   isAnySelected: boolean;
   onOpen: () => void;
@@ -13,7 +12,7 @@ type Props = {
   noLayout?: boolean;
 };
 
-export default function JobCard({ job, index, isSelected, isAnySelected, onOpen, prefersReducedMotion, isDesktop, noLayout = false }: Props) {
+export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefersReducedMotion, isDesktop, noLayout = false }: Props) {
   // directional bias for pre-morph animation
   //const bias = index === 0 ? 12 : index === length - 1 ? -12 : index % 2 === 0 ? -6 : 6;
 
