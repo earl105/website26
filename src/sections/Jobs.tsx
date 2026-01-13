@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import lowesLogo from '../assets/lowesLogo.png';
 import gojoLogo from '../assets/gojoLogo.png';
 import dicksLogo from '../assets/dicksLogo.png';
+import cmmLogo from '../assets/cmmLogo.png';
 import { AnimatePresence, useReducedMotion } from 'framer-motion';
 import JobCard from '../components/JobCard';
 import FullscreenJob from '../components/FullscreenJob';
@@ -16,22 +17,34 @@ export type Job = {
 };
 
 const jobs: Job[] = [
-  {
+    {
+    company: 'CoverMyMeds',
+    position: 'Technology Intern',
+    dates: 'June 2026 - August 2026',
+    color: '#e8106a',
+    img: { src: cmmLogo, alt: 'CMM Logo' },
+    bullets: [
+      'Description TBD, will update when time comes :).',
+      'lorem',
+      'ipsum',
+      'dolor',
+    ],
+  },{
     company: "Lowe's Home Improvement",
-    position: 'Cashier and Customer Service',
+    position: 'Summer Cashier and Customer Service',
     dates: 'May 2025 - July 2025',
     color: '#283061',
     img: { src: lowesLogo, alt: 'Lowes Logo' },
     bullets: [
       'Operated registers and processed high-volume transactions accurately while delivering friendly customer service.',
       'Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.',
-      'Supported Lawn & Garden and Lumber departments by managing heavy inventory, outdoor sales, and seasonal product flow.',
+      'Supported Lawn & Garden and Lumber departments by managing heavy inventory, outdoor sales, and seasonal product.',
       'Fulfilled and organized online orders, ensuring timely pick-up and delivery accuracy for customers.',
     ],
   },
   {
     company: 'GOJO Industries Inc.',
-    position: 'Warehouse Associate',
+    position: 'Summer Warehouse Associate',
     dates: 'May 2024 - July 2024',
     color: '#027cb7',
     img: { src: gojoLogo, alt: 'GOJO Logo' },
@@ -53,18 +66,6 @@ const jobs: Job[] = [
       'Managed and updated inventory for a department with over 250+ UPCs weekly.',
       'Efficiently processed and organized stock, handling up to 300 items per truck delivery.',
       "Cultivated strong customer relationships, driving store metrics to rank among the nation's top locations.",
-    ],
-  },{
-    company: 'test',
-    position: 'test',
-    dates: 'August 20XX - August 20XX',
-    color: '#006753',
-    img: { src: dicksLogo, alt: 'DSG Logo' },
-    bullets: [
-      'lorem ipsum dolor sit amet',
-      'lorem 2',
-      'lorem 3',
-      "lorem 4.",
     ],
   }
 ];

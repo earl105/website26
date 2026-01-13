@@ -69,7 +69,7 @@ const sampleProjects: Project[] = [
 	{
 		name: "Glossary Generator",
 		description: "Generates glossary entries from source text.",
-		technologies: ["Java"],
+		technologies: ["Java", "HTML"],
 		link: "#",
 		image: undefined,
 	},
@@ -232,7 +232,7 @@ export default function Projects() {
 						<div className="block md:hidden mb-6">
 							<TechCarousel speed={"slow"} pauseOnHover={false} />
 						</div>
-						<h2 className="text-2xl font-semibold mb-6">Projects</h2>
+					
 
 						<div className="relative">
 							<button
