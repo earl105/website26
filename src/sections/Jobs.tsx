@@ -95,8 +95,8 @@ export default function Jobs() {
       <div className="max-w-5xl mx-auto w-full">
         {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
-        <div className="flex items-start md:items-center">
-          <div className="flex-1 pr-3">
+        <div className="relative flex items-start md:items-center">
+          <div className="flex-1 pr-12 md:pr-4">
             <div className="space-y-4">
               {jobs.slice(startIndex, startIndex + VISIBLE).map((job, i) => {
                 const idx = startIndex + i; // absolute index
@@ -131,7 +131,7 @@ export default function Jobs() {
           </div>
 
           {/* Carousel controls */}
-          <div className="ml-4 flex flex-col items-center gap-3 h-full justify-center">
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
             {
               (() => {
                 const canUp = startIndex > 0;
