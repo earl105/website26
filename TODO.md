@@ -11,3 +11,5 @@ make spacebar nav consistent with navbar spacing
 fix mobile navbar glitches
 
 make jobs scrollable
+
+fix alignment for bottommost job on mobile (remove overlap with navbar)
