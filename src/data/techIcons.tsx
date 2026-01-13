@@ -36,6 +36,10 @@ const fileMap: Record<string, string> = {
   npm: 'npm',
   github: 'github',
   sqlite: 'sqlite',
+  mysql: 'mysql',
+  vscode: 'vscode',
+  vim: 'vim',
+git: 'git',
 };
 
 const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'>
@@ -56,30 +60,51 @@ const getSrc = (id: string) => {
 };
 
 export const techIcons: TechIcon[] = [
-  { id: 'arduino', name: 'Arduino IDE', src: getSrc('arduino') },
+
+  // Programming Languages
+  { id: 'java', name: 'Java', src: getSrc('java') },
   { id: 'asm', name: 'x86-64 Assembly', src: getSrc('asm') },
   { id: 'c', name: 'C', src: getSrc('c') },
   { id: 'css3', name: 'CSS3', src: getSrc('css3') },
-  { id: 'excel', name: 'Excel', src: getSrc('excel') },
-  { id: 'fusion', name: 'Fusion 360', src: getSrc('fusion') },
   { id: 'html5', name: 'HTML5', src: getSrc('html5') },
-  { id: 'inventor', name: 'Inventor', src: getSrc('inventor') },
   { id: 'ruby', name: 'Ruby', src: getSrc('ruby') },
   { id: 'ror', name: 'Ruby on Rails', src: getSrc('ror') },
-  { id: 'sqlite', name: 'SQLite', src: getSrc('sqlite') },
-  { id: 'java', name: 'Java', src: getSrc('java') },
-  { id: 'matlab', name: 'MATLAB', src: getSrc('matlab') },
-  { id: 'onshape', name: 'Onshape', src: getSrc('onshape') },
-  { id: 'xml', name: 'XML', src: getSrc('xml') },
   { id: 'python', name: 'Python', src: getSrc('python') },
   { id: 'javascript', name: 'JavaScript', src: getSrc('javascript') },
   { id: 'typescript', name: 'TypeScript', src: getSrc('typescript') },
+  { id: 'matlab', name: 'MATLAB', src: getSrc('matlab') },
+// Web Development Tools
   { id: 'react', name: 'React', src: getSrc('react') },
   { id: 'tailwind', name: 'Tailwind CSS', src: getSrc('tailwind') },
   { id: 'vercel', name: 'Vercel', src: getSrc('vercel') },
+
+// Databases
+  { id: 'sqlite', name: 'SQLite', src: getSrc('sqlite') },
+  { id: 'mysql', name: 'MySQL', src: getSrc('mysql') },
+  { id: 'xml', name: 'XML', src: getSrc('xml') },
+  { id: 'excel', name: 'Excel', src: getSrc('excel') },
+ 
+
+// CAD Tools
+  { id: 'onshape', name: 'Onshape', src: getSrc('onshape') },
+  { id: 'inventor', name: 'Inventor', src: getSrc('inventor') },
+  { id: 'fusion', name: 'Fusion 360', src: getSrc('fusion') },
+
+
+
+// IDEs and Package Managers
   { id: 'eclipse', name: 'Eclipse IDE', src: getSrc('eclipse') },
+  { id: 'vscode', name: 'Visual Studio Code', src: getSrc('vscode') },
+  { id: 'vim', name: 'Vim', src: getSrc('vim') },
+  { id: 'arduino', name: 'Arduino IDE', src: getSrc('arduino') },
   { id: 'npm', name: 'npm', src: getSrc('npm') },
   { id: 'github', name: 'GitHub', src: getSrc('github') },
+  { id: 'git', name: 'Git', src: getSrc('git') },
+
+
+
+
+
 ];
 
 export default techIcons;

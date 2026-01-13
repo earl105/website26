@@ -14,7 +14,7 @@ export default function Contact() {
               <p className="mt-0">
                 I am always open to discussing new opportunities, projects, or collaborations.
 The best way to reach me is via email.
-You can also find my work on GitHub and connect with me on LinkedIn.
+You can also find (some of) my work on GitHub and connect with me on LinkedIn.
 I look forward to hearing from you.
  </p>
 
