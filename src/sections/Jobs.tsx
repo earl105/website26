@@ -72,7 +72,6 @@ const jobs: Job[] = [
 
 export default function Jobs() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const VISIBLE = 3;
   const [startIndex, setStartIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const prefersReducedMotion = useReducedMotion();
