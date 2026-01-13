@@ -13,3 +13,5 @@ fix mobile navbar glitches
 make jobs scrollable
 
 fix alignment for bottommost job on mobile (remove overlap with navbar)
+
+add animations for vertical job carousel

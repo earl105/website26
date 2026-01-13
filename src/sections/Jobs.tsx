@@ -131,7 +131,7 @@ export default function Jobs() {
           </div>
 
           {/* Carousel controls */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+          <div className="absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
             {
               (() => {
                 const canUp = startIndex > 0;
