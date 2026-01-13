@@ -96,13 +96,13 @@ export default function Jobs() {
         {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
         <div className="flex items-start md:items-center">
-          <div className="w-full">
+          <div className="flex-1">
             <div className="space-y-4">
               {jobs.slice(startIndex, startIndex + VISIBLE).map((job, i) => {
                 const idx = startIndex + i; // absolute index
                 return (
                   <JobCard
-                    key={job.company}
+                    key={job.company + idx}
                     job={job}
                     isSelected={selectedIndex === idx}
                     isAnySelected={selectedIndex !== null}
@@ -131,7 +131,7 @@ export default function Jobs() {
           </div>
 
           {/* Carousel controls */}
-          <div className="ml-4 hidden md:flex flex-col items-center gap-3">
+          <div className="ml-4 flex flex-col items-center gap-3">
             {
               (() => {
                 const canUp = startIndex > 0;
