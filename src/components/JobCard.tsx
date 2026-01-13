@@ -10,15 +10,18 @@ type Props = {
   onOpen: () => void;
   prefersReducedMotion: boolean;
   isDesktop: boolean;
+  noLayout?: boolean;
 };
 
-export default function JobCard({ job, index, isSelected, isAnySelected, onOpen, prefersReducedMotion, isDesktop }: Props) {
+export default function JobCard({ job, index, isSelected, isAnySelected, onOpen, prefersReducedMotion, isDesktop, noLayout = false }: Props) {
   // directional bias for pre-morph animation
   //const bias = index === 0 ? 12 : index === length - 1 ? -12 : index % 2 === 0 ? -6 : 6;
 
+  const layoutId = `job-${job.company.replace(/\s+/g, '-')}`;
+
   return (
     <motion.div
-      layoutId={`job-${index}`}
+      {...(noLayout ? { layout: false } : { layoutId, layout: true })}
       initial={false}
       animate={{
         opacity: isAnySelected ? (isSelected ? 1 : 0.12) : 1,

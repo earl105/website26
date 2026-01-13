@@ -39,12 +39,14 @@ export default function FullscreenJob({ job, index, length, onClose, navbarHeigh
   // small directional pre-offset
   const initialY = index === 0 ? 12 : index === length - 1 ? -12 : 0;
 
+  const layoutId = `job-${job.company.replace(/\s+/g, '-')}`;
+
   return (
     <motion.div className="fixed left-0 right-0 z-50" style={containerStyle} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} aria-hidden />
 
       <motion.div
-        layoutId={`job-${index}`}
+        layoutId={layoutId}
         initial={{ y: initialY }}
         animate={{ y: 0 }}
         transition={{ type: prefersReducedMotion ? false : 'spring', stiffness: 300, damping: 30 }}

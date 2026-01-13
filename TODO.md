@@ -9,3 +9,5 @@ fix zoom animations for project carousel
 make spacebar nav consistent with navbar spacing
 
 fix mobile navbar glitches
+
+make jobs scrollable

@@ -54,11 +54,25 @@ const jobs: Job[] = [
       'Efficiently processed and organized stock, handling up to 300 items per truck delivery.',
       "Cultivated strong customer relationships, driving store metrics to rank among the nation's top locations.",
     ],
-  },
+  },{
+    company: 'test',
+    position: 'test',
+    dates: 'August 20XX - August 20XX',
+    color: '#006753',
+    img: { src: dicksLogo, alt: 'DSG Logo' },
+    bullets: [
+      'lorem ipsum dolor sit amet',
+      'lorem 2',
+      'lorem 3',
+      "lorem 4.",
+    ],
+  }
 ];
 
 export default function Jobs() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const VISIBLE = 3;
+  const [startIndex, setStartIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const prefersReducedMotion = useReducedMotion();
   const navbarHeightRef = useRef<number>(64); // adjust if your navbar height differs
@@ -81,35 +95,76 @@ export default function Jobs() {
       <div className="max-w-5xl mx-auto w-full">
         {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
-        <div className="space-y-4">
-          <AnimatePresence initial={false}>
-            {jobs.map((job, idx) => (
-              <JobCard
-                key={job.company + idx}
-                job={job}
-                index={idx}
-                isSelected={selectedIndex === idx}
-                isAnySelected={selectedIndex !== null}
-                onOpen={() => setSelectedIndex(idx)}
-                prefersReducedMotion={prefersReducedMotion ?? false}
-                isDesktop={isDesktop}
-              />
-            ))}
-          </AnimatePresence>
+        <div className="flex items-start md:items-center">
+          <div className="w-full">
+            <div className="space-y-4">
+              {jobs.slice(startIndex, startIndex + VISIBLE).map((job, i) => {
+                const idx = startIndex + i; // absolute index
+                return (
+                  <JobCard
+                    key={job.company}
+                    job={job}
+                    index={idx}
+                    isSelected={selectedIndex === idx}
+                    isAnySelected={selectedIndex !== null}
+                    onOpen={() => setSelectedIndex(idx)}
+                    prefersReducedMotion={prefersReducedMotion ?? false}
+                    isDesktop={isDesktop}
+                    noLayout
+                  />
+                );
+              })}
 
-          <AnimatePresence>
-            {selectedIndex !== null && (
-              <FullscreenJob
-                key={`fullscreen-${selectedIndex}`}
-                job={jobs[selectedIndex]}
-                index={selectedIndex}
-                length={jobs.length}
-                onClose={() => setSelectedIndex(null)}
-                navbarHeight={navbarHeightRef.current}
-                prefersReducedMotion={prefersReducedMotion ?? false}
-              />
-            )}
-          </AnimatePresence>
+              <AnimatePresence>
+                {selectedIndex !== null && (
+                  <FullscreenJob
+                    key={`fullscreen-${selectedIndex}`}
+                    job={jobs[selectedIndex]}
+                    index={selectedIndex}
+                    length={jobs.length}
+                    onClose={() => setSelectedIndex(null)}
+                    navbarHeight={navbarHeightRef.current}
+                    prefersReducedMotion={prefersReducedMotion ?? false}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Carousel controls */}
+          <div className="ml-4 hidden md:flex flex-col items-center gap-3">
+            {
+              (() => {
+                const canUp = startIndex > 0;
+                const canDown = startIndex + VISIBLE < jobs.length;
+                return (
+                  <>
+                    <button
+                      onClick={() => { if (canUp) setStartIndex(s => Math.max(0, s - 1)); }}
+                      disabled={!canUp}
+                      aria-label="Scroll up"
+                      className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${canUp ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={() => { if (canDown) setStartIndex(s => Math.min(jobs.length - VISIBLE, s + 1)); }}
+                      disabled={!canDown}
+                      aria-label="Scroll down"
+                      className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${canDown ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </>
+                );
+              })()
+            }
+          </div>
         </div>
       </div>
     </section>
