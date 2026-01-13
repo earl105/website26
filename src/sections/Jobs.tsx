@@ -104,7 +104,6 @@ export default function Jobs() {
                   <JobCard
                     key={job.company}
                     job={job}
-                    index={idx}
                     isSelected={selectedIndex === idx}
                     isAnySelected={selectedIndex !== null}
                     onOpen={() => setSelectedIndex(idx)}
