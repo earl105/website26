@@ -12,8 +12,8 @@ type Project = {
 const sampleProjects: Project[] = [
 	{
 		name: "Java Tag Cloud Generator",
-		description: "Generates a tag cloud from text using Java.",
-		technologies: ["Java"],
+		description: "Developed a Java Tag Cloud Generator that dynamically produces HTML/CSS output from user-selected text files, allowing full customization of word count and input/output paths via a command line interface.",
+		technologies: ["Java", "HTML", "CSS"],
 		link: "#",
 		image: undefined,
 	},
