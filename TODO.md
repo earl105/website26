@@ -1,6 +1,8 @@
 
 
-add laptop scroll animation
+fix laptop scroll animation on mobile
+
+fix laptop scroll animation for hot reloads when halfway through pages
 
 fix left/right animations for project carousel
 

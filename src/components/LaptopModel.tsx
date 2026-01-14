@@ -92,10 +92,9 @@ export default function LaptopModel({ scrollProgress = 0 }: Props) {
     const base = baseRotationRef.current
     if (!mesh || base === null) return
 
-    // Make "open" a bit more open than the model's base.
-    // Increased: stop ~30° higher when opening, and ~15° lower when closing.
-    const openAngle = base + MathUtils.degToRad(80) // was 30° more open, now ~60°
-    const closedAngle = base + MathUtils.degToRad(-110) // was -90°, now -105° (15° lower)
+
+    const openAngle = base + MathUtils.degToRad(80) 
+    const closedAngle = base + MathUtils.degToRad(-108) 
 
     // Base scroll progress (0..1)
     const t = MathUtils.clamp(scrollProgress, 0, 1)
