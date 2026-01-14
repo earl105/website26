@@ -2,12 +2,14 @@
 
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Center, Environment, ContactShadows } from '@react-three/drei'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState, useRef } from 'react'
 import LaptopModel from './LaptopModel'
 
 export default function LaptopScene() {
   const [fov, setFov] = useState(65)
   const [isMobile, setIsMobile] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [visibleRatio, setVisibleRatio] = useState(1)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -42,8 +44,24 @@ export default function LaptopScene() {
     }
   }, [])
 
+  // Track how much of the container is visible so we can drive the laptop "close" animation
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => setVisibleRatio(entry.intersectionRatio))
+      },
+      { threshold: Array.from({ length: 101 }, (_, i) => i / 100) }
+    )
+
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   return (
-    <div style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative' }}>
       <Canvas camera={{ position: [1.4, 0.5, 1.4], fov }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
         <ambientLight intensity={0.5} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
@@ -51,7 +69,7 @@ export default function LaptopScene() {
         <Suspense fallback={null}>
           <group rotation={[0, Math.PI * 1.25, 0]} position={[0, isMobile ? 0.5 : 0, 0]}>
             <Center>
-              <LaptopModel />
+              <LaptopModel scrollProgress={1 - visibleRatio} />
             </Center>
           </group>
           {/* Preset "city" or "apartment" usually matches GLTF viewers best */}
@@ -60,7 +78,13 @@ export default function LaptopScene() {
           <ContactShadows position={[0, -0.25, 0]} opacity={0.4} scale={10} blur={2} far={1} />
         </Suspense>
 
-        <OrbitControls makeDefault target={[0, -0.5, 0]} />
+        <OrbitControls
+          makeDefault
+          target={[0, -0.5, 0]}
+          enableZoom={false}
+          enableRotate={false}
+          enablePan={false}
+        />
       </Canvas>
     </div>
   )

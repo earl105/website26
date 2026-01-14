@@ -1,17 +1,25 @@
 import { useGLTF, Text } from '@react-three/drei'
 import { useLayoutEffect, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { useTypewriter } from '../hooks/useTypewriter'
-import { Mesh, MeshStandardMaterial, Color, Group } from 'three'
+import { Mesh, MeshStandardMaterial, Color, Group, MathUtils, Object3D } from 'three'
 
 const laptopUrl = '/models/laptop.glb' 
 const TARGET_MESH = 'Object_13'
 const FONT_URL = '/fonts/JetBrainsMono-Regular.ttf'
 
 
-export default function LaptopModel() {
+type Props = {
+  // 0 = fully open, 1 = fully closed
+  scrollProgress?: number
+}
+
+export default function LaptopModel({ scrollProgress = 0 }: Props) {
   const { scene } = useGLTF(laptopUrl)
   const textGroupRef = useRef<Group>(null)
-  const screenMeshRef = useRef<Mesh | null>(null)
+  // This will point to the screen mesh or a parent group (bezel/case) so the whole assembly rotates
+  const screenMeshRef = useRef<Group | Mesh | null>(null)
+  const baseRotationRef = useRef<number | null>(null)
   
   const typedText = useTypewriter('> Dylan Earl\n\n> Computer Science and Engineering\n\n> Student @ The Ohio State University', {
     speed: 100,
@@ -25,26 +33,32 @@ export default function LaptopModel() {
 
     scene.traverse((obj) => {
       if (obj instanceof Mesh && obj.name === TARGET_MESH) {
-        console.log('Found screen mesh:', obj.name)
-        
         // Clone material to break sharing
         const originalMat = obj.material as MeshStandardMaterial
         const screenMat = originalMat.clone()
-        
+
         // Style as dark glass screen
         screenMat.color = new Color('#0a0a0f')
         screenMat.roughness = 0.15
         screenMat.metalness = 0.9
         screenMat.emissive = new Color('#000000')
-        
+
         obj.material = screenMat
         materialsToCleanup.push(screenMat)
         obj.renderOrder = 10
-        
-        screenMeshRef.current = obj
+
+        // Prefer rotating the parent group so bezel + case move with the screen.
+        // Fallback to the mesh itself if no suitable parent exists.
+        let rotTarget: Object3D | null = obj
+        if (obj.parent && obj.parent.type !== 'Scene') {
+          // climb one level to include bezel/case if present
+          rotTarget = obj.parent
+        }
+
+        screenMeshRef.current = rotTarget as Group
+        // store the current rotation.x as the neutral base
+        baseRotationRef.current = rotTarget.rotation ? rotTarget.rotation.x : obj.rotation.x
       }
-      
-      
     })
     
     return () => {
@@ -55,26 +69,50 @@ export default function LaptopModel() {
   // Attach text group directly to screen mesh
   useLayoutEffect(() => {
     if (!screenMeshRef.current || !textGroupRef.current) return
-    
+
     const screenMesh = screenMeshRef.current
     const textGroup = textGroupRef.current
-    
-    console.log('Attaching text group to screen mesh')
-    
-    // Remove from scene and add to screen mesh
+
+    // Remove from scene and add to screen mesh (or its parent group)
     if (textGroup.parent) {
       textGroup.parent.remove(textGroup)
     }
-    screenMesh.add(textGroup)
-    
-   
-    textGroup.position.set(1.25, 0.09, -1.5) //left, offset from screen, up but inverse
-    
-  
-  textGroup.rotation.set(-Math.PI / 2, Math.PI, 0)
-    
-    console.log('Text attached. Screen local position:', textGroup.position.toArray())
+    ;(screenMesh as Object3D).add(textGroup)
+
+    // Adjust text placement relative to the new parent group
+    textGroup.position.set(1.25, 0.09, -1.5)
+    textGroup.rotation.set(-Math.PI / 2, Math.PI, 0)
   }, [scene])
+
+  // Animate the screen mesh rotation based on scroll progress (smooth lerp).
+  // Uses the model's base rotation so we get the full expected delta (~90deg),
+  // and speeds up interpolation for snappier response to scrolling.
+  useFrame(() => {
+    const mesh = screenMeshRef.current
+    const base = baseRotationRef.current
+    if (!mesh || base === null) return
+
+    // Make "open" a bit more open than the model's base.
+    // Increased: stop ~30° higher when opening, and ~15° lower when closing.
+    const openAngle = base + MathUtils.degToRad(80) // was 30° more open, now ~60°
+    const closedAngle = base + MathUtils.degToRad(-110) // was -90°, now -105° (15° lower)
+
+    // Base scroll progress (0..1)
+    const t = MathUtils.clamp(scrollProgress, 0, 1)
+
+    // Double the effective rotation for the same scroll amount, but clamp to physical limit
+    const doubledT = MathUtils.clamp(t * 1.5, 0, 1)
+    const target = openAngle + (closedAngle - openAngle) * doubledT
+
+    // Make closing noticeably faster than opening for snappier feel
+    const isClosing = target < mesh.rotation.x
+    const lerpFactor = isClosing ? 0.6 : 0.18
+
+    mesh.rotation.x = MathUtils.lerp(mesh.rotation.x, target, lerpFactor)
+
+    // Enforce physical limits so the lid never rotates past fully open/closed positions
+    mesh.rotation.x = MathUtils.clamp(mesh.rotation.x, closedAngle, openAngle)
+  })
 
   return (
     <>
