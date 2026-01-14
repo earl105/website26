@@ -137,7 +137,6 @@ export default function Projects() {
 			const [projects] = useState<Project[]>(sampleProjects);
 			const [index, setIndex] = useState(0);
 			const [perPage, setPerPage] = useState(3);
-			const [animating, setAnimating] = useState<"left" | "right" | null>(null);
 
 			// Palette for project cards — one color per project (wraps if fewer colors)
 			// Palette for project cards — moved to CSS as variables. We'll read them at runtime.
@@ -208,19 +207,11 @@ export default function Projects() {
 			}, [colors.length, n]);
 
 			const handlePrev = () => {
-				setAnimating("left");
-				setTimeout(() => {
-					setIndex((i) => (i - perPage + n) % n);
-					setAnimating(null);
-				}, 300);
+				setIndex((i) => (i - perPage + n) % n);
 			};
 
 			const handleNext = () => {
-				setAnimating("right");
-				setTimeout(() => {
-					setIndex((i) => (i + perPage) % n);
-					setAnimating(null);
-				}, 300);
+				setIndex((i) => (i + perPage) % n);
 			};
 
 			const visible = Array.from({ length: perPage }, (_, i) => projects[(index + i) % n]);
@@ -247,7 +238,6 @@ export default function Projects() {
 							<div className="overflow-hidden px-10">
 								<div className={`flex items-stretch gap-6`}>
 									{visible.map((p, i) => {
-										const cardAnim = animating === "left" ? "animate-slide-left" : animating === "right" ? "animate-slide-right" : "";
 										const actualIndex = (index + i) % n;
 										let bg = "#e24646"; // fallback
 										if (colors.length) {
@@ -263,7 +253,7 @@ export default function Projects() {
 												rel="noreferrer"
 												className="flex-none w-full md:w-64 group"
 											>
-												<article className={`relative overflow-hidden rounded-lg shadow p-6 flex flex-col ${cardAnim} transform hover:scale-103 transition-transform duration-200 hover:shadow-xl h-96`} style={{ backgroundColor: 'var(--card)' }}>
+												<article className={`relative overflow-hidden rounded-lg shadow p-6 flex flex-col transform hover:scale-103 transition-transform duration-200 hover:shadow-xl h-96`} style={{ backgroundColor: 'var(--card)' }}>
 													{/* absolute top accent bar so color is flush with card top */}
 													<div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: bg }} />
 
