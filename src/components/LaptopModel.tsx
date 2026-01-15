@@ -12,10 +12,9 @@ const FONT_URL = '/fonts/JetBrainsMono-Regular.ttf'
 type Props = {
   // 0 = fully open, 1 = fully closed
   scrollProgress?: number
-  isMobile?: boolean
 }
 
-export default function LaptopModel({ scrollProgress = 0, isMobile = false }: Props) {
+export default function LaptopModel({ scrollProgress = 0 }: Props) {
   const { scene } = useGLTF(laptopUrl)
   const textGroupRef = useRef<Group>(null)
   // This will point to the screen mesh or a parent group (bezel/case) so the whole assembly rotates
@@ -94,23 +93,19 @@ export default function LaptopModel({ scrollProgress = 0, isMobile = false }: Pr
     if (!mesh || base === null) return
 
 
-    const openAngle = base + MathUtils.degToRad(isMobile ? 100 : 80)
-    const closedAngle = base + MathUtils.degToRad(isMobile ? -120 : -108)
+    const openAngle = base + MathUtils.degToRad(80) 
+    const closedAngle = base + MathUtils.degToRad(-108) 
 
     // Base scroll progress (0..1)
     const t = MathUtils.clamp(scrollProgress, 0, 1)
 
-    // Double the effective rotation for the same scroll amount on desktop; on
-    // mobile keep the factor slightly lower so the full-open angle maps nicely
-    // to the scroll range.
-    const multiplier = isMobile ? 1.2 : 1.5
-    const doubledT = MathUtils.clamp(t * multiplier, 0, 1)
+    // Double the effective rotation for the same scroll amount, but clamp to physical limit
+    const doubledT = MathUtils.clamp(t * 1.5, 0, 1)
     const target = openAngle + (closedAngle - openAngle) * doubledT
 
-    // Make closing noticeably faster than opening for snappier feel.
-    // On mobile, open a bit faster so the lid reaches the more-open pose.
+    // Make closing noticeably faster than opening for snappier feel
     const isClosing = target < mesh.rotation.x
-    const lerpFactor = isClosing ? 0.6 : (isMobile ? 0.28 : 0.18)
+    const lerpFactor = isClosing ? 0.6 : 0.18
 
     mesh.rotation.x = MathUtils.lerp(mesh.rotation.x, target, lerpFactor)
 
