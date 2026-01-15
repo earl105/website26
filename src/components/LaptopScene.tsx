@@ -69,7 +69,7 @@ export default function LaptopScene() {
         <Suspense fallback={null}>
           <group rotation={[0, Math.PI * 1.25, 0]} position={[0, isMobile ? 0.5 : 0, 0]}>
             <Center>
-              <LaptopModel scrollProgress={1 - visibleRatio} />
+              <LaptopModel scrollProgress={1 - visibleRatio} isMobile={isMobile} />
             </Center>
           </group>
           {/* Preset "city" or "apartment" usually matches GLTF viewers best */}
