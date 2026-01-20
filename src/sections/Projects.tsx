@@ -235,7 +235,7 @@ export default function Projects() {
 								<ArrowLeft className="w-6 h-6 text-[var(--muted)]" />
 							</button>
 
-							<div className="overflow-hidden px-10">
+							<div className="overflow-hidden px-10 py-2.5">
 								<div className={`flex items-stretch gap-6`}>
 									{visible.map((p, i) => {
 										const actualIndex = (index + i) % n;

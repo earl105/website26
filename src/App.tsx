@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar";
+import MobileLandscapeWarning from "./components/MobileLandscapeWarning";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
 import Jobs from "./sections/Jobs";
@@ -10,6 +11,7 @@ import Contact from "./sections/Contact";
 function App() {
   return (
     <>
+      <MobileLandscapeWarning />
       <Navbar />
       <main>
         <Hero/>
