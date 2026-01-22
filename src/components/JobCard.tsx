@@ -22,6 +22,10 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
   const hasRange = dateParts.length === 2;
   const startDate = hasRange ? dateParts[0] : job.dates;
   const endDate = hasRange ? dateParts[1] : '';
+  // For Lowe's only, keep month and year together (prevent "May" / "2025" split)
+  const displayStartDate = job.company === "Lowe's Home Improvement"
+    ? startDate.replace(/ (\d{4})$/, '\u00A0$1')
+    : startDate;
 
   return (
     <motion.div
@@ -57,7 +61,7 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
               <div className="text-sm" style={{ color: 'var(--muted)' }}>
                 {hasRange ? (
                   <>
-                    <span className="md:inline">{startDate}{'\u00A0'}-</span>
+                    <span className="md:inline">{displayStartDate}{'\u00A0'}-</span>
                     <br className="md:hidden" />
                     <span className="md:inline">{endDate}</span>
                   </>
