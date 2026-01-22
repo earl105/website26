@@ -18,6 +18,11 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
 
   const layoutId = `job-${job.company.replace(/\s+/g, '-')}`;
 
+  const dateParts = job.dates.split(' - ');
+  const hasRange = dateParts.length === 2;
+  const startDate = hasRange ? dateParts[0] : job.dates;
+  const endDate = hasRange ? dateParts[1] : '';
+
   return (
     <motion.div
       {...(noLayout ? { layout: false } : { layoutId, layout: true })}
@@ -49,7 +54,17 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
         <div className="flex items-center justify-between">
           <div className="font-semibold text-base leading-tight break-words">{job.company}</div>
             <div className="flex items-center gap-2">
-              <div className="text-sm" style={{ color: 'var(--muted)' }}>{job.dates}</div>
+              <div className="text-sm" style={{ color: 'var(--muted)' }}>
+                {hasRange ? (
+                  <>
+                    <span className="md:inline">{startDate} -</span>
+                    <br className="md:hidden" />
+                    <span className="md:inline">{endDate}</span>
+                  </>
+                ) : (
+                  job.dates
+                )}
+              </div>
               {/* mobile-only chevron to indicate expandability */}
               <svg
                 className={`w-5 h-5 transform transition-transform duration-200 md:hidden ${isSelected ? 'rotate-180' : ''}`}
