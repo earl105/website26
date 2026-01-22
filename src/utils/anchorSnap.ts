@@ -7,14 +7,18 @@ let programmaticScroll = false
 let lastSnapped: Element | null = null
 let lastScrollY = 0
 let lastDirection = 0
-const DIRECTION_CHANGE_EXTRA_MS = 220
+// More forgiving timing to tolerate mobile browser UI chrome toggles
+const DIRECTION_CHANGE_EXTRA_MS = 480
 let lastInnerHeight = typeof window !== 'undefined' ? window.innerHeight : 0
 let transientUIChange = false
-const VIEWPORT_CHANGE_THRESHOLD = 0.06 // 6% height change considered UI show/hide
-const VIEWPORT_TRANSIENT_MS = 420
+// Consider a viewport height change of 10% significant (was 6%)
+const VIEWPORT_CHANGE_THRESHOLD = 0.10 // 10% height change considered UI show/hide
+// Longer transient period to wait for the browser chrome to settle
+const VIEWPORT_TRANSIENT_MS = 900
 
 const VISIBILITY_THRESHOLD = 0.65
-const SCROLL_DEBOUNCE_MS = 150
+// Slightly larger base debounce for scroll end detection
+const SCROLL_DEBOUNCE_MS = 260
 const PROGRAMMATIC_CLEAR_MS = 800
 
 function buildThresholds() {
