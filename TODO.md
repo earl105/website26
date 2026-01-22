@@ -6,6 +6,7 @@
 
 #### Desktop Fixes
 - make spacebar nav consistent with navbar spacing
+- fix navbar top to bottom jitter 
 
 #### Mobile fixes
 - fix mobile navbar bubble glitches
