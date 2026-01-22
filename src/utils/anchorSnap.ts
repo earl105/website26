@@ -8,6 +8,18 @@ let lastSnapped: Element | null = null
 let lastScrollY = 0
 let lastDirection = 0
 const DIRECTION_CHANGE_EXTRA_MS = 220
+let disableSnapInIosInApp = false
+
+function detectIosInApp() {
+  try {
+    const ua = navigator.userAgent || ''
+    const isIOS = /iP(hone|od|ad)/i.test(ua)
+    const isInApp = /Instagram|FBAV|FBAN/i.test(ua)
+    return isIOS && isInApp
+  } catch (e) {
+    return false
+  }
+}
 
 const VISIBILITY_THRESHOLD = 0.65
 const SCROLL_DEBOUNCE_MS = 150
@@ -45,6 +57,7 @@ function isAligned(el: Element) {
 function handleScrollEnd() {
   if (!enabled) return
   if (programmaticScroll) return
+  if (disableSnapInIosInApp) return
   const candidate = getCandidate()
   if (!candidate) return
   if (lastSnapped === candidate && isAligned(candidate)) return
@@ -88,6 +101,7 @@ export function enableAnchorSnap() {
   })
   const els = Array.from(document.querySelectorAll('section[id], [data-anchor]'))
   els.forEach((el) => observer!.observe(el))
+  disableSnapInIosInApp = detectIosInApp()
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('wheel', markUserScroll, { passive: true })
   window.addEventListener('touchstart', markUserScroll, { passive: true })
