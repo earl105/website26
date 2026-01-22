@@ -9,7 +9,8 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen grid grid-cols-1 md:grid-cols-6 items-center px-8 pt-16 overflow-hidden"
+      className="relative grid grid-cols-1 md:grid-cols-6 items-center px-8 pt-16 overflow-hidden"
+      style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}
     >
       {/* 3D Laptop Background */}
       {/* <div className="absolute inset-0 z-0">

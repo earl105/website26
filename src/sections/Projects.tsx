@@ -217,7 +217,7 @@ export default function Projects() {
 			const visible = Array.from({ length: perPage }, (_, i) => projects[(index + i) % n]);
 
 			return (
-				<section id="projects" className="min-h-screen flex flex-col items-center justify-center py-8 md:py-12">
+				<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
 					<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0">
 						{/* Render tech carousel on mobile above projects */}
 						<div className="block md:hidden mb-6">

@@ -8,18 +8,10 @@ let lastSnapped: Element | null = null
 let lastScrollY = 0
 let lastDirection = 0
 const DIRECTION_CHANGE_EXTRA_MS = 220
-let disableSnapInIosInApp = false
-
-function detectIosInApp() {
-  try {
-    const ua = navigator.userAgent || ''
-    const isIOS = /iP(hone|od|ad)/i.test(ua)
-    const isInApp = /Instagram|FBAV|FBAN/i.test(ua)
-    return isIOS && isInApp
-  } catch (e) {
-    return false
-  }
-}
+let lastInnerHeight = typeof window !== 'undefined' ? window.innerHeight : 0
+let transientUIChange = false
+const VIEWPORT_CHANGE_THRESHOLD = 0.06 // 6% height change considered UI show/hide
+const VIEWPORT_TRANSIENT_MS = 420
 
 const VISIBILITY_THRESHOLD = 0.65
 const SCROLL_DEBOUNCE_MS = 150
@@ -57,7 +49,6 @@ function isAligned(el: Element) {
 function handleScrollEnd() {
   if (!enabled) return
   if (programmaticScroll) return
-  if (disableSnapInIosInApp) return
   const candidate = getCandidate()
   if (!candidate) return
   if (lastSnapped === candidate && isAligned(candidate)) return
@@ -81,10 +72,26 @@ function onScroll() {
   lastScrollY = currentY
 
   if (scrollTimeout) window.clearTimeout(scrollTimeout)
-  const delay = SCROLL_DEBOUNCE_MS + (directionChanged ? DIRECTION_CHANGE_EXTRA_MS : 0)
+  const delay = SCROLL_DEBOUNCE_MS + (directionChanged ? DIRECTION_CHANGE_EXTRA_MS : 0) + (transientUIChange ? VIEWPORT_TRANSIENT_MS : 0)
   scrollTimeout = window.setTimeout(() => {
     handleScrollEnd()
   }, delay)
+}
+
+function onResize() {
+  const h = window.innerHeight
+  if (!lastInnerHeight) lastInnerHeight = h
+  const diff = Math.abs(h - lastInnerHeight) / Math.max(h, lastInnerHeight)
+  if (diff >= VIEWPORT_CHANGE_THRESHOLD) {
+    transientUIChange = true
+    // extend debounce and avoid snapping immediately while browser UI toggles
+    if (scrollTimeout) window.clearTimeout(scrollTimeout)
+    scrollTimeout = window.setTimeout(() => {
+      transientUIChange = false
+      handleScrollEnd()
+    }, VIEWPORT_TRANSIENT_MS + SCROLL_DEBOUNCE_MS)
+  }
+  lastInnerHeight = h
 }
 
 function markUserScroll() {
@@ -101,10 +108,10 @@ export function enableAnchorSnap() {
   })
   const els = Array.from(document.querySelectorAll('section[id], [data-anchor]'))
   els.forEach((el) => observer!.observe(el))
-  disableSnapInIosInApp = detectIosInApp()
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('wheel', markUserScroll, { passive: true })
   window.addEventListener('touchstart', markUserScroll, { passive: true })
+  window.addEventListener('resize', onResize, { passive: true })
   window.addEventListener('keydown', (e) => {
     const k = e.key
     if (k === 'ArrowUp' || k === 'ArrowDown' || k === 'PageUp' || k === 'PageDown' || k === 'Home' || k === 'End' || k === ' ') {
@@ -128,6 +135,7 @@ export function disableAnchorSnap() {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('wheel', markUserScroll)
   window.removeEventListener('touchstart', markUserScroll)
+  window.removeEventListener('resize', onResize)
 }
 
 export default { enableAnchorSnap, disableAnchorSnap }
