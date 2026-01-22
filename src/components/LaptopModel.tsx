@@ -15,7 +15,7 @@ type Props = {
   isMobile?: boolean
 }
 
-export default function LaptopModel({ scrollProgress = 0 }: Props) {
+export default function LaptopModel({ scrollProgress = 0, isMobile = false }: Props) {
   const { scene } = useGLTF(laptopUrl)
   const textGroupRef = useRef<Group>(null)
   // This will point to the screen mesh or a parent group (bezel/case) so the whole assembly rotates
