@@ -5,6 +5,9 @@ let visibility = new Map<Element, number>()
 let scrollTimeout: number | null = null
 let programmaticScroll = false
 let lastSnapped: Element | null = null
+let lastScrollY = 0
+let lastDirection = 0
+const DIRECTION_CHANGE_EXTRA_MS = 220
 
 const VISIBILITY_THRESHOLD = 0.65
 const SCROLL_DEBOUNCE_MS = 150
@@ -56,10 +59,19 @@ function handleScrollEnd() {
 }
 
 function onScroll() {
+  const currentY = window.scrollY || window.pageYOffset
+  let dir = 0
+  if (currentY > lastScrollY) dir = 1
+  else if (currentY < lastScrollY) dir = -1
+  const directionChanged = dir !== 0 && dir !== lastDirection && lastDirection !== 0
+  lastDirection = dir || lastDirection
+  lastScrollY = currentY
+
   if (scrollTimeout) window.clearTimeout(scrollTimeout)
+  const delay = SCROLL_DEBOUNCE_MS + (directionChanged ? DIRECTION_CHANGE_EXTRA_MS : 0)
   scrollTimeout = window.setTimeout(() => {
     handleScrollEnd()
-  }, SCROLL_DEBOUNCE_MS)
+  }, delay)
 }
 
 function markUserScroll() {
