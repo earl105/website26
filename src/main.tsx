@@ -3,6 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { enableVhUpdater } from './utils/setVh'
 
 
 // Prevent browser from restoring scroll position on reload/navigation
@@ -22,6 +23,11 @@ if (typeof window !== 'undefined') {
   window.scrollTo(0, 0)
   window.addEventListener('load', () => window.scrollTo(0, 0))
   requestAnimationFrame(() => window.scrollTo(0, 0))
+}
+
+// enable --vh CSS variable for mobile viewport-height stability
+if (typeof window !== 'undefined') {
+  enableVhUpdater()
 }
 
 

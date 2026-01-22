@@ -4,7 +4,7 @@ import TechCarousel from "../components/TechCarousel";
 
 export default function About() {
   return (
-    <section id="about" className="min-h-screen px-8 pt-0 md:pt-16 flex flex-col items-center justify-center pb-20 md:pb-0">
+    <section id="about" className="px-8 pt-0 md:pt-16 flex flex-col items-center justify-center pb-20 md:pb-0" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
       <div className="flex flex-col space-y-6 md:space-y-0 md:grid md:grid-cols-6 md:grid-rows-2 md:gap-4">
         {/* Left: Name block (2x2) */}
         <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-lg bg-[var(--card)] text-[var(--text)] p-3 md:p-4 mb-6 md:mb-0 shadow-md hover:shadow-lg transition-shadow transform hover:scale-102 transition-transform duration-200 flex flex-col md:justify-between">

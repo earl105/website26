@@ -33,7 +33,7 @@ export default function FullscreenJob({ job, index, length, onClose, navbarHeigh
 
   const containerStyle: React.CSSProperties = {
     top: `${navbarHeight}px`,
-    height: `calc(100vh - ${navbarHeight}px)`,
+    height: `calc(var(--vh, 1vh) * 100 - ${navbarHeight}px)`,
   };
 
   // small directional pre-offset

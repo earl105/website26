@@ -92,7 +92,7 @@ export default function Jobs() {
   }, []);
 
   return (
-    <section id="jobs" className="min-h-screen flex flex-col px-6 py-12 pt-16">
+    <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
       <div className="max-w-5xl mx-auto w-full">
         {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
 
