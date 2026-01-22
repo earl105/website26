@@ -1,7 +1,9 @@
+//src\main.tsx
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+
 
 // Prevent browser from restoring scroll position on reload/navigation
 if (typeof window !== 'undefined' && 'scrollRestoration' in history) {
@@ -22,8 +24,11 @@ if (typeof window !== 'undefined') {
   requestAnimationFrame(() => window.scrollTo(0, 0))
 }
 
+
 root.render(
   <StrictMode>
     <App />
   </StrictMode>
 )
+
+
