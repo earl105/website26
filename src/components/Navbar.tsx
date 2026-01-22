@@ -13,11 +13,33 @@ export default function Navbar() {
   const navRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0, top: 0, height: 0 });
+  const isProgrammaticScroll = useRef(false);
+  const programmaticScrollTimer = useRef<number | null>(null);
+  const programmaticScrollListener = useRef<((this: Window, ev: Event) => any) | null>(null);
+  const lastActiveRef = useRef(activeId);
+
+  const setActive = (id: string) => {
+    setActiveId(id);
+    lastActiveRef.current = id;
+  };
 
   const handleClick = (id: string) => (e: any) => {
     e.preventDefault();
-    setActiveId(id);
+    if (isProgrammaticScroll.current) {
+      if (programmaticScrollTimer.current) {
+        window.clearTimeout(programmaticScrollTimer.current);
+        programmaticScrollTimer.current = null;
+      }
+    }
+
+    isProgrammaticScroll.current = true;
+
+    setActive(id);
+    updateIndicatorForId(id);
+
     document.querySelector<HTMLElement>(`#${id}`)?.scrollIntoView({ behavior: "smooth" });
+
+    attachProgrammaticScrollEndListener(id);
   };
 
   const updateIndicator = () => {
@@ -41,6 +63,68 @@ export default function Navbar() {
     });
   };
 
+  const updateIndicatorForId = (id: string) => {
+    const el = itemRefs.current[id];
+    const nav = navRef.current;
+    if (!el || !nav) return;
+    const elRect = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const verticalInset = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches ? 6 : 6;
+    const top = verticalInset;
+    const height = Math.max(22, navRect.height - verticalInset * 2);
+
+    setIndicator({
+      left: elRect.left - navRect.left,
+      width: elRect.width,
+      top,
+      height,
+    });
+  };
+
+  const attachProgrammaticScrollEndListener = (targetId: string) => {
+    if (programmaticScrollListener.current) {
+      window.removeEventListener("scroll", programmaticScrollListener.current);
+      programmaticScrollListener.current = null;
+    }
+
+    const onScrollDuringProgrammatic = () => {
+      if (programmaticScrollTimer.current) {
+        window.clearTimeout(programmaticScrollTimer.current);
+      }
+      programmaticScrollTimer.current = window.setTimeout(() => {
+        finishProgrammaticScroll(targetId);
+      }, 150) as unknown as number;
+    };
+
+    programmaticScrollListener.current = onScrollDuringProgrammatic;
+    window.addEventListener("scroll", onScrollDuringProgrammatic, { passive: true });
+
+    if (programmaticScrollTimer.current) {
+      window.clearTimeout(programmaticScrollTimer.current);
+    }
+    programmaticScrollTimer.current = window.setTimeout(() => {
+      finishProgrammaticScroll(targetId);
+    }, 2000) as unknown as number;
+  };
+
+  const finishProgrammaticScroll = (targetId: string) => {
+    if (programmaticScrollTimer.current) {
+      window.clearTimeout(programmaticScrollTimer.current);
+      programmaticScrollTimer.current = null;
+    }
+    if (programmaticScrollListener.current) {
+      window.removeEventListener("scroll", programmaticScrollListener.current);
+      programmaticScrollListener.current = null;
+    }
+
+    setActive(targetId);
+    updateIndicatorForId(targetId);
+
+    window.setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 50) as unknown as number;
+  };
+
   useEffect(() => {
     updateIndicator();
   }, [activeId]);
@@ -58,11 +142,11 @@ export default function Navbar() {
     let rafId: number | null = null;
     let pendingTimeout: number | null = null;
     let lastSetTime = 0;
-    let lastActive = activeId;
     const minChangeDelay = 120; // ms
 
     const checkNearest = () => {
       rafId = null;
+      if (isProgrammaticScroll.current) return;
       const viewportCenter = window.innerHeight / 2;
       let nearestId: string | null = null;
       let nearestDistance = Infinity;
@@ -79,15 +163,15 @@ export default function Navbar() {
         }
       });
 
-      if (!nearestId || nearestId === lastActive) return;
+      if (!nearestId || nearestId === lastActiveRef.current) return;
 
       const now = Date.now();
       const elapsed = now - lastSetTime;
 
       const apply = () => {
-        setActiveId(nearestId as string);
+        setActive(nearestId as string);
         lastSetTime = Date.now();
-        lastActive = nearestId as string;
+        lastActiveRef.current = nearestId as string;
       };
 
       if (elapsed > minChangeDelay) {
