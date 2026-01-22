@@ -57,7 +57,7 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
               <div className="text-sm" style={{ color: 'var(--muted)' }}>
                 {hasRange ? (
                   <>
-                    <span className="md:inline">{startDate} -</span>
+                    <span className="md:inline">{startDate}{'\u00A0'}-</span>
                     <br className="md:hidden" />
                     <span className="md:inline">{endDate}</span>
                   </>
