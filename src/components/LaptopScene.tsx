@@ -82,8 +82,8 @@ export default function LaptopScene() {
   }, [isMobile])
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative' }}>
-      <Canvas camera={{ position: [1.4, 0.5, 1.4], fov }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative', touchAction: 'pan-y' }}>
+      <Canvas camera={{ position: [1.4, 0.5, 1.4], fov }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent', touchAction: 'pan-y' }}>
         <ambientLight intensity={0.5} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
         
