@@ -7,8 +7,10 @@ import Projects from "./sections/Projects";
 
 import "./App.css";
 import Contact from "./sections/Contact";
+import useSpacebarNavigation from "./hooks/useSpacebarNavigation";
 
 function App() {
+  useSpacebarNavigation();
   return (
     <>
       <MobileLandscapeWarning />
