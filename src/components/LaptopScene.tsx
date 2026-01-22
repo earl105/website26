@@ -10,6 +10,7 @@ export default function LaptopScene() {
   const [isMobile, setIsMobile] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [visibleRatio, setVisibleRatio] = useState(1)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -60,6 +61,26 @@ export default function LaptopScene() {
     return () => obs.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!isMobile) return setScrollProgress(0)
+    let raf = 0
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const y = window.scrollY || window.pageYOffset || 0
+        const range = Math.max(window.innerHeight * 0.6, 200)
+        const p = Math.min(Math.max(y / range, 0), 1)
+        setScrollProgress(p)
+      })
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [isMobile])
+
   return (
     <div ref={containerRef} style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative' }}>
       <Canvas camera={{ position: [1.4, 0.5, 1.4], fov }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
@@ -69,7 +90,7 @@ export default function LaptopScene() {
         <Suspense fallback={null}>
           <group rotation={[0, Math.PI * 1.25, 0]} position={[0, isMobile ? 0.5 : 0, 0]}>
             <Center>
-              <LaptopModel scrollProgress={1 - visibleRatio} />
+              <LaptopModel scrollProgress={isMobile ? scrollProgress : 1 - visibleRatio} />
             </Center>
           </group>
           {/* Preset "city" or "apartment" usually matches GLTF viewers best */}
