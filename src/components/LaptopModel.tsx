@@ -12,6 +12,7 @@ const FONT_URL = '/fonts/JetBrainsMono-Regular.ttf'
 type Props = {
   // 0 = fully open, 1 = fully closed
   scrollProgress?: number
+  isMobile?: boolean
 }
 
 export default function LaptopModel({ scrollProgress = 0 }: Props) {
@@ -93,8 +94,13 @@ export default function LaptopModel({ scrollProgress = 0 }: Props) {
     if (!mesh || base === null) return
 
 
-    const openAngle = base + MathUtils.degToRad(80) 
-    const closedAngle = base + MathUtils.degToRad(-108) 
+    let openAngle = base + MathUtils.degToRad(80)
+    const closedAngle = base + MathUtils.degToRad(-108)
+
+    if (isMobile) {
+      const maxOpen = closedAngle + MathUtils.degToRad(110)
+      openAngle = Math.min(openAngle, maxOpen)
+    }
 
     // Base scroll progress (0..1)
     const t = MathUtils.clamp(scrollProgress, 0, 1)
