@@ -5,20 +5,9 @@ let visibility = new Map<Element, number>()
 let scrollTimeout: number | null = null
 let programmaticScroll = false
 let lastSnapped: Element | null = null
-let lastScrollY = 0
-let lastDirection = 0
-// More forgiving timing to tolerate mobile browser UI chrome toggles
-const DIRECTION_CHANGE_EXTRA_MS = 480
-let lastInnerHeight = typeof window !== 'undefined' ? window.innerHeight : 0
-let transientUIChange = false
-// Consider a viewport height change of 10% significant (was 6%)
-const VIEWPORT_CHANGE_THRESHOLD = 0.10 // 10% height change considered UI show/hide
-// Longer transient period to wait for the browser chrome to settle
-const VIEWPORT_TRANSIENT_MS = 900
 
 const VISIBILITY_THRESHOLD = 0.65
-// Slightly larger base debounce for scroll end detection
-const SCROLL_DEBOUNCE_MS = 260
+const SCROLL_DEBOUNCE_MS = 150
 const PROGRAMMATIC_CLEAR_MS = 800
 
 function buildThresholds() {
@@ -67,35 +56,10 @@ function handleScrollEnd() {
 }
 
 function onScroll() {
-  const currentY = window.scrollY || window.pageYOffset
-  let dir = 0
-  if (currentY > lastScrollY) dir = 1
-  else if (currentY < lastScrollY) dir = -1
-  const directionChanged = dir !== 0 && dir !== lastDirection && lastDirection !== 0
-  lastDirection = dir || lastDirection
-  lastScrollY = currentY
-
   if (scrollTimeout) window.clearTimeout(scrollTimeout)
-  const delay = SCROLL_DEBOUNCE_MS + (directionChanged ? DIRECTION_CHANGE_EXTRA_MS : 0) + (transientUIChange ? VIEWPORT_TRANSIENT_MS : 0)
   scrollTimeout = window.setTimeout(() => {
     handleScrollEnd()
-  }, delay)
-}
-
-function onResize() {
-  const h = window.innerHeight
-  if (!lastInnerHeight) lastInnerHeight = h
-  const diff = Math.abs(h - lastInnerHeight) / Math.max(h, lastInnerHeight)
-  if (diff >= VIEWPORT_CHANGE_THRESHOLD) {
-    transientUIChange = true
-    // extend debounce and avoid snapping immediately while browser UI toggles
-    if (scrollTimeout) window.clearTimeout(scrollTimeout)
-    scrollTimeout = window.setTimeout(() => {
-      transientUIChange = false
-      handleScrollEnd()
-    }, VIEWPORT_TRANSIENT_MS + SCROLL_DEBOUNCE_MS)
-  }
-  lastInnerHeight = h
+  }, SCROLL_DEBOUNCE_MS)
 }
 
 function markUserScroll() {
@@ -115,7 +79,6 @@ export function enableAnchorSnap() {
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('wheel', markUserScroll, { passive: true })
   window.addEventListener('touchstart', markUserScroll, { passive: true })
-  window.addEventListener('resize', onResize, { passive: true })
   window.addEventListener('keydown', (e) => {
     const k = e.key
     if (k === 'ArrowUp' || k === 'ArrowDown' || k === 'PageUp' || k === 'PageDown' || k === 'Home' || k === 'End' || k === ' ') {
@@ -139,7 +102,6 @@ export function disableAnchorSnap() {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('wheel', markUserScroll)
   window.removeEventListener('touchstart', markUserScroll)
-  window.removeEventListener('resize', onResize)
 }
 
 export default { enableAnchorSnap, disableAnchorSnap }
