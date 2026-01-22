@@ -173,7 +173,7 @@ export default function Jobs() {
             <div className="flex flex-col items-center">
               <div className="mb-3">
                 <button
-                  onClick={() => { if (startIndex > 0) setStartIndex(s => Math.max(0, s - 1)); }}
+                  onClick={() => { if (startIndex > 0) setStartIndex(s => Math.max(0, s - visible)); }}
                   disabled={startIndex <= 0}
                   aria-label="Scroll up"
                   className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${startIndex > 0 ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
@@ -220,7 +220,7 @@ export default function Jobs() {
 
               <div className="mt-3">
                 <button
-                  onClick={() => { if (startIndex + visible < jobs.length) setStartIndex(s => Math.min(jobs.length - visible, s + 1)); }}
+                  onClick={() => { if (startIndex + visible < jobs.length) setStartIndex(s => Math.min(jobs.length - visible, s + visible)); }}
                   disabled={startIndex + visible >= jobs.length}
                   aria-label="Scroll down"
                   className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${startIndex + visible < jobs.length ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
