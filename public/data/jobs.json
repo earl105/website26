@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "company": "CoverMyMeds",
+    "role": "Technology Intern",
+    "start_date": "June 2026",
+    "end_date": "August 2026",
+    "bullets": [
+      "Supporting analysis, design, documentation, and engineering of solutions across software, platform, and data teams.",
+      "Collaborating with cross-functional engineers to automate workflows, solve technical challenges, and more.",
+      "Contributing to team projects using modern software stacks while quickly learning new tools and technologies.",
+      "Engaging in mentorship and training programs to strengthen technical communication and problem-solving skills."
+    ],
+    "logo_url": "/logos/cmmLogo.png",
+    "sort_order": 0
+  },
+  {
+    "id": 2,
+    "company": "Lowe's Home Improvement",
+    "role": "Summer Cashier and Customer Service",
+    "start_date": "May 2025",
+    "end_date": "July 2025",
+    "bullets": [
+      "Operated registers and processed high-volume transactions accurately while delivering friendly customer service.",
+      "Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.",
+      "Supported Lawn & Garden and Lumber departments by managing inventory, outdoor sales, and seasonal product.",
+      "Fulfilled and organized online orders, ensuring timely pick-up and delivery accuracy for customers."
+    ],
+    "logo_url": "/logos/lowesLogo.png",
+    "sort_order": 1
+  },
+  {
+    "id": 3,
+    "company": "GOJO Industries Inc.",
+    "role": "Summer Warehouse Associate",
+    "start_date": "May 2024",
+    "end_date": "July 2024",
+    "bullets": [
+      "Performed tasks in two-stage blow molding, including box preparation, filling, labeling, and palletizing.",
+      "Collaborated in a 6-person assembly line to efficiently process and package Purell soap and sanitizer bottles.",
+      "Assisted in 4 departments: single-stage blow molding, sanitization, logistics, and automation.",
+      "Over 6 million bottles were produced and packed under the blow molding operations team in 3 months."
+    ],
+    "logo_url": "/logos/gojoLogo.png",
+    "sort_order": 2
+  },
+  {
+    "id": 4,
+    "company": "Dicks Sporting Goods",
+    "role": "Footwear/Apparrel Sales Associate and Cashier",
+    "start_date": "August 2021",
+    "end_date": "August 2023",
+    "bullets": [
+      "Cross-trained across 4 departments (footwear, outerwear, apparel, and cashier) to provide adaptable service.",
+      "Managed and updated inventory for a department with over 250+ UPCs weekly.",
+      "Efficiently processed and organized stock, handling up to 300 items per truck delivery.",
+      "Cultivated strong customer relationships, driving store metrics to rank among the nation's top locations."
+    ],
+    "logo_url": "/logos/dicksLogo.png",
+    "sort_order": 3
+  }
+]

@@ -1,8 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import lowesLogo from '../assets/jobIcons/lowesLogo.png';
-import gojoLogo from '../assets/jobIcons/gojoLogo.png';
-import dicksLogo from '../assets/jobIcons/dicksLogo.png';
-import cmmLogo from '../assets/jobIcons/cmmLogo.png';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, useReducedMotion } from 'framer-motion';
 import JobCard from '../components/JobCard';
 import FullscreenJob from '../components/FullscreenJob';
@@ -16,67 +12,81 @@ export type Job = {
   bullets: string[];
 };
 
-const jobs: Job[] = [
-    {
-    company: 'CoverMyMeds',
-    position: 'Technology Intern',
-    dates: 'June 2026 - August 2026',
-    color: '#e8106a',
-    img: { src: cmmLogo, alt: 'CMM Logo' },
-    bullets: [
-  'Supporting analysis, design, documentation, and engineering of solutions across software, platform, and data teams.',
-  'Collaborating with cross-functional engineers to automate workflows, solve technical challenges, and more.',
-  'Contributing to team projects using modern software stacks while quickly learning new tools and technologies.',
-  'Engaging in mentorship and training programs to strengthen technical communication and problem-solving skills.',
-],
-  },{
-    company: "Lowe's Home Improvement",
-    position: 'Summer Cashier and Customer Service',
-    dates: 'May 2025 - July 2025',
-    color: '#283061',
-    img: { src: lowesLogo, alt: 'Lowes Logo' },
-    bullets: [
-      'Operated registers and processed high-volume transactions accurately while delivering friendly customer service.',
-      'Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.',
-      'Supported Lawn & Garden and Lumber departments by managing inventory, outdoor sales, and seasonal product.',
-      'Fulfilled and organized online orders, ensuring timely pick-up and delivery accuracy for customers.',
-    ],
-  },
-  {
-    company: 'GOJO Industries Inc.',
-    position: 'Summer Warehouse Associate',
-    dates: 'May 2024 - July 2024',
-    color: '#027cb7',
-    img: { src: gojoLogo, alt: 'GOJO Logo' },
-    bullets: [
-      'Performed tasks in two-stage blow molding, including box preparation, filling, labeling, and palletizing.',
-      'Collaborated in a 6-person assembly line to efficiently process and package Purell soap and sanitizer bottles.',
-      'Assisted in 4 departments: single-stage blow molding, sanitization, logistics, and automation.',
-      'Over 6 million bottles were produced and packed under the blow molding operations team in 3 months.',
-    ],
-  },
-  {
-    company: 'Dicks Sporting Goods',
-    position: 'Footwear/Apparrel Sales Associate and Cashier',
-    dates: 'August 2021 - August 2023',
-    color: '#006753',
-    img: { src: dicksLogo, alt: 'DSG Logo' },
-    bullets: [
-      'Cross-trained across 4 departments (footwear, outerwear, apparel, and cashier) to provide adaptable service.',
-      'Managed and updated inventory for a department with over 250+ UPCs weekly.',
-      'Efficiently processed and organized stock, handling up to 300 items per truck delivery.',
-      "Cultivated strong customer relationships, driving store metrics to rank among the nation's top locations.",
-    ],
-  }
-];
+type JobRecord = {
+  id: number;
+  company: string;
+  role: string;
+  start_date: string;
+  end_date: string;
+  bullets: string[];
+  logo_url: string;
+  sort_order: number;
+};
+
+const accentColors: Record<string, string> = {
+  'CoverMyMeds': '#e8106a',
+  "Lowe's Home Improvement": '#283061',
+  'GOJO Industries Inc.': '#027cb7',
+  'Dicks Sporting Goods': '#006753',
+};
+
+const getAccentColor = (company: string) => accentColors[company] ?? '#4b5563';
+
+const toJob = (record: JobRecord): Job => ({
+  company: record.company,
+  position: record.role,
+  dates: `${record.start_date} - ${record.end_date}`,
+  color: getAccentColor(record.company),
+  img: { src: record.logo_url, alt: `${record.company} logo` },
+  bullets: record.bullets,
+});
 
 export default function Jobs() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [startIndex, setStartIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [records, setRecords] = useState<JobRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const visible = isDesktop ? 3 : 2;
   const navbarHeightRef = useRef<number>(64); // adjust if your navbar height differs
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadJobs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/data/jobs.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load jobs (${response.status})`);
+        }
+
+        const data = (await response.json()) as JobRecord[];
+        if (!cancelled) {
+          setRecords([...data].sort((a, b) => a.sort_order - b.sort_order));
+        }
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(loadError instanceof Error ? loadError.message : 'Failed to load jobs');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadJobs();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const jobs = useMemo(() => records.map(toJob), [records]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -90,6 +100,36 @@ export default function Jobs() {
       else mq.removeListener(handler as any);
     };
   }, []);
+
+  useEffect(() => {
+    if (startIndex > Math.max(0, jobs.length - visible)) {
+      setStartIndex(Math.max(0, jobs.length - visible));
+    }
+  }, [jobs.length, startIndex, visible]);
+
+  if (loading) {
+    return (
+      <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="glass-surface-soft rounded-lg p-8 text-center text-[color:var(--muted)]">
+            Loading jobs...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="glass-surface-soft rounded-lg p-8 text-center text-red-100" style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}>
+            {error}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>

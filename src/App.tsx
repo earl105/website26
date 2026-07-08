@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar";
+import Background from "./components/Background";
 import MobileLandscapeWarning from "./components/MobileLandscapeWarning";
 import Hero from "./sections/Hero";
 import About from "./sections/About";
@@ -26,9 +27,10 @@ function App() {
 
   return (
     <>
+      <Background />
       <MobileLandscapeWarning />
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <Hero/>
         <About />
         <Projects />

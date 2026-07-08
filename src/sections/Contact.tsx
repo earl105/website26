@@ -6,7 +6,7 @@ import headshot from "../assets/headshot.jpg";
 export default function Contact() {
   return (
     <section id="contact" className="px-8 pt-0 md:pt-16 flex items-center justify-center" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-      <div className="w-full max-w-4xl rounded-lg bg-[var(--card)] text-[var(--text)] p-6 shadow-md  transform hover:scale-103 transition-transform duration-150">
+      <div className="w-full max-w-4xl rounded-lg glass-surface text-[var(--text)] p-6 transition-transform duration-150 hover:scale-103">
         <h2 className="text-xl font-bold ml-4">Contact</h2>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
           <div className="p-4 flex flex-col justify-between">

@@ -43,19 +43,19 @@ export default function FullscreenJob({ job, index, length, onClose, navbarHeigh
 
   return (
     <motion.div className="fixed left-0 right-0 z-50" style={containerStyle} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" onClick={onClose} aria-hidden />
 
       <motion.div
         layoutId={layoutId}
         initial={{ y: initialY }}
         animate={{ y: 0 }}
         transition={{ type: prefersReducedMotion ? false : 'spring', stiffness: 300, damping: 30 }}
-        className="relative max-w-3xl mx-auto h-full bg-[color:var(--card)] rounded-t-lg md:rounded-lg overflow-hidden shadow-xl"
+        className="relative max-w-3xl mx-auto h-full glass-surface-strong rounded-t-lg md:rounded-lg overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-label={`${job.company} details`}
       >
-        <header className="flex items-center justify-between p-4 border-b">
+        <header className="flex items-center justify-between p-4 border-b border-white/10">
           <div>
             <div className="font-semibold text-lg">{job.company}</div>
             <div className="text-sm text-[color:var(--muted)]">{job.dates}</div>

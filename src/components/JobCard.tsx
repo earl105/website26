@@ -42,7 +42,7 @@ export default function JobCard({ job, isSelected, isAnySelected, onOpen, prefer
       tabIndex={isDesktop ? undefined as any : 0}
       onKeyDown={(e) => { if (!isDesktop && (e.key === 'Enter' || e.key === ' ')) onOpen(); }}
       aria-expanded={isSelected}
-      className="w-full h-44 md:h-auto flex items-stretch gap-0 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 bg-[color:var(--card)] overflow-hidden"
+      className="w-full h-44 md:h-auto flex items-stretch gap-0 rounded-lg glass-surface overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
     >
       {/* left accent stripe (mobile only) */}
       <div className="w-2 rounded-l-lg md:hidden" style={{ backgroundColor: job.color }} />
