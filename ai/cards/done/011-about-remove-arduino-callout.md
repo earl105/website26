@@ -1,6 +1,6 @@
 # CARD-011 — Remove Arduino IDE Callout in About (Keep Icon)
 
-**Status:** 🟢 Ready (content fix)
+**Status:** 🟢 Implemented
 
 ## Summary
 Remove the "Arduino IDE" mention from the About Me prose. Keep the Arduino icon in the tech carousel.

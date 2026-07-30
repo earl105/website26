@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import TechCarousel from "../components/TechCarousel";
+import ProjectCardSkeleton from "../components/ProjectCardSkeleton";
+import { devLoadDelay } from "../utils/devLoadDelay";
 
 // Slide the whole visible set horizontally on navigate; direction: 1 = next, -1 = prev.
 const slideVariants = {
@@ -82,6 +84,8 @@ export default function Projects() {
 						if (!response.ok) {
 							throw new Error(`Failed to load projects (${response.status})`);
 						}
+
+						await devLoadDelay();
 
 						const data = (await response.json()) as Project[];
 						if (!cancelled) {
@@ -190,8 +194,14 @@ export default function Projects() {
 				return (
 					<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
 						<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
-							<div className="glass-surface-soft rounded-lg p-8 text-center text-[color:var(--muted)]">
-								Loading projects...
+							<div className="relative">
+								<div className="overflow-hidden px-10 py-2.5">
+									<div className="flex items-stretch justify-center gap-6">
+										{Array.from({ length: perPage }).map((_, i) => (
+											<ProjectCardSkeleton key={i} />
+										))}
+									</div>
+								</div>
 							</div>
 						</div>
 					</section>

@@ -2,8 +2,20 @@
 
 One card (`.md` file) per task, derived from [`TODO.md`](../../TODO.md) and cross-referenced with [`features.md`](../../features.md). Each card has a stable ID (`CARD-0XX`) matching its filename prefix.
 
+## Folder layout (status = directory)
+
+Cards are filed into subdirectories by status, so status is visible from the folder — not just the card body. When a card's status changes, **move the file** to the matching folder (and update its `Status:` line, which stays the source of truth).
+
+| Folder | Meaning |
+| --- | --- |
+| `done/` | 🟢 Implemented / completed |
+| `in-progress/` | 🔵 Partially implemented — needs verify/finish |
+| `ready/` | 🟢 Ready to build, not started |
+| `tbd/` | 🟡 Requirements undefined — needs direction before building |
+| `discarded/` | ⚫ Obsolete / superseded — kept for history |
+
 ## How to read a card
-- **Status flag** — `🟢 Ready`, `🟡 Requirements TBD`, or `🔵 Partially implemented`
+- **Status flag** — `🟢`, `🔵`, `🟡`, `⚫` (matches its folder)
 - **Summary / Instructions / Acceptance criteria / Nuances & considerations / Files likely touched**
 
 ## Global constraints (apply to every card)
@@ -13,27 +25,29 @@ One card (`.md` file) per task, derived from [`TODO.md`](../../TODO.md) and cros
 
 ## Index
 
-### Animations
-- **CARD-001** — [`001-anim-project-carousel-slide.md`](001-anim-project-carousel-slide.md) — 🟢 implemented (framer-motion slide/fade)
-- **CARD-002** — [`002-anim-job-carousel.md`](002-anim-job-carousel.md) — 🟢 completed (superseded by CARD-003 cross-fade)
+### 🟢 Done — [`done/`](done/)
+- **CARD-001** — [`001-anim-project-carousel-slide.md`](done/001-anim-project-carousel-slide.md) — framer-motion slide/fade for project carousel
+- **CARD-002** — [`002-anim-job-carousel.md`](done/002-anim-job-carousel.md) — completed (superseded by CARD-003 cross-fade)
+- **CARD-003** — [`003-job-carousel-redo.md`](done/003-job-carousel-redo.md) — reworked into VS Code file-explorer experience section
+- **CARD-005** — [`005-skeleton-loaders.md`](done/005-skeleton-loaders.md) — shimmer skeletons for projects + jobs
+- **CARD-008** — [`008-laptop-scaling-desktop.md`](done/008-laptop-scaling-desktop.md) — desktop FOV 65→60 enlarges laptop
+- **CARD-010** — [`010-content-update-fourth-year.md`](done/010-content-update-fourth-year.md) — update "third-year" → "fourth-year"
+- **CARD-011** — [`011-about-remove-arduino-callout.md`](done/011-about-remove-arduino-callout.md) — remove Arduino IDE text mention (keep icon)
+- **CARD-012** — [`012-add-tech-icons.md`](done/012-add-tech-icons.md) — added Claude Code, Playwright, pnpm, Jest icons (just dropped — no brand mark)
 
-### Changes
-- **CARD-003** — [`003-job-carousel-redo.md`](003-job-carousel-redo.md) — 🟢 reworked into VS Code file-explorer experience section
-- **CARD-004** — [`004-project-card-click-behavior.md`](004-project-card-click-behavior.md) — 🔵 conditional/override click behavior
-- **CARD-005** — [`005-skeleton-loaders.md`](005-skeleton-loaders.md) — 🟢 skeleton loaders while data fetches
-- **CARD-006** — [`006-liquid-glass-transparency.md`](006-liquid-glass-transparency.md) — 🟢 implement proper liquid glass (current impl insufficient)
-- **CARD-007** — [`007-backgrounds.md`](007-backgrounds.md) — 🟡 section backgrounds (direction TBD)
-- **CARD-008** — [`008-laptop-scaling-desktop.md`](008-laptop-scaling-desktop.md) — 🟢 laptop appears too small on desktop
-- **CARD-009** — [`009-job-carousel-vertical-centering.md`](009-job-carousel-vertical-centering.md) — 🟢 vertically center jobs carousel
-- **CARD-010** — [`010-content-update-fourth-year.md`](010-content-update-fourth-year.md) — 🟢 update "third-year" → "fourth-year"
-- **CARD-011** — [`011-about-remove-arduino-callout.md`](011-about-remove-arduino-callout.md) — 🟢 remove Arduino IDE text mention (keep icon)
-- **CARD-012** — [`012-add-tech-icons.md`](012-add-tech-icons.md) — 🟢 add Claude Code, Playwright, pnpm, Jest, just icons
+### 🔵 In progress — [`in-progress/`](in-progress/)
+- **CARD-004** — [`004-project-card-click-behavior.md`](in-progress/004-project-card-click-behavior.md) — conditional/override click behavior (verify + finish)
 
-### New features (Phase 2 — backend/admin)
-- **CARD-013** — [`013-admin-login.md`](013-admin-login.md) — 🟢 admin login button + JWT auth
-- **CARD-014** — [`014-admin-crud-projects.md`](014-admin-crud-projects.md) — 🟢 admin CRUD for project cards
-- **CARD-015** — [`015-admin-crud-jobs.md`](015-admin-crud-jobs.md) — 🟢 admin CRUD for job cards
-- **CARD-016** — [`016-admin-crud-text-components.md`](016-admin-crud-text-components.md) — 🟡 admin CRUD for other text components
+### 🟢 Ready — [`ready/`](ready/)
+- **CARD-006** — [`006-liquid-glass-transparency.md`](ready/006-liquid-glass-transparency.md) — implement proper liquid glass (current impl insufficient)
+- **CARD-013** — [`013-admin-login.md`](ready/013-admin-login.md) — admin login button + JWT auth _(Phase 2 — prerequisite for all admin CRUD)_
+- **CARD-014** — [`014-admin-crud-projects.md`](ready/014-admin-crud-projects.md) — admin CRUD for project cards _(Phase 2 — blocked on CARD-013)_
+- **CARD-015** — [`015-admin-crud-jobs.md`](ready/015-admin-crud-jobs.md) — admin CRUD for job cards _(Phase 2 — blocked on CARD-013)_
 
-### Less important (do last)
-- **CARD-017** — [`017-data-logging.md`](017-data-logging.md) — 🟡 traffic + failure logging and dashboard
+### 🟡 Requirements TBD — [`tbd/`](tbd/)
+- **CARD-007** — [`007-backgrounds.md`](tbd/007-backgrounds.md) — section backgrounds (visual direction not chosen)
+- **CARD-016** — [`016-admin-crud-text-components.md`](tbd/016-admin-crud-text-components.md) — admin CRUD for other text components (scope undefined)
+- **CARD-017** — [`017-data-logging.md`](tbd/017-data-logging.md) — traffic + failure logging and dashboard (lowest priority)
+
+### ⚫ Discarded — [`discarded/`](discarded/)
+- **CARD-009** — [`009-job-carousel-vertical-centering.md`](discarded/009-job-carousel-vertical-centering.md) — obsolete; jobs is no longer a carousel (resolved by CARD-003)

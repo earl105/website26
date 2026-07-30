@@ -1,6 +1,8 @@
 # CARD-009 — Vertically Center Jobs Carousel
 
-**Status:** 🟢 Ready (quick fix)
+**Status:** ⚫ Discarded — obsolete after the jobs rework
+
+> ⚫ **Discarded.** The jobs section is no longer a carousel. [CARD-003](../done/003-job-carousel-redo.md) replaced it with a centered editor-window layout (`items-center justify-center`), which resolves the "too high" complaint. Kept for history.
 
 ## Summary
 The jobs carousel currently sits too high in its section; it should be vertically centered within the full-height section.
@@ -20,7 +22,7 @@ In `src/sections/Jobs.tsx` the section uses `flex flex-col px-6 py-12 pt-16` wit
 - [ ] No regression to the `FullscreenJob` expanded overlay position.
 
 ## Nuances & considerations
-- If [CARD-003](003-job-carousel-redo.md) (redo) lands first, this may be absorbed there — but it's a valid standalone quick fix meanwhile.
+- If [CARD-003](../done/003-job-carousel-redo.md) (redo) lands first, this may be absorbed there — but it's a valid standalone quick fix meanwhile.
 - `--vh` is a custom viewport unit (`src/utils/setVh.ts`) for mobile browser chrome; rely on it rather than raw `100vh`.
 
 ## Files likely touched

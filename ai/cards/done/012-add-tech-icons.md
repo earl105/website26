@@ -1,9 +1,9 @@
 # CARD-012 — Add Tech Icons (Claude Code, Playwright, pnpm, Jest, just)
 
-**Status:** 🟢 Ready
+**Status:** 🟢 Implemented — **just** dropped (no recognizable brand mark; excluded per follow-up)
 
 ## Summary
-Add placeholder/real icons for: **Claude Code**, **Playwright**, **pnpm**, **Jest**, and **just**. (`npm` already exists in the carousel — TODO listed it but it's present.)
+Add placeholder/real icons for: **Claude Code**, **Playwright**, **pnpm**, and **Jest**. (`npm` already exists in the carousel — TODO listed it but it's present.) ~~**just**~~ was dropped — casey/just has no widely-recognized logo.
 
 ## Current state
 `src/data/techIcons.tsx` loads assets from `src/assets/techIcons/*.{png,svg}` via `import.meta.glob`, maps ids → filenames in `fileMap`, and renders `techIcons[]`. Missing files fall back to a built-in `placeholderDataUrl`. `npm` is already registered (`{ id: 'npm', name: 'npm' }`) with `src/assets/techIcons/npm.svg`.

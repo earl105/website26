@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import JobIcon, { type JobIconKey } from '../data/jobIcons';
+import JobsSkeleton from '../components/JobsSkeleton';
+import { devLoadDelay } from '../utils/devLoadDelay';
 
 export type Job = {
   company: string;
@@ -77,6 +79,8 @@ export default function Jobs() {
           throw new Error(`Failed to load jobs (${response.status})`);
         }
 
+        await devLoadDelay();
+
         const data = (await response.json()) as JobRecord[];
         if (!cancelled) {
           setRecords([...data].sort((a, b) => a.sort_order - b.sort_order));
@@ -107,15 +111,25 @@ export default function Jobs() {
   const sectionClass = 'flex flex-col items-center justify-center px-4 py-12 pt-16';
   const sectionStyle = { minHeight: 'calc(var(--vh, 1vh) * 100)' } as const;
 
-  if (loading || error) {
+  if (loading) {
+    return (
+      <section id="jobs" className={sectionClass} style={sectionStyle}>
+        <div className="w-full max-w-5xl mx-auto">
+          <JobsSkeleton />
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
     return (
       <section id="jobs" className={sectionClass} style={sectionStyle}>
         <div className="max-w-5xl mx-auto w-full">
           <div
-            className={`glass-surface-soft rounded-lg p-8 text-center ${error ? 'text-red-100' : 'text-[color:var(--muted)]'}`}
-            style={error ? { borderColor: 'rgba(248, 113, 113, 0.30)' } : undefined}
+            className="glass-surface-soft rounded-lg p-8 text-center text-red-100"
+            style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}
           >
-            {error ?? 'Loading jobs...'}
+            {error}
           </div>
         </div>
       </section>

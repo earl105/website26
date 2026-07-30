@@ -40,6 +40,11 @@ const fileMap: Record<string, string> = {
   vscode: 'vscode',
   vim: 'vim',
 git: 'git',
+  claude: 'claude',
+  playwright: 'playwright',
+  pnpm: 'pnpm',
+  jest: 'jest',
+  openai: 'openai',
 };
 
 const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'>
@@ -63,44 +68,58 @@ export const techIcons: TechIcon[] = [
 
 // Programming Languages
   { id: 'java', name: 'Java', src: getSrc('java') },
-  { id: 'asm', name: 'x86-64 Assembly', src: getSrc('asm') },
   { id: 'c', name: 'C', src: getSrc('c') },
-  { id: 'css3', name: 'CSS3', src: getSrc('css3') },
-  { id: 'html5', name: 'HTML5', src: getSrc('html5') },
-  { id: 'ruby', name: 'Ruby', src: getSrc('ruby') },
-  { id: 'ror', name: 'Ruby on Rails', src: getSrc('ror') },
+  { id: 'asm', name: 'x86-64 Assembly', src: getSrc('asm') },
   { id: 'python', name: 'Python', src: getSrc('python') },
+  { id: 'ruby', name: 'Ruby', src: getSrc('ruby') },
   { id: 'javascript', name: 'JavaScript', src: getSrc('javascript') },
   { id: 'typescript', name: 'TypeScript', src: getSrc('typescript') },
   { id: 'matlab', name: 'MATLAB', src: getSrc('matlab') },
 
-// Web Development Tools
+// Markup & Styling
+  { id: 'html5', name: 'HTML5', src: getSrc('html5') },
+  { id: 'css3', name: 'CSS3', src: getSrc('css3') },
+  { id: 'xml', name: 'XML', src: getSrc('xml') },
+
+// Frameworks & Web Platforms
   { id: 'react', name: 'React', src: getSrc('react') },
+  { id: 'ror', name: 'Ruby on Rails', src: getSrc('ror') },
   { id: 'tailwind', name: 'Tailwind CSS', src: getSrc('tailwind') },
   { id: 'vercel', name: 'Vercel', src: getSrc('vercel') },
 
 // Databases
   { id: 'sqlite', name: 'SQLite', src: getSrc('sqlite') },
   { id: 'mysql', name: 'MySQL', src: getSrc('mysql') },
-  { id: 'xml', name: 'XML', src: getSrc('xml') },
-  { id: 'excel', name: 'Excel', src: getSrc('excel') },
- 
 
 // CAD Tools
   { id: 'onshape', name: 'Onshape', src: getSrc('onshape') },
   { id: 'inventor', name: 'Inventor', src: getSrc('inventor') },
   { id: 'fusion', name: 'Fusion 360', src: getSrc('fusion') },
 
+// Testing
+  { id: 'jest', name: 'Jest', src: getSrc('jest') },
+  { id: 'playwright', name: 'Playwright', src: getSrc('playwright') },
 
+// AI Coding Assistants
+  { id: 'claude', name: 'Claude Code', src: getSrc('claude') },
+  { id: 'openai', name: 'OpenAI Codex', src: getSrc('openai') },
 
-// IDEs, Version Control, and Package Managers
-  { id: 'eclipse', name: 'Eclipse IDE', src: getSrc('eclipse') },
+// IDEs & Editors
   { id: 'vscode', name: 'Visual Studio Code', src: getSrc('vscode') },
   { id: 'vim', name: 'Vim', src: getSrc('vim') },
+  { id: 'eclipse', name: 'Eclipse IDE', src: getSrc('eclipse') },
   { id: 'arduino', name: 'Arduino IDE', src: getSrc('arduino') },
-  { id: 'npm', name: 'npm', src: getSrc('npm') },
-  { id: 'github', name: 'GitHub', src: getSrc('github') },
+
+// Version Control
   { id: 'git', name: 'Git', src: getSrc('git') },
+  { id: 'github', name: 'GitHub', src: getSrc('github') },
+
+// Package Managers
+  { id: 'npm', name: 'npm', src: getSrc('npm') },
+  { id: 'pnpm', name: 'pnpm', src: getSrc('pnpm') },
+
+// Productivity
+  { id: 'excel', name: 'Excel', src: getSrc('excel') },
 
 ];
 

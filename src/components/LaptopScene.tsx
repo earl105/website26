@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState, useRef } from 'react'
 import LaptopModel from './LaptopModel'
 
 export default function LaptopScene() {
-  const [fov, setFov] = useState(65)
+  const [fov, setFov] = useState(60)
   const [isMobile, setIsMobile] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [visibleRatio, setVisibleRatio] = useState(1)
@@ -20,7 +20,8 @@ export default function LaptopScene() {
     const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
       const matches = 'matches' in e ? e.matches : mql.matches
       setIsMobile(matches)
-      setFov(matches ? 80 : 65)
+      // Desktop uses a narrower FOV so the laptop reads larger; mobile stays wide.
+      setFov(matches ? 80 : 60)
     }
 
     // initialize

@@ -1,6 +1,6 @@
 # CARD-010 — Update "third-year" → "fourth-year"
 
-**Status:** 🟢 Ready (content fix)
+**Status:** 🟢 Implemented
 
 ## Summary
 Update the About copy from "third-year student" to "fourth-year student" (and any other year references that are now stale).

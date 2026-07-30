@@ -54,19 +54,19 @@ export default function About() {
         <div className="col-start-5 col-span-2 row-start-1 row-span-2 rounded-lg glass-surface text-[var(--text)] p-3 md:p-4 transition-transform duration-200 hover:scale-102">
           <h2 className="text-xl font-bold mb-0 md:mb-2">About Me</h2>
           <p className="block md:hidden">
-            As a third-year student at The Ohio State University majoring in
+            As a fourth-year student at The Ohio State University majoring in
             Computer Science and Engineering, I am currently completing a Summer
             2026 internship at CoverMyMeds and am seeking post-graduation job
             opportunities beginning Summer 2027.
           </p>
           <p className="hidden md:block">
-            As a third-year student at The Ohio State University majoring in
+            As a fourth-year student at The Ohio State University majoring in
             Computer Science and Engineering, I am currently completing a Summer
             2026 internship at CoverMyMeds and am seeking post-graduation job
             opportunities beginning Summer 2027.
 
             I am well-versed in software such as Git, Autodesk Inventor, Fusion
-            360, Onshape, and the Arduino IDE. Outside of tech, I enjoy camping,
+            360, and Onshape. Outside of tech, I enjoy camping,
             kayaking, canoeing, rock climbing, and sharpshooting.
           </p>
         </div>

@@ -30,7 +30,7 @@ Reworked the job section from a vertical stacked-card carousel (with up/down arr
 - Role glyphs live in `src/data/jobIcons.tsx` (Feather-style line icons).
 - `JobCard.tsx` and `FullscreenJob.tsx` were deleted — the new layout doesn't use them.
 - [CARD-002](002-anim-job-carousel.md) (job carousel animations) is completed/superseded — the pagination it targeted is gone; only the cross-fade remains.
-- [CARD-009](009-job-carousel-vertical-centering.md) ("too high" complaint) is addressed by the section now centering the window (`items-center justify-center`).
+- [CARD-009](../discarded/009-job-carousel-vertical-centering.md) ("too high" complaint) is addressed by the section now centering the window (`items-center justify-center`).
 
 ## Files touched
 - `src/sections/Jobs.tsx` (rewritten)
