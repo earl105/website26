@@ -16,6 +16,7 @@
       "Engaging in mentorship and training programs to strengthen technical communication and problem-solving skills."
     ],
     "logo_url": "/logos/cmmLogo.png",
+    "category": "professional",
     "sort_order": 0
   },
   {
@@ -35,6 +36,7 @@
       "Fulfilled and organized online orders, ensuring timely pick-up and delivery accuracy for customers."
     ],
     "logo_url": "/logos/lowesLogo.png",
+    "category": "experience",
     "sort_order": 1
   },
   {
@@ -54,6 +56,7 @@
       "Over 6 million bottles were produced and packed under the blow molding operations team in 3 months."
     ],
     "logo_url": "/logos/gojoLogo.png",
+    "category": "experience",
     "sort_order": 2
   },
   {
@@ -73,6 +76,7 @@
       "Cultivated strong customer relationships, driving store metrics to rank among the nation's top locations."
     ],
     "logo_url": "/logos/dicksLogo.png",
+    "category": "experience",
     "sort_order": 3
   }
 ]

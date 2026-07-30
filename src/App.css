@@ -76,3 +76,10 @@ main > *:nth-child(even)::after {
 main > *:nth-child(odd) {
 	background-color: var(--bg-alt);
 }
+
+/* Even sections use the base bg so the odd::after fade (which ends on var(--bg))
+   lands on a matching color instead of the fixed Background gradient — this is
+   what keeps the odd→even seams (home→about, projects→jobs) blending smoothly. */
+main > *:nth-child(even) {
+	background-color: var(--bg);
+}

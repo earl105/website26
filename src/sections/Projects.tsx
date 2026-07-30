@@ -245,7 +245,7 @@ export default function Projects() {
 									initial="enter"
 									animate="center"
 									exit="exit"
-									transition={{ duration: prefersReducedMotion ? 0.15 : 0.3, ease: "easeInOut" }}
+									transition={{ duration: prefersReducedMotion ? 0.075 : 0.15, ease: "easeInOut" }}
 									onAnimationComplete={(definition) => { if (definition === "center") setAnimating(false); }}
 									className="flex items-stretch gap-6"
 								>

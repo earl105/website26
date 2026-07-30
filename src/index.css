@@ -43,6 +43,34 @@
 
 
 
+/* Ordered-dither dissolve at the page bottom. A single uniform dot grid keeps
+   it clean and consistent (no moiré): the base layer is a sparse grid that
+   fades in toward the bottom, and a second layer — the same grid, offset by
+   half a cell — fills the gaps only near the very bottom, doubling the density
+   for a clean two-level dither. Dots sit just above the background luminance so
+   the palette is effectively unchanged. */
+.dither > div {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.055) 0.9px, transparent 1.1px);
+  background-size: 8px 8px;
+}
+
+/* sparse base grid */
+.dither .d-a {
+  background-position: 0 0;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 60%, transparent 100%);
+          mask-image: linear-gradient(to top, #000 0%, #000 60%, transparent 100%);
+}
+
+/* half-cell-offset infill — same grid, appears only near the bottom */
+.dither .d-b {
+  background-position: 4px 4px;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 26%, transparent 50%);
+          mask-image: linear-gradient(to top, #000 0%, #000 26%, transparent 50%);
+}
+
 /* Conveyor belt animation for TechCarousel */
 @keyframes conveyor-scroll {
   0% { transform: translate3d(0, -50%, 0); }
@@ -148,49 +176,66 @@ html { color-scheme: dark; }
   .glass-surface,
   .glass-surface-soft,
   .glass-surface-strong {
-    --glass-fill: 0.50;   /* alpha of the dark fill */
-    --glass-blur: 20px;
-    --glass-sat: 180%;
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    --glass-fill: 0.44;   /* alpha of the dark fill */
+    --glass-blur: 12px;   /* lower = shinier/clearer, higher = frostier */
+    --glass-sat: 200%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     background:
-      linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.10) 0%,
-        rgba(255, 255, 255, 0.03) 46%,
-        rgba(255, 255, 255, 0) 100%
+      /* Specular highlight: a radial light source, horizontally centered and
+         offset above the top edge — light glancing off the glass from above.
+         Move the `at 50% -20%` point to reposition the light (e.g. `50% 50%`
+         for dead-centre). */
+      radial-gradient(
+        140% 90% at 50% -20%,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.05) 26%,
+        rgba(255, 255, 255, 0) 56%
       ),
-      rgba(38, 38, 40, var(--glass-fill));
+      rgba(40, 40, 42, var(--glass-fill));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     box-shadow:
-      0 8px 30px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      inset 1px 0 0 rgba(255, 255, 255, 0.06),
-      inset 0 -10px 26px rgba(0, 0, 0, 0.16);
+      /* Outer drop shadow, split into layered steps of increasing blur so the
+         falloff dithers out instead of banding on the dark background. */
+      0 1px 2px rgba(0, 0, 0, 0.12),
+      0 3px 6px rgba(0, 0, 0, 0.11),
+      0 6px 12px rgba(0, 0, 0, 0.10),
+      0 11px 22px rgba(0, 0, 0, 0.09),
+      0 18px 36px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.30),
+      inset 1px 0 0 rgba(255, 255, 255, 0.10),
+      inset 0 -8px 22px rgba(0, 0, 0, 0.14);
   }
 
   /* Subtle: lighter blur/fill for small controls (arrows, error chips). */
   .glass-surface-soft {
-    --glass-fill: 0.36;
-    --glass-blur: 16px;
-    --glass-sat: 160%;
+    --glass-fill: 0.30;
+    --glass-blur: 9px;
+    --glass-sat: 185%;
     box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.22),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      inset 0 -6px 18px rgba(0, 0, 0, 0.12);
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      0 2px 5px rgba(0, 0, 0, 0.07),
+      0 5px 10px rgba(0, 0, 0, 0.06),
+      0 9px 18px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      inset 0 -6px 16px rgba(0, 0, 0, 0.10);
   }
 
   /* Strong: heavier blur/fill for nav + fullscreen modals that float over
      busy content (e.g. the LaptopScene canvas). */
   .glass-surface-strong {
-    --glass-fill: 0.64;
-    --glass-blur: 28px;
-    --glass-sat: 185%;
+    --glass-fill: 0.56;
+    --glass-blur: 16px;
+    --glass-sat: 200%;
     box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      inset 1px 0 0 rgba(255, 255, 255, 0.07),
-      inset 0 -12px 30px rgba(0, 0, 0, 0.20);
+      0 2px 4px rgba(0, 0, 0, 0.14),
+      0 4px 9px rgba(0, 0, 0, 0.13),
+      0 9px 18px rgba(0, 0, 0, 0.12),
+      0 16px 30px rgba(0, 0, 0, 0.11),
+      0 26px 48px rgba(0, 0, 0, 0.10),
+      inset 0 1px 0 rgba(255, 255, 255, 0.32),
+      inset 1px 0 0 rgba(255, 255, 255, 0.11),
+      inset 0 -10px 26px rgba(0, 0, 0, 0.18);
   }
 
   /* Fallback: where backdrop-filter is unsupported, drop the sheen back

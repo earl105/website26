@@ -20,19 +20,28 @@ export default function JobsSkeleton() {
 
       {/* Body: sidebar + detail pane */}
       <div className="flex flex-col md:flex-row flex-1 min-h-0">
-        {/* Explorer sidebar (vertical desktop, tab strip mobile) */}
-        <aside className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-white/10 md:py-2">
-          <div className="hidden md:block px-4 pt-1 pb-2">
+        {/* Explorer sidebar: two collapsible folders (professional + experience) */}
+        <aside className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-white/10 py-2 max-h-48 md:max-h-none overflow-hidden">
+          <div className="px-4 pt-1 pb-2">
             <div className="h-2.5 w-20 skeleton" />
           </div>
-          <div className="flex md:block gap-4 md:gap-0 px-4 md:px-0 py-3 md:py-0 overflow-hidden">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-2 md:pl-7 md:pr-3 md:py-2">
+          {[1, 3].map((fileCount, g) => (
+            <div key={g} className="mb-1">
+              {/* folder header */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5">
+                <div className="w-3.5 h-3.5 rounded skeleton shrink-0" />
                 <div className="w-4 h-4 rounded skeleton shrink-0" />
-                <div className="h-3 w-24 skeleton" />
+                <div className="h-3 w-28 skeleton" />
               </div>
-            ))}
-          </div>
+              {/* files */}
+              {Array.from({ length: fileCount }).map((_, i) => (
+                <div key={i} className="flex items-center gap-2 pl-9 pr-3 py-1.5">
+                  <div className="w-4 h-4 rounded skeleton shrink-0" />
+                  <div className="h-3 w-24 skeleton" />
+                </div>
+              ))}
+            </div>
+          ))}
         </aside>
 
         {/* Detail pane */}

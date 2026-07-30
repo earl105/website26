@@ -12,6 +12,7 @@ export type Job = {
   summary: string;
   icon: JobIconKey;
   file: string;
+  category: string;
   img: { src: string; alt: string };
   bullets: string[];
 };
@@ -26,10 +27,21 @@ type JobRecord = {
   icon: JobIconKey;
   color?: string;
   file?: string;
+  category?: string;
   bullets: string[];
   logo_url: string;
   sort_order: number;
 };
+
+// Folder groups shown in the explorer, in display order. Any job whose
+// category doesn't match falls back to "experience".
+const CATEGORY_ORDER = ['professional', 'experience'] as const;
+const CATEGORY_LABEL: Record<string, string> = {
+  professional: 'career',
+  experience: 'general',
+};
+const normalizeCategory = (category: string) =>
+  (CATEGORY_ORDER as readonly string[]).includes(category) ? category : 'experience';
 
 const accentColors: Record<string, string> = {
   'CoverMyMeds': '#e8106a',
@@ -56,12 +68,14 @@ const toJob = (record: JobRecord): Job => ({
   summary: record.summary,
   icon: record.icon,
   file: record.file ?? toFileName(record.company, record.icon),
+  category: normalizeCategory(record.category ?? 'experience'),
   img: { src: record.logo_url, alt: `${record.company} logo` },
   bullets: record.bullets,
 });
 
 export default function Jobs() {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
   const [records, setRecords] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,6 +118,23 @@ export default function Jobs() {
   }, []);
 
   const jobs = useMemo(() => records.map(toJob), [records]);
+
+  // Group jobs into explorer folders, preserving each job's index in the flat
+  // (sort_order) array so selection still works across folders.
+  const groups = useMemo(
+    () =>
+      CATEGORY_ORDER.map((cat) => ({
+        cat,
+        label: CATEGORY_LABEL[cat],
+        items: jobs
+          .map((job, index) => ({ job, index }))
+          .filter(({ job }) => job.category === cat),
+      })).filter((group) => group.items.length > 0),
+    [jobs]
+  );
+
+  const toggleFolder = (cat: string) =>
+    setCollapsedFolders((prev) => ({ ...prev, [cat]: !prev[cat] }));
 
   useEffect(() => {
     if (selectedIndex > jobs.length - 1) setSelectedIndex(0);
@@ -155,49 +186,83 @@ export default function Jobs() {
               <span className="w-3 h-3 rounded-full bg-[#28c840]" />
             </div>
             <div className="text-xs text-[color:var(--muted-2)] font-mono truncate">
-              experience / <span className="text-[color:var(--muted)]">{active?.file}</span>
+              {active ? CATEGORY_LABEL[active.category] : 'experience'} /{' '}
+              <span className="text-[color:var(--muted)]">{active?.file}</span>
             </div>
           </div>
 
           {/* Body: sidebar + detail pane */}
           <div className="flex flex-col md:flex-row flex-1 min-h-0">
-            {/* File explorer sidebar (vertical tree on desktop, tab strip on mobile) */}
-            <aside className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-white/10 md:py-2">
-              <div className="hidden md:block px-4 pb-1 text-[10px] tracking-widest uppercase text-[color:var(--muted-2)] font-semibold">
+            {/* File explorer sidebar: collapsible IDE-style folder tree */}
+            <aside className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-white/10 py-2 overflow-y-auto max-h-48 md:max-h-none">
+              <div className="px-4 pb-1 text-[10px] tracking-widest uppercase text-[color:var(--muted-2)] font-semibold">
                 Explorer
               </div>
-              <div className="hidden md:flex px-3 py-1 items-center gap-1 text-sm text-[color:var(--muted)] font-mono">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M6 8l4 4 4-4" />
-                </svg>
-                experience
-              </div>
 
-              <ul className="flex md:block overflow-x-auto">
-                {jobs.map((job, i) => {
-                  const isActive = i === selectedIndex;
-                  return (
-                    <li key={job.company} className="shrink-0 md:shrink">
-                      <button
-                        onClick={() => setSelectedIndex(i)}
-                        aria-current={isActive}
-                        className={`relative w-full flex items-center gap-2 px-3 py-2.5 md:pl-7 md:pr-3 md:py-1.5 text-left text-sm font-mono whitespace-nowrap transition-colors ${
-                          isActive ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]'
-                        }`}
-                        style={{ backgroundColor: isActive ? 'var(--card-muted)' : 'transparent' }}
+              {groups.map((group) => {
+                const collapsed = collapsedFolders[group.cat] ?? false;
+                return (
+                  <div key={group.cat}>
+                    <button
+                      onClick={() => toggleFolder(group.cat)}
+                      aria-expanded={!collapsed}
+                      className="w-full flex items-center gap-1.5 px-3 py-1.5 text-left text-sm font-mono text-[color:var(--muted)] hover:text-[color:var(--fg)] transition-colors"
+                    >
+                      <svg
+                        className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${collapsed ? '-rotate-90' : ''}`}
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
                       >
-                        {/* active indicator: underline on mobile, left stripe on desktop */}
-                        <span
-                          className="absolute inset-x-0 bottom-0 h-0.5 md:inset-x-auto md:inset-y-0 md:left-0 md:right-auto md:w-0.5 md:h-auto"
-                          style={{ backgroundColor: isActive ? job.color : 'transparent' }}
-                        />
-                        <JobIcon name={job.icon} className="w-4 h-4 shrink-0" style={{ color: job.color }} />
-                        <span className="truncate">{job.file}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+                        <path d="M6 8l4 4 4-4" />
+                      </svg>
+                      <svg className="w-4 h-4 shrink-0 text-[color:var(--muted-2)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                      </svg>
+                      <span className="truncate">{group.label}</span>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {!collapsed && (
+                        <motion.ul
+                          initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          {group.items.map(({ job, index }) => {
+                            const isActive = index === selectedIndex;
+                            return (
+                              <li key={job.company}>
+                                <button
+                                  onClick={() => setSelectedIndex(index)}
+                                  aria-current={isActive}
+                                  className={`relative w-full flex items-center gap-2 pl-9 pr-3 py-1.5 text-left text-sm font-mono whitespace-nowrap transition-colors ${
+                                    isActive ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]'
+                                  }`}
+                                  style={{ backgroundColor: isActive ? 'var(--card-muted)' : 'transparent' }}
+                                >
+                                  <span
+                                    className="absolute inset-y-0 left-0 w-0.5"
+                                    style={{ backgroundColor: isActive ? job.color : 'transparent' }}
+                                  />
+                                  <JobIcon name={job.icon} className="w-4 h-4 shrink-0" style={{ color: job.color }} />
+                                  <span className="truncate">{job.file}</span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </aside>
 
             {/* Detail pane */}
@@ -216,7 +281,7 @@ export default function Jobs() {
                         className="w-12 h-12 md:w-16 md:h-16 rounded-md flex items-center justify-center overflow-hidden shrink-0"
                         style={{ backgroundColor: active.color }}
                       >
-                        <img src={active.img.src} alt={active.img.alt} className="w-11/12 h-11/12 object-contain" />
+                        <img src={active.img.src} alt={active.img.alt} className="w-11/12 h-11/12 object-contain rounded" />
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-base md:text-xl font-semibold leading-tight break-words">{active.company}</h3>
