@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, useReducedMotion } from 'framer-motion';
-import JobCard from '../components/JobCard';
-import FullscreenJob from '../components/FullscreenJob';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import JobIcon, { type JobIconKey } from '../data/jobIcons';
 
 export type Job = {
   company: string;
   position: string;
   dates: string;
   color: string;
+  summary: string;
+  icon: JobIconKey;
+  file: string;
   img: { src: string; alt: string };
   bullets: string[];
 };
@@ -18,6 +20,9 @@ type JobRecord = {
   role: string;
   start_date: string;
   end_date: string;
+  summary: string;
+  icon: JobIconKey;
+  file?: string;
   bullets: string[];
   logo_url: string;
   sort_order: number;
@@ -32,25 +37,32 @@ const accentColors: Record<string, string> = {
 
 const getAccentColor = (company: string) => accentColors[company] ?? '#4b5563';
 
+// First word of the company, lowercased and stripped, as the "filename".
+// Tech roles read as .tsx, everything else as .md for a bit of flavor.
+const toFileName = (company: string, icon: JobIconKey) => {
+  const slug = company.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+  const ext = icon === 'code' ? 'tsx' : 'md';
+  return `${slug}.${ext}`;
+};
+
 const toJob = (record: JobRecord): Job => ({
   company: record.company,
   position: record.role,
   dates: `${record.start_date} - ${record.end_date}`,
   color: getAccentColor(record.company),
+  summary: record.summary,
+  icon: record.icon,
+  file: record.file ?? toFileName(record.company, record.icon),
   img: { src: record.logo_url, alt: `${record.company} logo` },
   bullets: record.bullets,
 });
 
 export default function Jobs() {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [startIndex, setStartIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [records, setRecords] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
-  const visible = isDesktop ? 3 : 2;
-  const navbarHeightRef = useRef<number>(64); // adjust if your navbar height differs
 
   useEffect(() => {
     let cancelled = false;
@@ -89,189 +101,133 @@ export default function Jobs() {
   const jobs = useMemo(() => records.map(toJob), [records]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsDesktop(('matches' in e ? e.matches : mq.matches));
-    setIsDesktop(mq.matches);
-    if (mq.addEventListener) mq.addEventListener('change', handler as EventListener);
-    else mq.addListener(handler as any);
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener('change', handler as EventListener);
-      else mq.removeListener(handler as any);
-    };
-  }, []);
+    if (selectedIndex > jobs.length - 1) setSelectedIndex(0);
+  }, [jobs.length, selectedIndex]);
 
-  useEffect(() => {
-    if (startIndex > Math.max(0, jobs.length - visible)) {
-      setStartIndex(Math.max(0, jobs.length - visible));
-    }
-  }, [jobs.length, startIndex, visible]);
+  const sectionClass = 'flex flex-col items-center justify-center px-4 py-12 pt-16';
+  const sectionStyle = { minHeight: 'calc(var(--vh, 1vh) * 100)' } as const;
 
-  if (loading) {
+  if (loading || error) {
     return (
-      <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+      <section id="jobs" className={sectionClass} style={sectionStyle}>
         <div className="max-w-5xl mx-auto w-full">
-          <div className="glass-surface-soft rounded-lg p-8 text-center text-[color:var(--muted)]">
-            Loading jobs...
+          <div
+            className={`glass-surface-soft rounded-lg p-8 text-center ${error ? 'text-red-100' : 'text-[color:var(--muted)]'}`}
+            style={error ? { borderColor: 'rgba(248, 113, 113, 0.30)' } : undefined}
+          >
+            {error ?? 'Loading jobs...'}
           </div>
         </div>
       </section>
     );
   }
 
-  if (error) {
-    return (
-      <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="glass-surface-soft rounded-lg p-8 text-center text-red-100" style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}>
-            {error}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const active = jobs[selectedIndex];
 
   return (
-    <section id="jobs" className="flex flex-col px-6 py-12 pt-16" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-      <div className="max-w-5xl mx-auto w-full">
-        {/* <h2 className="text-3xl md:text-4xl font-semibold mb-8">Jobs</h2> */}
-
-        <div>
-          {isDesktop ? (
-            <div className="relative flex items-start md:items-center">
-              <div className="flex-1 md:pr-12 pr-0">
-                <div className="space-y-4">
-                  {jobs.slice(startIndex, startIndex + visible).map((job, i) => {
-                    const idx = startIndex + i; // absolute index
-                    return (
-                      <JobCard
-                        key={job.company + idx}
-                        job={job}
-                        isSelected={selectedIndex === idx}
-                        isAnySelected={selectedIndex !== null}
-                        onOpen={() => setSelectedIndex(idx)}
-                        prefersReducedMotion={prefersReducedMotion ?? false}
-                        isDesktop={isDesktop}
-                        noLayout
-                      />
-                    );
-                  })}
-
-                  <AnimatePresence>
-                    {selectedIndex !== null && (
-                      <FullscreenJob
-                        key={`fullscreen-${selectedIndex}`}
-                        job={jobs[selectedIndex]}
-                        index={selectedIndex}
-                        length={jobs.length}
-                        onClose={() => setSelectedIndex(null)}
-                        navbarHeight={navbarHeightRef.current}
-                        prefersReducedMotion={prefersReducedMotion ?? false}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Carousel controls (desktop) */}
-              <div className="absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
-                {
-                  (() => {
-                    const canUp = startIndex > 0;
-                    const canDown = startIndex + visible < jobs.length;
-                    return (
-                      <>
-                        <button
-                          onClick={() => { if (canUp) setStartIndex(s => Math.max(0, s - 1)); }}
-                          disabled={!canUp}
-                          aria-label="Scroll up"
-                          className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${canUp ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                            <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-
-                        <button
-                          onClick={() => { if (canDown) setStartIndex(s => Math.min(jobs.length - visible, s + 1)); }}
-                          disabled={!canDown}
-                          aria-label="Scroll down"
-                          className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${canDown ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                            <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-                      </>
-                    );
-                  })()
-                }
-              </div>
+    <section id="jobs" className={sectionClass} style={sectionStyle}>
+      <div className="w-full max-w-5xl mx-auto">
+        {/* Editor window */}
+        <div
+          className="glass-surface rounded-lg overflow-hidden flex flex-col h-[calc(var(--vh,1vh)*86)] md:h-[calc(var(--vh,1vh)*76)]"
+          style={{ maxHeight: '620px' }}
+        >
+          {/* Title bar */}
+          <div className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+              <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
+              <span className="w-3 h-3 rounded-full bg-[#28c840]" />
             </div>
-          ) : (
-            /* Mobile: show up button, 2 cards, then down button */
-            <div className="flex flex-col items-center">
-              <div className="mb-3">
-                <button
-                  onClick={() => { if (startIndex > 0) setStartIndex(s => Math.max(0, s - visible)); }}
-                  disabled={startIndex <= 0}
-                  aria-label="Scroll up"
-                  className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${startIndex > 0 ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                    <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="w-full">
-                <div className="space-y-4">
-                  {jobs.slice(startIndex, startIndex + visible).map((job, i) => {
-                    const idx = startIndex + i;
-                    return (
-                      <JobCard
-                        key={job.company + idx}
-                        job={job}
-                        isSelected={selectedIndex === idx}
-                        isAnySelected={selectedIndex !== null}
-                        onOpen={() => setSelectedIndex(idx)}
-                        prefersReducedMotion={prefersReducedMotion ?? false}
-                        isDesktop={isDesktop}
-                        noLayout
-                      />
-                    );
-                  })}
-
-                  <AnimatePresence>
-                    {selectedIndex !== null && (
-                      <FullscreenJob
-                        key={`fullscreen-${selectedIndex}`}
-                        job={jobs[selectedIndex]}
-                        index={selectedIndex}
-                        length={jobs.length}
-                        onClose={() => setSelectedIndex(null)}
-                        navbarHeight={navbarHeightRef.current}
-                        prefersReducedMotion={prefersReducedMotion ?? false}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              <div className="mt-3">
-                <button
-                  onClick={() => { if (startIndex + visible < jobs.length) setStartIndex(s => Math.min(jobs.length - visible, s + visible)); }}
-                  disabled={startIndex + visible >= jobs.length}
-                  aria-label="Scroll down"
-                  className={`w-10 h-10 rounded-md flex items-center justify-center border transition-colors ${startIndex + visible < jobs.length ? 'hover:bg-gray-100' : 'opacity-40 cursor-not-allowed'}`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                    <path d="M6 12l4-4 4 4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
+            <div className="text-xs text-[color:var(--muted-2)] font-mono truncate">
+              experience / <span className="text-[color:var(--muted)]">{active?.file}</span>
             </div>
-          )}
+          </div>
+
+          {/* Body: sidebar + detail pane */}
+          <div className="flex flex-col md:flex-row flex-1 min-h-0">
+            {/* File explorer sidebar (vertical tree on desktop, tab strip on mobile) */}
+            <aside className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-white/10 md:py-2">
+              <div className="hidden md:block px-4 pb-1 text-[10px] tracking-widest uppercase text-[color:var(--muted-2)] font-semibold">
+                Explorer
+              </div>
+              <div className="hidden md:flex px-3 py-1 items-center gap-1 text-sm text-[color:var(--muted)] font-mono">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M6 8l4 4 4-4" />
+                </svg>
+                experience
+              </div>
+
+              <ul className="flex md:block overflow-x-auto">
+                {jobs.map((job, i) => {
+                  const isActive = i === selectedIndex;
+                  return (
+                    <li key={job.company} className="shrink-0 md:shrink">
+                      <button
+                        onClick={() => setSelectedIndex(i)}
+                        aria-current={isActive}
+                        className={`relative w-full flex items-center gap-2 px-3 py-2.5 md:pl-7 md:pr-3 md:py-1.5 text-left text-sm font-mono whitespace-nowrap transition-colors ${
+                          isActive ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]'
+                        }`}
+                        style={{ backgroundColor: isActive ? 'var(--card-muted)' : 'transparent' }}
+                      >
+                        {/* active indicator: underline on mobile, left stripe on desktop */}
+                        <span
+                          className="absolute inset-x-0 bottom-0 h-0.5 md:inset-x-auto md:inset-y-0 md:left-0 md:right-auto md:w-0.5 md:h-auto"
+                          style={{ backgroundColor: isActive ? job.color : 'transparent' }}
+                        />
+                        <JobIcon name={job.icon} className="w-4 h-4 shrink-0" style={{ color: job.color }} />
+                        <span className="truncate">{job.file}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </aside>
+
+            {/* Detail pane */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6">
+              <AnimatePresence mode="wait">
+                {active && (
+                  <motion.div
+                    key={active.company}
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <div
+                        className="w-12 h-12 md:w-16 md:h-16 rounded-md flex items-center justify-center overflow-hidden shrink-0"
+                        style={{ backgroundColor: active.color }}
+                      >
+                        <img src={active.img.src} alt={active.img.alt} className="w-11/12 h-11/12 object-contain" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base md:text-xl font-semibold leading-tight break-words">{active.company}</h3>
+                        <div className="text-sm text-[color:var(--fg)]">{active.position}</div>
+                        <div className="text-xs text-[color:var(--muted)] font-mono mt-0.5">{active.dates}</div>
+                      </div>
+                    </div>
+
+                    {/* One-line summary as a code comment */}
+                    <p className="mt-3 md:mt-4 font-mono text-sm" style={{ color: '#6A9955' }}>
+                      {'// '}{active.summary}
+                    </p>
+
+                    <ul className="mt-3 md:mt-4 space-y-2 md:space-y-2.5 text-sm text-[color:var(--fg)]">
+                      {active.bullets.map((b, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="select-none shrink-0" style={{ color: active.color }}>▹</span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -5,6 +5,9 @@
     "role": "Technology Intern",
     "start_date": "June 2026",
     "end_date": "August 2026",
+    "summary": "Full-stack engineering across software, platform & data teams.",
+    "icon": "code",
+    "file": "covermymeds.tsx",
     "bullets": [
       "Supporting analysis, design, documentation, and engineering of solutions across software, platform, and data teams.",
       "Collaborating with cross-functional engineers to automate workflows, solve technical challenges, and more.",
@@ -20,6 +23,9 @@
     "role": "Summer Cashier and Customer Service",
     "start_date": "May 2025",
     "end_date": "July 2025",
+    "summary": "High-volume cashier & multi-department customer service.",
+    "icon": "cart",
+    "file": "lowes.md",
     "bullets": [
       "Operated registers and processed high-volume transactions accurately while delivering friendly customer service.",
       "Assisted customers with product inquiries, returns, and locating merchandise across multiple departments.",
@@ -35,6 +41,9 @@
     "role": "Summer Warehouse Associate",
     "start_date": "May 2024",
     "end_date": "July 2024",
+    "summary": "Blow-molding line producing 6M+ Purell bottles in one summer.",
+    "icon": "box",
+    "file": "gojo-purell.md",
     "bullets": [
       "Performed tasks in two-stage blow molding, including box preparation, filling, labeling, and palletizing.",
       "Collaborated in a 6-person assembly line to efficiently process and package Purell soap and sanitizer bottles.",
@@ -50,6 +59,9 @@
     "role": "Footwear/Apparrel Sales Associate and Cashier",
     "start_date": "August 2021",
     "end_date": "August 2023",
+    "summary": "Cross-trained sales associate across 4 departments; top-ranked store.",
+    "icon": "tag",
+    "file": "dicks-sporting.md",
     "bullets": [
       "Cross-trained across 4 departments (footwear, outerwear, apparel, and cashier) to provide adaptable service.",
       "Managed and updated inventory for a department with over 250+ UPCs weekly.",

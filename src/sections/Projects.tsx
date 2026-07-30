@@ -1,5 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import TechCarousel from "../components/TechCarousel";
+
+// Slide the whole visible set horizontally on navigate; direction: 1 = next, -1 = prev.
+const slideVariants = {
+	enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+	center: { x: "0%", opacity: 1 },
+	exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
+};
+
+// Reduced-motion fallback: cross-fade only, no horizontal travel.
+const fadeVariants = {
+	enter: { opacity: 0 },
+	center: { opacity: 1 },
+	exit: { opacity: 0 },
+};
 
 type Project = {
 	id: number;
@@ -51,6 +66,9 @@ export default function Projects() {
 			const [index, setIndex] = useState(0);
 			const [perPage, setPerPage] = useState(3);
 			const [colors, setColors] = useState<string[]>([]);
+			const [direction, setDirection] = useState(1);
+			const [animating, setAnimating] = useState(false);
+			const prefersReducedMotion = useReducedMotion();
 
 			useEffect(() => {
 				let cancelled = false;
@@ -153,12 +171,16 @@ export default function Projects() {
 			}, [colors.length, n]);
 
 			const handlePrev = () => {
-				if (n === 0) return;
+				if (n === 0 || animating) return;
+				setDirection(-1);
+				setAnimating(true);
 				setIndex((value) => (value - perPage + n) % n);
 			};
 
 			const handleNext = () => {
-				if (n === 0) return;
+				if (n === 0 || animating) return;
+				setDirection(1);
+				setAnimating(true);
 				setIndex((value) => (value + perPage) % n);
 			};
 
@@ -205,7 +227,18 @@ export default function Projects() {
 							</button>
 
 							<div className="overflow-hidden px-10 py-2.5">
-								<div className="flex items-stretch gap-6">
+								<AnimatePresence mode="wait" custom={direction} initial={false}>
+								<motion.div
+									key={index}
+									custom={direction}
+									variants={prefersReducedMotion ? fadeVariants : slideVariants}
+									initial="enter"
+									animate="center"
+									exit="exit"
+									transition={{ duration: prefersReducedMotion ? 0.15 : 0.3, ease: "easeInOut" }}
+									onAnimationComplete={(definition) => { if (definition === "center") setAnimating(false); }}
+									className="flex items-stretch gap-6"
+								>
 									{visible.map((project, i) => {
 										const actualIndex = n > 0 ? (index + i) % n : 0;
 										let bg = '#e24646';
@@ -257,7 +290,8 @@ export default function Projects() {
 											</div>
 										);
 									})}
-								</div>
+								</motion.div>
+								</AnimatePresence>
 							</div>
 
 							<button
