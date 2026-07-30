@@ -53,6 +53,13 @@ I look forward to hearing from you.
             </div>
           </div>
         </div>
+
+        {/* Subtle admin entry — not advertised; real access is gated server-side. */}
+        <div className="mt-4 text-right">
+          <a href="/admin" className="text-[10px] text-[color:var(--muted-2)] opacity-40 hover:opacity-80 transition-opacity">
+            admin
+          </a>
+        </div>
       </div>
     </section>
   );

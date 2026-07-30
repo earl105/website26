@@ -18,6 +18,9 @@ dist-ssr
 !.env.example
 .vercel
 
+# Internal admin/security docs — not for public repo
+ADMIN_SETUP.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

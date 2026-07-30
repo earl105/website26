@@ -24,6 +24,7 @@ type JobRecord = {
   end_date: string;
   summary: string;
   icon: JobIconKey;
+  color?: string;
   file?: string;
   bullets: string[];
   logo_url: string;
@@ -51,7 +52,7 @@ const toJob = (record: JobRecord): Job => ({
   company: record.company,
   position: record.role,
   dates: `${record.start_date} - ${record.end_date}`,
-  color: getAccentColor(record.company),
+  color: record.color ?? getAccentColor(record.company),
   summary: record.summary,
   icon: record.icon,
   file: record.file ?? toFileName(record.company, record.icon),

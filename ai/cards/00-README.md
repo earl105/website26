@@ -34,15 +34,15 @@ Cards are filed into subdirectories by status, so status is visible from the fol
 - **CARD-010** — [`010-content-update-fourth-year.md`](done/010-content-update-fourth-year.md) — update "third-year" → "fourth-year"
 - **CARD-011** — [`011-about-remove-arduino-callout.md`](done/011-about-remove-arduino-callout.md) — remove Arduino IDE text mention (keep icon)
 - **CARD-012** — [`012-add-tech-icons.md`](done/012-add-tech-icons.md) — added Claude Code, Playwright, pnpm, Jest icons (just dropped — no brand mark)
+- **CARD-013** — [`013-admin-login.md`](done/013-admin-login.md) — admin auth (scrypt + jose JWT httpOnly cookie), security-reviewed _(Phase 2)_
+- **CARD-014** — [`014-admin-crud-projects.md`](done/014-admin-crud-projects.md) — admin CRUD for projects → GitHub commit _(Phase 2)_
+- **CARD-015** — [`015-admin-crud-jobs.md`](done/015-admin-crud-jobs.md) — admin CRUD for jobs → GitHub commit; accent color migrated to JSON _(Phase 2)_
 
 ### 🔵 In progress — [`in-progress/`](in-progress/)
 - **CARD-004** — [`004-project-card-click-behavior.md`](in-progress/004-project-card-click-behavior.md) — conditional/override click behavior (verify + finish)
 
 ### 🟢 Ready — [`ready/`](ready/)
 - **CARD-006** — [`006-liquid-glass-transparency.md`](ready/006-liquid-glass-transparency.md) — implement proper liquid glass (current impl insufficient)
-- **CARD-013** — [`013-admin-login.md`](ready/013-admin-login.md) — admin login button + JWT auth _(Phase 2 — prerequisite for all admin CRUD)_
-- **CARD-014** — [`014-admin-crud-projects.md`](ready/014-admin-crud-projects.md) — admin CRUD for project cards _(Phase 2 — blocked on CARD-013)_
-- **CARD-015** — [`015-admin-crud-jobs.md`](ready/015-admin-crud-jobs.md) — admin CRUD for job cards _(Phase 2 — blocked on CARD-013)_
 
 ### 🟡 Requirements TBD — [`tbd/`](tbd/)
 - **CARD-007** — [`007-backgrounds.md`](tbd/007-backgrounds.md) — section backgrounds (visual direction not chosen)

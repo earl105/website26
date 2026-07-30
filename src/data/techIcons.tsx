@@ -45,6 +45,9 @@ git: 'git',
   pnpm: 'pnpm',
   jest: 'jest',
   openai: 'openai',
+  jira: 'jira',
+  confluence: 'confluence',
+  miro: 'miro',
 };
 
 const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'>
@@ -117,6 +120,11 @@ export const techIcons: TechIcon[] = [
 // Package Managers
   { id: 'npm', name: 'npm', src: getSrc('npm') },
   { id: 'pnpm', name: 'pnpm', src: getSrc('pnpm') },
+
+// Collaboration & Project Management
+  { id: 'jira', name: 'Jira', src: getSrc('jira') },
+  { id: 'confluence', name: 'Confluence', src: getSrc('confluence') },
+  { id: 'miro', name: 'Miro', src: getSrc('miro') },
 
 // Productivity
   { id: 'excel', name: 'Excel', src: getSrc('excel') },

@@ -7,6 +7,7 @@
     "end_date": "August 2026",
     "summary": "Full-stack engineering across software, platform & data teams.",
     "icon": "code",
+    "color": "#e8106a",
     "file": "covermymeds.tsx",
     "bullets": [
       "Supporting analysis, design, documentation, and engineering of solutions across software, platform, and data teams.",
@@ -25,6 +26,7 @@
     "end_date": "July 2025",
     "summary": "High-volume cashier & multi-department customer service.",
     "icon": "cart",
+    "color": "#283061",
     "file": "lowes.md",
     "bullets": [
       "Operated registers and processed high-volume transactions accurately while delivering friendly customer service.",
@@ -43,6 +45,7 @@
     "end_date": "July 2024",
     "summary": "Blow-molding line producing 6M+ Purell bottles in one summer.",
     "icon": "box",
+    "color": "#027cb7",
     "file": "gojo-purell.md",
     "bullets": [
       "Performed tasks in two-stage blow molding, including box preparation, filling, labeling, and palletizing.",
@@ -61,6 +64,7 @@
     "end_date": "August 2023",
     "summary": "Cross-trained sales associate across 4 departments; top-ranked store.",
     "icon": "tag",
+    "color": "#006753",
     "file": "dicks-sporting.md",
     "bullets": [
       "Cross-trained across 4 departments (footwear, outerwear, apparel, and cashier) to provide adaptable service.",
