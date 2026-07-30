@@ -131,28 +131,74 @@ html { color-scheme: dark; }
   /* utility tokens for borders and subtle surfaces */
   .border-theme { border-color: var(--border); }
 
-  .glass-surface {
-    background: rgba(48, 48, 48, 0.52);
-    backdrop-filter: blur(14px) saturate(150%);
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
-  }
+  /* --------------------------------------------------------------------
+     Liquid glass surfaces — single source of truth.
+     `.glass-surface` (default), `.glass-surface-strong` (nav/modals),
+     `.glass-surface-soft` (subtle chips).
+     Every consumer inherits changes made here.
 
+     The look is built from four layers so it reads as real glass, not a
+     flat tint:
+       1. a diagonal light-to-transparent sheen (the "highlight" of glass)
+       2. a low-alpha dark fill for legibility over the site's dark bg
+       3. backdrop blur + saturate to refract whatever sits behind it
+       4. layered box-shadows: outer drop shadow for lift, an inset top
+          highlight edge, and an inset bottom shadow for depth/curvature
+     -------------------------------------------------------------------- */
+  .glass-surface,
+  .glass-surface-soft,
   .glass-surface-strong {
-    background: rgba(42, 42, 42, 0.68);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    --glass-fill: 0.50;   /* alpha of the dark fill */
+    --glass-blur: 20px;
+    --glass-sat: 180%;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.10) 0%,
+        rgba(255, 255, 255, 0.03) 46%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+      rgba(38, 38, 40, var(--glass-fill));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 1px 0 0 rgba(255, 255, 255, 0.06),
+      inset 0 -10px 26px rgba(0, 0, 0, 0.16);
   }
 
+  /* Subtle: lighter blur/fill for small controls (arrows, error chips). */
   .glass-surface-soft {
-    background: rgba(48, 48, 48, 0.38);
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --glass-fill: 0.36;
+    --glass-blur: 16px;
+    --glass-sat: 160%;
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -6px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Strong: heavier blur/fill for nav + fullscreen modals that float over
+     busy content (e.g. the LaptopScene canvas). */
+  .glass-surface-strong {
+    --glass-fill: 0.64;
+    --glass-blur: 28px;
+    --glass-sat: 185%;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 1px 0 0 rgba(255, 255, 255, 0.07),
+      inset 0 -12px 30px rgba(0, 0, 0, 0.20);
+  }
+
+  /* Fallback: where backdrop-filter is unsupported, drop the sheen back
+     to a near-opaque fill so content stays legible instead of see-through. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-surface { background: rgba(34, 34, 36, 0.92); }
+    .glass-surface-soft { background: rgba(36, 36, 38, 0.88); }
+    .glass-surface-strong { background: rgba(30, 30, 32, 0.96); }
   }
 }
 
