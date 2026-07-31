@@ -391,7 +391,21 @@ export default function Jobs() {
                                     className="absolute inset-y-0 left-0 w-0.5"
                                     style={{ backgroundColor: isActive ? job.color : 'transparent' }}
                                   />
-                                  <JobIcon name={job.icon} className="w-4 h-4 shrink-0" style={{ color: job.color }} />
+                                  <span className="relative flex items-center justify-center shrink-0">
+                                    <span
+                                      aria-hidden
+                                      className="absolute w-7 h-7 rounded-full transition-opacity"
+                                      style={{
+                                        background: 'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 55%, rgba(255,255,255,0) 78%)',
+                                        opacity: isActive ? 1 : 0.6,
+                                      }}
+                                    />
+                                    <JobIcon
+                                      name={job.icon}
+                                      className="relative w-4 h-4"
+                                      style={{ color: liftColor(job.color), opacity: isActive ? 1 : 0.82 }}
+                                    />
+                                  </span>
                                   <span className="truncate">{job.file}</span>
                                 </button>
                               </li>
