@@ -2,6 +2,7 @@ import linkedinLogo from "../assets/buttons/linkedinLogo.png";
 import githubLogo from "../assets/buttons/githubLogo.png";
 import emailLogo from "../assets/buttons/emailLogo.png";
 import LaptopScene from "../components/LaptopScene";
+import ScrollCue from "../components/ScrollCue";
 
 // Toggle this to `false` (or comment out) to remove the debug border for deployment
 const SHOW_DEBUG_BORDER = false;
@@ -64,6 +65,9 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Low-key "there's more below" cue (CARD-019) */}
+      <ScrollCue />
     </section>
   )
 }
