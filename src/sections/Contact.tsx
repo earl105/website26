@@ -11,7 +11,20 @@ export default function Contact() {
         <div className="d-a" />
         <div className="d-b" />
       </div>
-      <div className="relative z-10 w-full max-w-4xl rounded-lg glass-surface text-[var(--text)] p-6 transition-transform duration-150 hover:scale-103">
+      <div className="relative z-10 w-full max-w-4xl rounded-lg glass-surface text-[var(--text)] overflow-hidden transition-transform duration-150 hover:scale-103">
+        {/* Title bar */}
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+            <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
+            <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+          </div>
+          <div className="text-xs text-[color:var(--muted-2)] font-mono truncate">
+            contact / <span className="text-[color:var(--muted)]">get-in-touch.md</span>
+          </div>
+        </div>
+
+        <div className="p-6">
         <h2 className="text-xl font-bold ml-4">Contact</h2>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
           <div className="p-4 flex flex-col justify-between">
@@ -64,6 +77,7 @@ I look forward to hearing from you.
           <a href="/admin" className="text-[10px] text-[color:var(--muted-2)] opacity-40 hover:opacity-80 transition-opacity">
             admin
           </a>
+        </div>
         </div>
       </div>
     </section>
