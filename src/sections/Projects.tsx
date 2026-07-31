@@ -6,9 +6,9 @@ import { devLoadDelay } from "../utils/devLoadDelay";
 
 // Slide the whole visible set horizontally on navigate; direction: 1 = next, -1 = prev.
 const slideVariants = {
-	enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+	enter: (dir: number) => ({ x: dir > 0 ? "25%" : "-25%", opacity: 0 }),
 	center: { x: "0%", opacity: 1 },
-	exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
+	exit: (dir: number) => ({ x: dir > 0 ? "-25%" : "25%", opacity: 0 }),
 };
 
 // Reduced-motion fallback: cross-fade only, no horizontal travel.
@@ -245,7 +245,7 @@ export default function Projects() {
 									initial="enter"
 									animate="center"
 									exit="exit"
-									transition={{ duration: prefersReducedMotion ? 0.075 : 0.15, ease: "easeInOut" }}
+									transition={{ duration: prefersReducedMotion ? 0.1 : 0.195, ease: "easeInOut" }}
 									onAnimationComplete={(definition) => { if (definition === "center") setAnimating(false); }}
 									className="flex items-stretch gap-6"
 								>
