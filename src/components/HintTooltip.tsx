@@ -8,8 +8,8 @@ type HintTooltipProps = {
   open: boolean;
   /** Called on manual close (×), Escape, or click-through of the close button. */
   onDismiss: () => void;
-  /** Which edge the pointer sits on — points toward the anchored element. */
-  arrow: HintArrowSide;
+  /** Which edge the pointer sits on — points toward the anchored element. `'none'` hides the pointer. */
+  arrow: HintArrowSide | 'none';
   /** Absolute-positioning / layout classes for the wrapper (e.g. `right-full mr-3`). */
   className?: string;
   /** Inline positioning (e.g. a measured `top`) merged onto the wrapper. */
@@ -62,7 +62,7 @@ export default function HintTooltip({ open, onDismiss, arrow, className, style, 
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onDismiss]);
 
-  const offset = enterOffset[arrow];
+  const offset = arrow === 'none' ? {} : enterOffset[arrow];
 
   return (
     <AnimatePresence>
@@ -91,7 +91,7 @@ export default function HintTooltip({ open, onDismiss, arrow, className, style, 
                 <path d="M5 5l10 10M15 5L5 15" />
               </svg>
             </button>
-            <Pointer side={arrow} />
+            {arrow !== 'none' && <Pointer side={arrow} />}
           </div>
         </motion.div>
       )}

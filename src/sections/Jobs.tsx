@@ -378,6 +378,16 @@ export default function Jobs() {
           Click to switch roles
         </HintTooltip>
 
+        {/* Mobile file-switch hint: sits above the editor window, no pointer. */}
+        <HintTooltip
+          open={hintOpen}
+          onDismiss={dismissHint}
+          arrow="none"
+          className="md:hidden bottom-full mb-2 left-0 right-0 mx-auto w-max"
+        >
+          Tap icons to switch roles
+        </HintTooltip>
+
         {/* Editor window */}
         <div
           className="glass-surface rounded-lg overflow-hidden flex flex-col h-[calc(var(--vh,1vh)*86)] md:h-[calc(var(--vh,1vh)*76)]"
@@ -397,16 +407,7 @@ export default function Jobs() {
           </div>
 
           {/* Body: sidebar + detail pane */}
-          <div className="relative flex flex-col md:flex-row flex-1 min-h-0">
-            {/* Mobile file-switch hint: points up at the tab strip. */}
-            <HintTooltip
-              open={hintOpen}
-              onDismiss={dismissHint}
-              arrow="top"
-              className="md:hidden top-2 left-0 right-0 mx-auto w-max"
-            >
-              Tap to switch roles
-            </HintTooltip>
+          <div className="flex flex-col md:flex-row flex-1 min-h-0">
 
             {/* Mobile: Chrome pinned-tab strip — icon-only tabs. Tabs spread to
                 fill when few, shrink to a tappable min width and scroll (with
