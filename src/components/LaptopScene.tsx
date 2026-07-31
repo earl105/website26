@@ -93,7 +93,11 @@ export default function LaptopScene() {
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
         
         <Suspense fallback={null}>
-          <group rotation={[0, Math.PI * 1.25, 0]} position={[0, isMobile ? 0.5 : 0, 0]}>
+          <group
+            rotation={[0, Math.PI * 1.25, 0]}
+            position={[0, isMobile ? 0.4 : 0, 0]}
+            scale={isMobile ? 0.95 : 1}
+          >
             <Center>
               <LaptopModel isMobile={isMobile} scrollProgress={isMobile ? scrollProgress : 1 - visibleRatio} />
             </Center>

@@ -1,22 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import TechCarousel from "../components/TechCarousel";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion, type PanInfo } from "framer-motion";
 import ProjectCardSkeleton from "../components/ProjectCardSkeleton";
 import { devLoadDelay } from "../utils/devLoadDelay";
 
-// Slide the whole visible set horizontally on navigate; direction: 1 = next, -1 = prev.
-const slideVariants = {
-	enter: (dir: number) => ({ x: dir > 0 ? "25%" : "-25%", opacity: 0 }),
-	center: { x: "0%", opacity: 1 },
-	exit: (dir: number) => ({ x: dir > 0 ? "-25%" : "25%", opacity: 0 }),
-};
-
-// Reduced-motion fallback: cross-fade only, no horizontal travel.
-const fadeVariants = {
-	enter: { opacity: 0 },
-	center: { opacity: 1 },
-	exit: { opacity: 0 },
-};
+// Per-position visual presets, indexed by absolute distance from the centered
+// card. The middle three (offsets 0, ±1) stay crisp; ±2/±3 recede and blur so
+// focus reads clearly on the center. Desktop shows a 7-card arc, mobile a 3-card.
+const COVERFLOW = {
+	desktop: {
+		maxOffset: 2,
+		spacing: [0, 288, 512],
+		scale: [1, 0.82, 0.62],
+		rotate: [0, 36, 46],
+		z: [0, -150, -320],
+		opacity: [1, 0.85, 0.32],
+		blur: [0, 0, 2.4],
+	},
+	mobile: {
+		maxOffset: 1,
+		spacing: [0, 236],
+		scale: [1, 0.68],
+		rotate: [0, 34],
+		z: [0, -150],
+		opacity: [1, 0.3],
+		blur: [0, 4],
+	},
+} as const;
 
 type Project = {
 	id: number;
@@ -62,258 +71,356 @@ const ArrowRight = ({ className = "" }: { className?: string }) => (
 );
 
 export default function Projects() {
-			const [projects, setProjects] = useState<Project[]>([]);
-			const [loading, setLoading] = useState(true);
-			const [error, setError] = useState<string | null>(null);
-			const [index, setIndex] = useState(0);
-			const [perPage, setPerPage] = useState(3);
-			const [colors, setColors] = useState<string[]>([]);
-			const [direction, setDirection] = useState(1);
-			const [animating, setAnimating] = useState(false);
-			const prefersReducedMotion = useReducedMotion();
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [index, setIndex] = useState(0);
+	const [isMobile, setIsMobile] = useState(false);
+	const [colors, setColors] = useState<string[]>([]);
+	const prefersReducedMotion = useReducedMotion();
+	// Set while a drag exceeds the tap threshold, so the release doesn't also
+	// fire a card click (navigation / focus).
+	const draggedRef = useRef(false);
 
-			useEffect(() => {
-				let cancelled = false;
+	useEffect(() => {
+		let cancelled = false;
 
-				const loadProjects = async () => {
-					try {
-						setLoading(true);
-						setError(null);
+		const loadProjects = async () => {
+			try {
+				setLoading(true);
+				setError(null);
 
-						const response = await fetch('/data/projects.json');
-						if (!response.ok) {
-							throw new Error(`Failed to load projects (${response.status})`);
-						}
-
-						await devLoadDelay();
-
-						const data = (await response.json()) as Project[];
-						if (!cancelled) {
-							setProjects([...data].sort((a, b) => a.sort_order - b.sort_order));
-						}
-					} catch (loadError) {
-						if (!cancelled) {
-							setError(loadError instanceof Error ? loadError.message : 'Failed to load projects');
-						}
-					} finally {
-						if (!cancelled) {
-							setLoading(false);
-						}
-					}
-				};
-
-				void loadProjects();
-				return () => {
-					cancelled = true;
-				};
-			}, []);
-
-			useEffect(() => {
-				const root = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null;
-				if (!root) return;
-
-				const cols: string[] = [];
-				for (let i = 0; i < 20; i++) {
-					const value = root.getPropertyValue(`--project-color-${i}`);
-					if (!value) break;
-					const trimmed = value.trim();
-					if (trimmed) cols.push(trimmed);
+				const response = await fetch('/data/projects.json');
+				if (!response.ok) {
+					throw new Error(`Failed to load projects (${response.status})`);
 				}
 
-				if (cols.length === 0) {
-					const list = root.getPropertyValue('--project-colors');
-					if (list) {
-						cols.push(...list.split(',').map((s) => s.trim()).filter(Boolean));
-					}
+				await devLoadDelay();
+
+				const data = (await response.json()) as Project[];
+				if (!cancelled) {
+					setProjects([...data].sort((a, b) => a.sort_order - b.sort_order));
 				}
-
-				if (cols.length) {
-					setColors(cols);
+			} catch (loadError) {
+				if (!cancelled) {
+					setError(loadError instanceof Error ? loadError.message : 'Failed to load projects');
 				}
-			}, []);
-
-			useEffect(() => {
-				const update = () => setPerPage(window.innerWidth >= 768 ? 3 : 1);
-				update();
-				window.addEventListener('resize', update);
-				return () => window.removeEventListener('resize', update);
-			}, []);
-
-			const n = projects.length;
-
-			const shuffledIndices = useMemo(() => {
-				if (colors.length === 0) return [];
-
-				const seedBase = 1337;
-				const mulberry32 = (a: number) => {
-					return function () {
-						let t = (a += 0x6d2b79f5);
-						t = Math.imul(t ^ (t >>> 15), t | 1);
-						t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-						return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-					};
-				};
-
-				const base = Array.from({ length: colors.length }, (_, k) => k);
-				const result: number[] = [];
-				let iter = 0;
-				const targetLen = Math.max(n, colors.length);
-
-				while (result.length < targetLen) {
-					const arr = base.slice();
-					const rnd = mulberry32(seedBase + iter);
-					for (let i = arr.length - 1; i > 0; i--) {
-						const j = Math.floor(rnd() * (i + 1));
-						[arr[i], arr[j]] = [arr[j], arr[i]];
-					}
-					result.push(...arr);
-					iter++;
-					if (iter > 100) break;
+			} finally {
+				if (!cancelled) {
+					setLoading(false);
 				}
-
-				return result;
-			}, [colors.length, n]);
-
-			const handlePrev = () => {
-				if (n === 0 || animating) return;
-				setDirection(-1);
-				setAnimating(true);
-				setIndex((value) => (value - perPage + n) % n);
-			};
-
-			const handleNext = () => {
-				if (n === 0 || animating) return;
-				setDirection(1);
-				setAnimating(true);
-				setIndex((value) => (value + perPage) % n);
-			};
-
-			const visible = n > 0 ? Array.from({ length: perPage }, (_, i) => projects[(index + i) % n]) : [];
-
-			if (loading) {
-				return (
-					<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-						<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
-							<div className="relative">
-								<div className="overflow-hidden px-10 py-2.5">
-									<div className="flex items-stretch justify-center gap-6">
-										{Array.from({ length: perPage }).map((_, i) => (
-											<ProjectCardSkeleton key={i} />
-										))}
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-				);
 			}
+		};
 
-			if (error) {
-				return (
-					<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-						<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
-							<div className="glass-surface-soft rounded-lg p-8 text-center text-red-100" style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}>
-								{error}
-							</div>
-						</div>
-					</section>
-				);
-			}
+		void loadProjects();
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
-			return (
-				<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-					<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0">
-						<div className="block md:hidden mb-6">
-							<TechCarousel speed={"slow"} pauseOnHover={false} />
-						</div>
+	useEffect(() => {
+		const root = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+		if (!root) return;
 
-						<div className="relative">
-							<button
-								aria-label="Previous projects"
-								onClick={handlePrev}
-								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full glass-surface-soft transform hover:scale-103 transition-transform duration-150 left-[-6px] md:left-[-2.5rem]"
-							>
-								<ArrowLeft className="w-6 h-6 text-[var(--muted)]" />
-							</button>
-
-							<div className="overflow-hidden px-10 py-2.5">
-								<AnimatePresence mode="wait" custom={direction} initial={false}>
-								<motion.div
-									key={index}
-									custom={direction}
-									variants={prefersReducedMotion ? fadeVariants : slideVariants}
-									initial="enter"
-									animate="center"
-									exit="exit"
-									transition={{ duration: prefersReducedMotion ? 0.1 : 0.195, ease: "easeInOut" }}
-									onAnimationComplete={(definition) => { if (definition === "center") setAnimating(false); }}
-									className="flex items-stretch gap-6"
-								>
-									{visible.map((project, i) => {
-										const actualIndex = n > 0 ? (index + i) % n : 0;
-										let bg = '#e24646';
-										if (colors.length) {
-											const order = shuffledIndices.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
-											const colorIndex = order[actualIndex % order.length] % colors.length;
-											bg = colors[colorIndex];
-										}
-
-										const cardContent = (
-											<article className="relative overflow-hidden rounded-lg p-6 flex flex-col transform hover:scale-103 transition-transform duration-200 h-96 glass-surface">
-												<div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: bg }} />
-												{project.screenshot_url ? (
-													<div className="mt-2 mb-4 h-40 w-full overflow-hidden rounded-md">
-														<img src={project.screenshot_url} alt={project.title} className="w-full h-full object-cover" />
-													</div>
-												) : null}
-												<h3 className="text-lg font-bold mb-2">{project.title}</h3>
-												<p className="text-sm mb-4 flex-grow" style={{ color: 'var(--muted)' }}>{project.description}</p>
-												<div className="mb-4">
-													<div className="mt-2 flex flex-wrap gap-2">
-														{project.tags.map((tag) => (
-															<span key={tag} className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'var(--chip)', color: 'var(--fg)' }}>
-																{tag}
-															</span>
-														))}
-													</div>
-												</div>
-											</article>
-										);
-
-										if (project.clickable && !project.clickable_override && (project.github_url || project.demo_url)) {
-											return (
-												<a
-													key={`${project.title}-${i}`}
-													href={project.github_url || project.demo_url || '#'}
-													target="_blank"
-													rel="noreferrer"
-													className="flex-none w-full md:w-64 group"
-												>
-													{cardContent}
-												</a>
-											);
-										}
-
-										return (
-											<div key={`${project.title}-${i}`} className="flex-none w-full md:w-64 group cursor-default">
-												{cardContent}
-											</div>
-										);
-									})}
-								</motion.div>
-								</AnimatePresence>
-							</div>
-
-							<button
-								aria-label="Next projects"
-								onClick={handleNext}
-								className="absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full glass-surface-soft transform hover:scale-103 transition-transform duration-150 right-[-6px] md:right-[-2.5rem]"
-							>
-								<ArrowRight className="w-6 h-6 text-[var(--muted)]" />
-							</button>
-						</div>
-					</div>
-				</section>
-			);
+		const cols: string[] = [];
+		for (let i = 0; i < 20; i++) {
+			const value = root.getPropertyValue(`--project-color-${i}`);
+			if (!value) break;
+			const trimmed = value.trim();
+			if (trimmed) cols.push(trimmed);
 		}
 
+		if (cols.length === 0) {
+			const list = root.getPropertyValue('--project-colors');
+			if (list) {
+				cols.push(...list.split(',').map((s) => s.trim()).filter(Boolean));
+			}
+		}
+
+		if (cols.length) {
+			setColors(cols);
+		}
+	}, []);
+
+	useEffect(() => {
+		const update = () => setIsMobile(window.innerWidth < 768);
+		update();
+		window.addEventListener('resize', update);
+		return () => window.removeEventListener('resize', update);
+	}, []);
+
+	const n = projects.length;
+
+	const shuffledIndices = useMemo(() => {
+		if (colors.length === 0) return [];
+
+		const seedBase = 1337;
+		const mulberry32 = (a: number) => {
+			return function () {
+				let t = (a += 0x6d2b79f5);
+				t = Math.imul(t ^ (t >>> 15), t | 1);
+				t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+				return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+			};
+		};
+
+		const base = Array.from({ length: colors.length }, (_, k) => k);
+		const result: number[] = [];
+		let iter = 0;
+		const targetLen = Math.max(n, colors.length);
+
+		while (result.length < targetLen) {
+			const arr = base.slice();
+			const rnd = mulberry32(seedBase + iter);
+			for (let i = arr.length - 1; i > 0; i--) {
+				const j = Math.floor(rnd() * (i + 1));
+				[arr[i], arr[j]] = [arr[j], arr[i]];
+			}
+			result.push(...arr);
+			iter++;
+			if (iter > 100) break;
+		}
+
+		return result;
+	}, [colors.length, n]);
+
+	const goTo = (next: number) => {
+		if (n === 0) return;
+		setIndex(((next % n) + n) % n);
+	};
+
+	const handlePrev = () => goTo(index - 1);
+	const handleNext = () => goTo(index + 1);
+
+	// Keyboard navigation.
+	useEffect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (n === 0) return;
+			if (e.key === 'ArrowLeft') setIndex((v) => ((v - 1) % n + n) % n);
+			else if (e.key === 'ArrowRight') setIndex((v) => ((v + 1) % n) % n);
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, [n]);
+
+	// Shortest signed circular distance from the centered card to project i.
+	const circularOffset = (i: number) => {
+		let off = ((i - index) % n + n) % n;
+		if (off > n / 2) off -= n;
+		return off;
+	};
+
+	const handleDragEnd = (_e: unknown, info: PanInfo) => {
+		const cfg = isMobile ? COVERFLOW.mobile : COVERFLOW.desktop;
+		const unit = cfg.spacing[1] || 190;
+		// Combine travelled distance with a touch of throw velocity.
+		const throw_ = info.offset.x + info.velocity.x * 0.15;
+		const steps = Math.round(-throw_ / unit);
+		draggedRef.current = Math.abs(info.offset.x) > 6;
+		if (steps !== 0) goTo(index + steps);
+	};
+
+	const cfg = isMobile ? COVERFLOW.mobile : COVERFLOW.desktop;
+
+	const cardColor = (actualIndex: number) => {
+		if (!colors.length) return '#e24646';
+		const order = shuffledIndices.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
+		const colorIndex = order[actualIndex % order.length] % colors.length;
+		return colors[colorIndex];
+	};
+
+	if (loading) {
+		return (
+			<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+				<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
+					<div className="relative">
+						<div className="overflow-hidden px-10 py-2.5">
+							<div className="flex items-stretch justify-center gap-6">
+								{Array.from({ length: isMobile ? 1 : 3 }).map((_, i) => (
+									<ProjectCardSkeleton key={i} />
+								))}
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		);
+	}
+
+	if (error) {
+		return (
+			<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+				<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
+					<div className="glass-surface-soft rounded-lg p-8 text-center text-red-100" style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}>
+						{error}
+					</div>
+				</div>
+			</section>
+		);
+	}
+
+	return (
+		<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+			<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
+				<div className="relative">
+					<button
+						aria-label="Previous project"
+						onClick={handlePrev}
+						className="hidden md:block absolute top-1/2 -translate-y-1/2 z-40 p-2 rounded-full glass-surface-soft transform hover:scale-103 transition-transform duration-150 left-[-6px] md:left-[-2.5rem]"
+					>
+						<ArrowLeft className="w-6 h-6 text-[var(--muted)]" />
+					</button>
+
+					{/* Stage: fixed-height 3D scene. Cards are absolutely positioned and
+					    transformed by their offset from center. Drag anywhere to spin. */}
+					<motion.div
+						className="relative overflow-hidden select-none"
+						style={{
+							height: isMobile ? '26rem' : '27rem',
+							perspective: 1600,
+							cursor: 'grab',
+						}}
+						drag="x"
+						dragConstraints={{ left: 0, right: 0 }}
+						dragElastic={0.16}
+						onDragStart={() => { draggedRef.current = false; }}
+						onDragEnd={handleDragEnd}
+						whileTap={{ cursor: 'grabbing' }}
+					>
+						{projects.map((project, i) => {
+							const off = circularOffset(i);
+							const abs = Math.abs(off);
+							const sign = Math.sign(off);
+							const visible = abs <= cfg.maxOffset;
+
+							const clamped = Math.min(abs, cfg.spacing.length - 1);
+							const x = sign * cfg.spacing[clamped];
+							const scale = cfg.scale[clamped];
+							const rotateY = prefersReducedMotion ? 0 : -sign * cfg.rotate[clamped];
+							const z = prefersReducedMotion ? 0 : cfg.z[clamped];
+							const opacity = visible ? cfg.opacity[clamped] : 0;
+							const blur = prefersReducedMotion ? 0 : cfg.blur[clamped];
+							const isCenter = off === 0;
+							const bg = cardColor(i);
+
+							const cardContent = (
+								<article className="relative overflow-hidden rounded-lg p-6 flex flex-col h-96 w-64 glass-surface">
+									<div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: bg }} />
+									{project.screenshot_url ? (
+										<div className="mt-2 mb-4 h-40 w-full overflow-hidden rounded-md">
+											<img src={project.screenshot_url} alt={project.title} className="w-full h-full object-cover" draggable={false} />
+										</div>
+									) : null}
+									<h3 className="text-lg font-bold mb-2">{project.title}</h3>
+									<p className="text-sm mb-4 flex-grow" style={{ color: 'var(--muted)' }}>{project.description}</p>
+									<div className="mb-4">
+										<div className="mt-2 flex flex-wrap gap-2">
+											{project.tags.map((tag) => (
+												<span key={tag} className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'var(--chip)', color: 'var(--fg)' }}>
+													{tag}
+												</span>
+											))}
+										</div>
+									</div>
+								</article>
+							);
+
+							const canLink = isCenter && project.clickable && !project.clickable_override && (project.github_url || project.demo_url);
+
+							return (
+								<motion.div
+									key={project.id}
+									className="absolute top-1/2 left-1/2"
+									style={{ width: '16rem', marginLeft: '-8rem', marginTop: '-12rem', transformStyle: 'preserve-3d', pointerEvents: visible ? 'auto' : 'none' }}
+									animate={{ x, scale, rotateY, z, opacity, filter: `blur(${blur}px)`, zIndex: 100 - abs * 10 }}
+									transition={prefersReducedMotion
+										? { duration: 0.18 }
+										: { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 }}
+								>
+									{/* Accent glow behind the focused card. */}
+									<div
+										aria-hidden
+										className="absolute -inset-6 rounded-2xl pointer-events-none transition-opacity duration-300"
+										style={{ background: `radial-gradient(60% 60% at 50% 40%, ${bg}, transparent 70%)`, opacity: isCenter ? 0.28 : 0, filter: 'blur(24px)', zIndex: -1 }}
+									/>
+									{canLink ? (
+										<a
+											href={project.github_url || project.demo_url || '#'}
+											target="_blank"
+											rel="noreferrer"
+											className="block group"
+											onClick={(e) => { if (draggedRef.current) e.preventDefault(); }}
+										>
+											{cardContent}
+										</a>
+									) : (
+										<div
+											className={isCenter ? 'cursor-default' : 'cursor-pointer'}
+											onClick={() => { if (!draggedRef.current && !isCenter) goTo(i); }}
+										>
+											{cardContent}
+										</div>
+									)}
+								</motion.div>
+							);
+						})}
+					</motion.div>
+
+					<button
+						aria-label="Next project"
+						onClick={handleNext}
+						className="hidden md:block absolute top-1/2 -translate-y-1/2 z-40 p-2 rounded-full glass-surface-soft transform hover:scale-103 transition-transform duration-150 right-[-6px] md:right-[-2.5rem]"
+					>
+						<ArrowRight className="w-6 h-6 text-[var(--muted)]" />
+					</button>
+				</div>
+
+				{/* Position indicator: dots on desktop, larger arrow controls on mobile. */}
+				{n > 1 ? (
+					<>
+						<div className="hidden md:flex mt-6 items-center justify-center gap-2">
+							{projects.map((project, i) => {
+								const active = i === index;
+								return (
+									<button
+										key={project.id}
+										aria-label={`Go to ${project.title}`}
+										aria-current={active}
+										onClick={() => goTo(i)}
+										className="rounded-full transition-all duration-200"
+										style={{
+											width: active ? 20 : 8,
+											height: 8,
+											backgroundColor: active ? cardColor(i) : 'var(--chip)',
+											opacity: active ? 1 : 0.6,
+										}}
+									/>
+								);
+							})}
+						</div>
+
+						<div className="flex md:hidden mt-6 items-center justify-center gap-4">
+							<button
+								aria-label="Previous project"
+								onClick={handlePrev}
+								className="p-3 rounded-full glass-surface-soft text-[var(--muted)] active:scale-95 transition-transform"
+							>
+								<ArrowLeft className="w-5 h-5" />
+							</button>
+							<span className="text-sm tabular-nums" style={{ color: 'var(--muted)' }}>
+								{index + 1} / {n}
+							</span>
+							<button
+								aria-label="Next project"
+								onClick={handleNext}
+								className="p-3 rounded-full glass-surface-soft text-[var(--muted)] active:scale-95 transition-transform"
+							>
+								<ArrowRight className="w-5 h-5" />
+							</button>
+						</div>
+					</>
+				) : null}
+			</div>
+		</section>
+	);
+}

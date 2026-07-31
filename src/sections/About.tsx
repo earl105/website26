@@ -71,8 +71,8 @@ export default function About() {
           </p>
         </div>
       </div>
-      {/* Show carousel only on md+; hidden on mobile (will be rendered above projects on mobile) */}
-      <div className="w-full mt-2 md:mt-6 hidden md:block">
+      {/* Tech carousel: below the grid on desktop, below the About Me box on mobile */}
+      <div className="w-full mt-6 block">
         <TechCarousel speed={"slow"} pauseOnHover />
       </div>
     </section>
