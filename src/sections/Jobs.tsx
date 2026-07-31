@@ -2,7 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import JobIcon, { type JobIconKey } from '../data/jobIcons';
 import JobsSkeleton from '../components/JobsSkeleton';
+import HintTooltip from '../components/HintTooltip';
 import { devLoadDelay } from '../utils/devLoadDelay';
+
+// Session flag so the "click to switch roles" nudge shows at most once per
+// browsing session (matches the file-explorer discovery hint, CARD-018).
+const HINT_KEY = 'jobs-file-hint-seen';
 
 export type Job = {
   company: string;
@@ -132,6 +137,23 @@ export default function Jobs() {
   const [error, setError] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
 
+  // File-switch discovery hint (CARD-018): a low-key nudge that the sidebar /
+  // tab strip is interactive. Shown once per session, after the section
+  // scrolls into view; stays until the user switches jobs (or Esc / ×). On
+  // desktop it sits to the left of the editor window, its arrow aligned to the
+  // next (not-yet-selected) job's row so it reads as "click here next".
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [hintOpen, setHintOpen] = useState(false);
+  const [hintTop, setHintTop] = useState<number | null>(null);
+  const showTimerRef = useRef<number | null>(null);
+
+  const dismissHint = useCallback(() => {
+    setHintOpen(false);
+    if (showTimerRef.current) window.clearTimeout(showTimerRef.current);
+    showTimerRef.current = null;
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -169,6 +191,27 @@ export default function Jobs() {
   }, []);
 
   const jobs = useMemo(() => records.map(toJob), [records]);
+
+  // The job the hint points at: the next one after the current selection.
+  const hintTargetIndex = jobs.length > 1 ? (selectedIndex + 1) % jobs.length : selectedIndex;
+
+  // Vertically align the hint with the target file's sidebar row, measured
+  // relative to the outer wrapper (the hint lives outside the editor window).
+  const positionHint = useCallback(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const row = wrapper.querySelector<HTMLElement>(`[data-file-index="${hintTargetIndex}"]`);
+    if (!row) {
+      setHintTop(16);
+      return;
+    }
+    const wrapRect = wrapper.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    // Anchor the pill's top so its arrow (at the pill's vertical center, ~15px
+    // down for the single-line pill) lines up with the target row's center.
+    const HALF_PILL = 15;
+    setHintTop(rowRect.top - wrapRect.top + rowRect.height / 2 - HALF_PILL);
+  }, [hintTargetIndex]);
 
   // Group jobs into explorer folders, preserving each job's index in the flat
   // (sort_order) array so selection still works across folders.
@@ -226,6 +269,65 @@ export default function Jobs() {
     btn?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }, [selectedIndex]);
 
+  // Selecting a file/tab is also the primary hint-dismiss trigger.
+  const selectJob = useCallback(
+    (index: number) => {
+      setSelectedIndex(index);
+      dismissHint();
+    },
+    [dismissHint]
+  );
+
+  // Fire the hint once the section enters the viewport (not on mount — Jobs is
+  // below the fold and may render before it's ever seen). Skipped entirely if
+  // already shown this session. Stays open until the user switches jobs.
+  useEffect(() => {
+    if (loading || error || jobs.length === 0) return;
+
+    let alreadySeen = false;
+    try {
+      alreadySeen = sessionStorage.getItem(HINT_KEY) === '1';
+    } catch {
+      // sessionStorage unavailable (private mode / disabled) — just skip persistence.
+    }
+    if (alreadySeen) return;
+
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        showTimerRef.current = window.setTimeout(() => {
+          positionHint();
+          setHintOpen(true);
+          try {
+            sessionStorage.setItem(HINT_KEY, '1');
+          } catch {
+            // ignore persistence failures
+          }
+        }, 600);
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      if (showTimerRef.current) window.clearTimeout(showTimerRef.current);
+    };
+  }, [loading, error, jobs.length, positionHint]);
+
+  // Keep the desktop hint aligned to its target row across viewport resizes.
+  useEffect(() => {
+    if (!hintOpen) return;
+    const onResize = () => positionHint();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [hintOpen, positionHint]);
+
   // Fade the strip's overflowing edge(s) to transparent as a passive "more this
   // way" hint. A CSS mask does this independent of the background color.
   const FADE = 28;
@@ -262,8 +364,20 @@ export default function Jobs() {
   const active = jobs[selectedIndex];
 
   return (
-    <section id="jobs" className={sectionClass} style={sectionStyle}>
-      <div className="w-full max-w-5xl mx-auto">
+    <section ref={sectionRef} id="jobs" className={sectionClass} style={sectionStyle}>
+      <div ref={wrapperRef} className="relative w-full max-w-5xl mx-auto">
+        {/* Desktop file-switch hint: sits in the margin to the left of the
+            editor window, arrow pointing right at the next job's row. */}
+        <HintTooltip
+          open={hintOpen}
+          onDismiss={dismissHint}
+          arrow="right"
+          className="hidden md:block right-full mr-3"
+          style={{ top: hintTop ?? 16 }}
+        >
+          Click to switch roles
+        </HintTooltip>
+
         {/* Editor window */}
         <div
           className="glass-surface rounded-lg overflow-hidden flex flex-col h-[calc(var(--vh,1vh)*86)] md:h-[calc(var(--vh,1vh)*76)]"
@@ -283,7 +397,17 @@ export default function Jobs() {
           </div>
 
           {/* Body: sidebar + detail pane */}
-          <div className="flex flex-col md:flex-row flex-1 min-h-0">
+          <div className="relative flex flex-col md:flex-row flex-1 min-h-0">
+            {/* Mobile file-switch hint: points up at the tab strip. */}
+            <HintTooltip
+              open={hintOpen}
+              onDismiss={dismissHint}
+              arrow="top"
+              className="md:hidden top-2 left-0 right-0 mx-auto w-max"
+            >
+              Tap to switch roles
+            </HintTooltip>
+
             {/* Mobile: Chrome pinned-tab strip — icon-only tabs. Tabs spread to
                 fill when few, shrink to a tappable min width and scroll (with
                 arrows) as more jobs are added. */}
@@ -300,7 +424,7 @@ export default function Jobs() {
                     <button
                       key={job.company}
                       data-tab={i}
-                      onClick={() => setSelectedIndex(i)}
+                      onClick={() => selectJob(i)}
                       aria-current={isActive}
                       aria-label={job.company}
                       className="relative flex-1 min-w-[3.25rem] flex items-center justify-center py-2.5 transition-colors"
@@ -380,7 +504,8 @@ export default function Jobs() {
                             return (
                               <li key={job.company}>
                                 <button
-                                  onClick={() => setSelectedIndex(index)}
+                                  data-file-index={index}
+                                  onClick={() => selectJob(index)}
                                   aria-current={isActive}
                                   className={`relative w-full flex items-center gap-2 pl-9 pr-3 py-1.5 text-left text-sm font-mono whitespace-nowrap transition-colors ${
                                     isActive ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]'

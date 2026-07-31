@@ -48,6 +48,8 @@ Cards are filed into subdirectories by status, so status is visible from the fol
 - **CARD-007** — [`007-backgrounds.md`](tbd/007-backgrounds.md) — section backgrounds (visual direction not chosen)
 - **CARD-016** — [`016-admin-crud-text-components.md`](tbd/016-admin-crud-text-components.md) — admin CRUD for other text components (scope undefined)
 - **CARD-017** — [`017-data-logging.md`](tbd/017-data-logging.md) — traffic + failure logging and dashboard (lowest priority)
+- **CARD-018** — [`018-jobs-file-switch-hint-tooltip.md`](tbd/018-jobs-file-switch-hint-tooltip.md) — self-dismissing hint nudging clicks through the Jobs file explorer (sibling of CARD-019)
+- **CARD-019** — [`019-hero-scroll-cue-tooltip.md`](tbd/019-hero-scroll-cue-tooltip.md) — self-dismissing scroll cue on the hero (sibling of CARD-018)
 
 ### ⚫ Discarded — [`discarded/`](discarded/)
 - **CARD-009** — [`009-job-carousel-vertical-centering.md`](discarded/009-job-carousel-vertical-centering.md) — obsolete; jobs is no longer a carousel (resolved by CARD-003)
