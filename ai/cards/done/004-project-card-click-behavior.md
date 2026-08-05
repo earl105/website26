@@ -29,7 +29,7 @@ if (project.clickable && !project.clickable_override && (project.github_url || p
 - [ ] No console errors / dead `#` hrefs rendered.
 
 ## Nuances & considerations
-- Semantics: `clickable_override` currently means "override OFF." Document this clearly in the schema so the admin GUI (CARD-014) labels the toggle intuitively (e.g. "Disable link").
+- Semantics: `clickable_override` currently means "override OFF." Document this clearly in the schema so any future editor UI labels the toggle intuitively (e.g. "Disable link").
 - The whole `<article>` currently has `hover:scale-103` even inside a plain `<div>` — this can imply clickability falsely. Consider gating the hover transform on the clickable branch.
 
 ## Files likely touched

@@ -22,7 +22,7 @@ Update the About copy from "third-year student" to "fourth-year student" (and an
 
 ## Nuances & considerations
 - The mobile and desktop copies are separate strings — easy to update one and miss the other.
-- Consider whether this belongs in `public/data/*.json` later so it's editable via the admin GUI (CARD-016) rather than hardcoded.
+- Consider whether this belongs in `public/data/*.json` later so it's editable without a code change, rather than hardcoded.
 
 ## Files likely touched
 - `src/sections/About.tsx`

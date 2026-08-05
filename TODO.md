@@ -22,11 +22,6 @@
 
 #### New features
 
-- login button (only admin exists)
-- admin should be able to CRUD project cards with GUI
-- admin should be able to CRUD job cards with GUI
-- admin should be able to CRUD other text-based components with GUI
-
 - all feature implementation should be FOSS
   
  # less important - do last (vercel does most of this already)

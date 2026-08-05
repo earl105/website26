@@ -19,19 +19,7 @@
 
 ### Backend (Phase 2 — Vercel Serverless Functions)
 - `/api` folder in existing repo — Vercel auto-deploys, no new hosting
-- **GitHub API (Octokit)** — admin writes updated JSON files back to the repo as commits → Vercel auto-redeploys (~30–60s lag)
-- **JWT in httpOnly cookie** — admin auth, no external auth service
-- **Nodemailer + Gmail SMTP** — contact form email sending
 
-### Environment variables needed (`.env`) — Phase 2
-```
-GITHUB_TOKEN=           # Personal access token (repo scope only)
-GITHUB_REPO=            # e.g. "dylanearl/portfolio"
-ADMIN_PASSWORD_HASH=    # bcrypt hash of admin password
-JWT_SECRET=             # random secret string
-GMAIL_USER=             # Gmail address
-GMAIL_APP_PASSWORD=     # Gmail app password (not your real password)
-```
 
 ### JSON Schema
 
@@ -80,8 +68,7 @@ GMAIL_APP_PASSWORD=     # Gmail app password (not your real password)
 - Function logs, deployment logs, and error traces visible in the Vercel dashboard
 - Sufficient for a portfolio — no setup required
 
-### Backup Plan (if Vercel logs become insufficient)
-If traffic visibility or persistent error tracking becomes a priority later, the lightest option that maintains the no-cloud-service constraint:
+
 
 - **Option A — Append to `logs/traffic.json` in repo via GitHub API**
   - Batch writes (e.g. flush every N visits or on a schedule via Vercel Cron)
@@ -96,7 +83,6 @@ If traffic visibility or persistent error tracking becomes a priority later, the
 - **Option C — Plausible / Umami self-hosted**
   - Umami is open source and can be self-hosted on a free tier (Railway, Render)
   - Only viable if a backend is already being deployed for another reason
-  - Revisit if/when admin backend is live
 
 ---
 
@@ -116,21 +102,18 @@ Pure frontend work. No backend required. Implement in this order:
 9. **Fade-in / slide-up scroll animations** — global pass across all sections
 10. **Group tech icons by category** — three labeled rows on About page
 
-### Phase 2 — Backend + Admin
+### Phase 2 — Backend
 Implement after Phase 1 is complete and deployed:
 
 1. **Vercel Serverless Functions setup** — `/api` scaffolding, shared middleware
-2. **Admin login** — `/admin` route, JWT auth, password hash in `.env`
-3. **Contact form** — `/api/contact`, Nodemailer + Gmail SMTP
-4. **Admin CRUD: Projects** — GUI + GitHub API commit flow
-5. **Admin CRUD: Jobs** — GUI + GitHub API commit flow
-6. **Logging** — revisit based on need at that point
+
+3. **Logging** — revisit based on need at that point
 
 ---
 
 ## 🎨 Phase 1 Feature Details
 
-### 1. Data Migration (prerequisite for skeletons + admin)
+### 1. Data Migration (prerequisite for skeletons)
 - Move `const projects: Project[] = [...]` → `public/data/projects.json`
 - Move `const jobs: Job[] = [...]` → `public/data/jobs.json`
 - Update components to `fetch('/data/projects.json')` with `useEffect` + `useState`
@@ -192,39 +175,11 @@ Choose one or combine — implement as a global `<Background />` component:
 
 ## 🔐 Phase 2 Feature Details
 
-### Admin Login
-- `/admin` React route, guarded client-side
-- `POST /api/admin/login` → validates against `ADMIN_PASSWORD_HASH` env var (bcrypt)
-- Returns JWT in httpOnly `Set-Cookie` header
-- Middleware on all `/api/admin/*` routes verifies cookie
-
 ### Contact Form (Nodemailer + Gmail SMTP)
 - Fields: Name, Email, Message
 - `POST /api/contact` → Nodemailer sends to your Gmail
 - In-memory rate limiter (per IP, sliding window) in the serverless function
 - Inline success/error state in the UI
-
-### Admin CRUD Flow
-```
-Admin saves changes in GUI
-  → POST /api/admin/projects or /api/admin/jobs
-    → JWT validated
-    → Fetch current JSON from repo via GitHub API (get file SHA + content)
-    → Merge/replace with new data
-    → PUT updated JSON back via GitHub API (creates a commit)
-      → Vercel detects push → redeploys in ~30–60s
-        → Live site updated
-```
-
-### Admin: CRUD Projects GUI
-- Form fields: title, description, tags (add/remove chips), screenshot URL, GitHub URL, demo URL, clickable toggle, override toggle
-- Drag-to-reorder list (updates `sort_order`)
-- Delete with confirmation
-
-### Admin: CRUD Jobs GUI
-- Form fields: company, role, start/end date, bullets (add/remove lines), logo URL
-- Drag-to-reorder list
-- Delete with confirmation
 
 ---
 

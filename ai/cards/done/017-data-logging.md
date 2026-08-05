@@ -21,20 +21,20 @@ Use **Vercel built-in** logging/analytics first — function logs, deploy logs, 
 - Persist via the same batched GitHub-commit approach, or rely on Vercel error traces.
 
 ### 3. Logging dashboard
-- Admin-only view (behind CARD-013 auth) that reads the log file(s)/analytics and visualizes traffic + failures.
+- Authenticated-only view that reads the log file(s)/analytics and visualizes traffic + failures.
 - Only meaningful if custom logging (Option A) is chosen; otherwise the "dashboard" is just the Vercel dashboard.
 
 ## Acceptance criteria (draft)
 - [ ] Decision recorded: Vercel built-in vs. custom (and which option).
 - [ ] If custom: traffic + failures are captured without excessive commits/writes.
-- [ ] If dashboard: admin-only, reads real data, shows traffic and failure summaries.
+- [ ] If dashboard: authenticated-only, reads real data, shows traffic and failure summaries.
 - [ ] No cloud database, no non-FOSS external service (per global constraints).
 
 ## Nuances & considerations
 - Per-request commits would spam the git history and hit GitHub rate limits — batching is mandatory for Option A.
 - Privacy: prefer cookieless/anonymous analytics.
-- Revisit only after Phase 1 + admin backend are live; not worth building speculatively.
+- Revisit only after Phase 1 is live; not worth building speculatively.
 
 ## Files likely touched
-- (If custom) New: `api/log/*`, `logs/traffic.json`, admin dashboard UI
+- (If custom) New: `api/log/*`, `logs/traffic.json`, dashboard UI
 - Or: `src/main.tsx` / `App.tsx` for a Vercel Analytics wrapper

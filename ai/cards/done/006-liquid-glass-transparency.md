@@ -5,7 +5,7 @@
 > **Note:** The current glass implementation is NOT good enough yet. The existing `.glass-surface`, `.glass-surface-strong`, and `.glass-surface-soft` classes in `src/index.css` are a rough starting point only — treat this as a real implementation task, not a tweak.
 
 ## Progress (2026-07-30)
-Redesigned the three glass utility classes centrally in `src/index.css` — all consumers (`Projects`, `Jobs`, `About`, `Contact`, `Navbar`, admin, skeleton loaders) inherit the upgrade with zero per-component changes.
+Redesigned the three glass utility classes centrally in `src/index.css` — all consumers (`Projects`, `Jobs`, `About`, `Contact`, `Navbar`, skeleton loaders) inherit the upgrade with zero per-component changes.
 
 **What changed:**
 - Layered look: diagonal `linear-gradient` sheen (white 10%→3%→transparent) over a low-alpha dark fill, so it reads as curved glass rather than a flat tint.
