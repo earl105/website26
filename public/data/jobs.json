@@ -5,15 +5,15 @@
     "role": "Technology Intern",
     "start_date": "June 2026",
     "end_date": "August 2026",
-    "summary": "Full-stack engineering across software, platform & data teams.",
+    "summary": "Full-stack web development on a prescriber-facing medical application.",
     "icon": "code",
     "color": "#e8106a",
     "file": "covermymeds.tsx",
     "bullets": [
-      "Supporting analysis, design, documentation, and engineering of solutions across software, platform, and data teams.",
-      "Collaborating with cross-functional engineers to automate workflows, solve technical challenges, and more.",
-      "Contributing to team projects using modern software stacks while quickly learning new tools and technologies.",
-      "Engaging in mentorship and training programs to strengthen technical communication and problem-solving skills."
+      "Removed a deprecated feature and its dependencies across ~40 files, eliminating ~4,000 lines of dead code from a TypeScript monorepo, resulting in reduced regression surface in a production healthcare application",
+      "Built utilities to transform and normalize raw FHIR patient records from an Aidbox server, standardizing record formatting across a React and Tailwind CSS frontend without modifying source health data",
+      "Resolved a series of UI/UX defects in a patient-facing prior authorization application, correcting display overflow, tooltip rendering, error wording, and modal inconsistencies across multiple clinical workflows",
+      "Developed a PHI risk evaluation tool using Claude MCPs with workflow-adaptive reporting"
     ],
     "logo_url": "/logos/cmmLogo.png",
     "category": "professional",
