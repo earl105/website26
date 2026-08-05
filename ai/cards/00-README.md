@@ -38,6 +38,7 @@ Cards are filed into subdirectories by status, so status is visible from the fol
 - **CARD-014** — [`014-admin-crud-projects.md`](done/014-admin-crud-projects.md) — admin CRUD for projects → GitHub commit _(Phase 2)_
 - **CARD-015** — [`015-admin-crud-jobs.md`](done/015-admin-crud-jobs.md) — admin CRUD for jobs → GitHub commit; accent color migrated to JSON _(Phase 2)_
 - **CARD-018** — [`018-jobs-file-switch-hint-tooltip.md`](done/018-jobs-file-switch-hint-tooltip.md) — low-key glass hint nudging clicks through the Jobs file explorer (shared `HintTooltip`)
+- **CARD-020** — [`020-seo-metadata.md`](done/020-seo-metadata.md) — meta description, OG/Twitter tags, canonical link, generated OG image
 
 ### 🔵 In progress — [`in-progress/`](in-progress/)
 - **CARD-004** — [`004-project-card-click-behavior.md`](in-progress/004-project-card-click-behavior.md) — conditional/override click behavior (verify + finish)
@@ -45,12 +46,16 @@ Cards are filed into subdirectories by status, so status is visible from the fol
 
 ### 🟢 Ready — [`ready/`](ready/)
 - **CARD-006** — [`006-liquid-glass-transparency.md`](ready/006-liquid-glass-transparency.md) — implement proper liquid glass (current impl insufficient)
+- **CARD-022** — [`022-tests-data-driven-sections.md`](ready/022-tests-data-driven-sections.md) — Vitest/RTL coverage + admin save-boundary validation for Jobs/Projects
+- **CARD-023** — [`023-accessibility-reduced-motion.md`](ready/023-accessibility-reduced-motion.md) — keyboard nav audit + `prefers-reduced-motion` fallback
+- **CARD-024** — [`024-readme-rewrite.md`](ready/024-readme-rewrite.md) — replace default Vite README with a real project description
 
 ### 🟡 Requirements TBD — [`tbd/`](tbd/)
 - **CARD-007** — [`007-backgrounds.md`](tbd/007-backgrounds.md) — section backgrounds (visual direction not chosen)
 - **CARD-016** — [`016-admin-crud-text-components.md`](tbd/016-admin-crud-text-components.md) — admin CRUD for other text components (scope undefined)
 - **CARD-017** — [`017-data-logging.md`](tbd/017-data-logging.md) — traffic + failure logging and dashboard (lowest priority)
 - **CARD-019** — [`019-hero-scroll-cue-tooltip.md`](tbd/019-hero-scroll-cue-tooltip.md) — low-key animated bouncing scroll-cue arrow on the hero (sibling of CARD-018)
+- **CARD-021** — [`021-robots-ai-crawler-decision.md`](tbd/021-robots-ai-crawler-decision.md) — decide whether to keep blocking AI crawlers in `robots.txt`
 
 ### ⚫ Discarded — [`discarded/`](discarded/)
 - **CARD-009** — [`009-job-carousel-vertical-centering.md`](discarded/009-job-carousel-vertical-centering.md) — obsolete; jobs is no longer a carousel (resolved by CARD-003)
