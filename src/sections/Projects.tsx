@@ -37,9 +37,17 @@ type Project = {
 	demo_url: string | null;
 	screenshot_url: string | null;
 	clickable: boolean;
+	// "Disable link": when true, forces the card non-clickable even if a valid
+	// URL exists. (Overrides `clickable` OFF.)
 	clickable_override: boolean;
 	sort_order: number;
 };
+
+// A URL only counts as linkable if it's a real destination — not null, blank,
+// or a bare "#" (which would just reload the site). Placeholder "#" values are
+// treated the same as no URL, so such cards never render as dead links.
+const isValidUrl = (url: string | null): url is string =>
+	!!url && url.trim() !== '' && url.trim() !== '#';
 
 const ArrowLeft = ({ className = "" }: { className?: string }) => (
 	<svg
@@ -304,8 +312,16 @@ export default function Projects() {
 							const isCenter = off === 0;
 							const bg = cardColor(i);
 
+							// Prefer github, fall back to demo — but only real URLs count.
+							const linkUrl = isValidUrl(project.github_url)
+								? project.github_url
+								: isValidUrl(project.demo_url)
+									? project.demo_url
+									: null;
+							const canLink = isCenter && project.clickable && !project.clickable_override && linkUrl !== null;
+
 							const cardContent = (
-								<article className="relative overflow-hidden rounded-lg p-6 flex flex-col h-96 w-64 glass-surface">
+								<article className={`relative overflow-hidden rounded-lg p-6 flex flex-col h-96 w-64 glass-surface${canLink ? ' transition-transform duration-150 group-hover:scale-[1.03]' : ''}`}>
 									<div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: bg }} />
 									{project.screenshot_url ? (
 										<div className="mt-2 mb-4 h-40 w-full overflow-hidden rounded-md">
@@ -326,8 +342,6 @@ export default function Projects() {
 								</article>
 							);
 
-							const canLink = isCenter && project.clickable && !project.clickable_override && (project.github_url || project.demo_url);
-
 							return (
 								<motion.div
 									key={project.id}
@@ -346,13 +360,13 @@ export default function Projects() {
 									/>
 									{canLink ? (
 										<a
-											href={project.github_url || project.demo_url || '#'}
+											href={linkUrl ?? '#'}
 											target="_blank"
 											rel="noreferrer"
-											className="block group"
+											className="block group cursor-pointer"
 											onClick={(e) => {
 												if (draggedRef.current) { e.preventDefault(); return; }
-												trackEvent('project_open', { project: project.title, destination: project.github_url ? 'github' : 'demo' });
+												trackEvent('project_open', { project: project.title, destination: isValidUrl(project.github_url) ? 'github' : 'demo' });
 											}}
 										>
 											{cardContent}
