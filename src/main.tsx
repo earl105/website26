@@ -3,6 +3,7 @@ import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { Analytics } from '@vercel/analytics/react'
 import { enableVhUpdater } from './utils/setVh'
 
 // Admin lives at /admin and is code-split into its own chunk so none of it
@@ -39,7 +40,10 @@ root.render(
         <AdminApp />
       </Suspense>
     ) : (
-      <App />
+      <>
+        <App />
+        <Analytics />
+      </>
     )}
   </StrictMode>
 )

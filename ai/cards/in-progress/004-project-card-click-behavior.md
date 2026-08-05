@@ -3,7 +3,7 @@
 **Status:** 🔵 Partially implemented — verify + finish
 
 ## Summary
-Project cards should only be clickable when a link exists, with a manual per-project override flag to force-disable the link even when one is present.
+Project cards should only be clickable when a VALID link exists (github/documentation, not just a link back to the main site), with a manual per-project override flag to force-disable the link even when one is present.
 
 ## Current state
 The logic already exists in `src/sections/Projects.tsx`:

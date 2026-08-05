@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion, type PanInfo } from "framer-motion";
 import ProjectCardSkeleton from "../components/ProjectCardSkeleton";
 import { devLoadDelay } from "../utils/devLoadDelay";
+import { trackEvent } from "../utils/analytics";
 
 // Per-position visual presets, indexed by absolute distance from the centered
 // card. The middle three (offsets 0, ±1) stay crisp; ±2/±3 recede and blur so
@@ -349,7 +350,10 @@ export default function Projects() {
 											target="_blank"
 											rel="noreferrer"
 											className="block group"
-											onClick={(e) => { if (draggedRef.current) e.preventDefault(); }}
+											onClick={(e) => {
+												if (draggedRef.current) { e.preventDefault(); return; }
+												trackEvent('project_open', { project: project.title, destination: project.github_url ? 'github' : 'demo' });
+											}}
 										>
 											{cardContent}
 										</a>

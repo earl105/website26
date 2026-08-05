@@ -4,6 +4,7 @@ import JobIcon, { type JobIconKey } from '../data/jobIcons';
 import JobsSkeleton from '../components/JobsSkeleton';
 import HintTooltip from '../components/HintTooltip';
 import { devLoadDelay } from '../utils/devLoadDelay';
+import { trackEvent } from '../utils/analytics';
 
 // Session flag so the "click to switch roles" nudge shows at most once per
 // browsing session (matches the file-explorer discovery hint, CARD-018).
@@ -274,8 +275,10 @@ export default function Jobs() {
     (index: number) => {
       setSelectedIndex(index);
       dismissHint();
+      const job = jobs[index];
+      if (job) trackEvent('job_view', { company: job.company, role: job.position });
     },
-    [dismissHint]
+    [dismissHint, jobs]
   );
 
   // Fire the hint once the section enters the viewport (not on mount — Jobs is

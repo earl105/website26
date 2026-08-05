@@ -3,6 +3,7 @@ import githubLogo from "../assets/buttons/githubLogo.png";
 import emailLogo from "../assets/buttons/emailLogo.png";
 import LaptopScene from "../components/LaptopScene";
 import ScrollCue from "../components/ScrollCue";
+import { trackEvent } from "../utils/analytics";
 
 // Toggle this to `false` (or comment out) to remove the debug border for deployment
 const SHOW_DEBUG_BORDER = false;
@@ -27,6 +28,7 @@ export default function Hero() {
         <div className="flex gap-2.5 mt-6 justify-center md:justify-start">
           <a
             href="https://www.linkedin.com/in/dylanearl/"
+            onClick={() => trackEvent('social_click', { platform: 'linkedin', location: 'hero' })}
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
             <img src={linkedinLogo} alt="LinkedIn" className="w-10 h-auto" />
@@ -34,6 +36,7 @@ export default function Hero() {
 
           <a
             href="https://github.com/earl105"
+            onClick={() => trackEvent('social_click', { platform: 'github', location: 'hero' })}
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
             <img src={githubLogo} alt="GitHub" className="w-10 h-auto" />
@@ -41,6 +44,7 @@ export default function Hero() {
 
           <a
             href="mailto:earl.105@osu.edu"
+            onClick={() => trackEvent('social_click', { platform: 'email', location: 'hero' })}
             className="social-button transform hover:scale-105 transition-transform duration-150"
           >
             <img src={emailLogo} alt="Email" className="w-10 h-auto" />

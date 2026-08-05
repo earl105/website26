@@ -2,6 +2,7 @@ import linkedinLogo from "../assets/buttons/linkedinLogo.png";
 import githubLogo from "../assets/buttons/githubLogo.png";
 import emailLogo from "../assets/buttons/emailLogo.png";
 import headshot from "../assets/headshot.jpg";
+import { trackEvent } from "../utils/analytics";
 
 export default function Contact() {
   return (
@@ -43,6 +44,7 @@ I look forward to hearing from you.
               <div className="flex gap-2.5 mt-3">
                 <a
                   href="https://www.linkedin.com/in/dylanearl/"
+                  onClick={() => trackEvent('contact_click', { platform: 'linkedin' })}
                   className="social-button transform hover:scale-105 transition-transform duration-150"
                 >
                   <img src={linkedinLogo} alt="LinkedIn" className="w-10 h-auto" />
@@ -50,6 +52,7 @@ I look forward to hearing from you.
 
                 <a
                   href="https://github.com/earl105"
+                  onClick={() => trackEvent('contact_click', { platform: 'github' })}
                   className="social-button transform hover:scale-105 transition-transform duration-150"
                 >
                   <img src={githubLogo} alt="GitHub" className="w-10 h-auto" />
@@ -57,6 +60,7 @@ I look forward to hearing from you.
 
                 <a
                   href="mailto:earl.105@osu.edu"
+                  onClick={() => trackEvent('contact_click', { platform: 'email' })}
                   className="social-button transform hover:scale-105 transition-transform duration-150"
                 >
                   <img src={emailLogo} alt="Email" className="w-10 h-auto" />
