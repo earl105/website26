@@ -67,7 +67,7 @@ export default function About() {
             opportunities beginning Summer 2027.<br></br><br></br>
 
             I am well-versed in software such as React, Typescript, Java, and C. 
-            Outside of tech, I enjoy camping, kayaking, canoeing, rock climbing, and sharpshooting.
+            Outside of development, I enjoy gaming, cooking, camping, kayaking, and skeet shooting.
           </p>
         </div>
       </div>
