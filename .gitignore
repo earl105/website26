@@ -21,6 +21,8 @@ dist-ssr
 # Internal admin/security docs — not for public repo
 ADMIN_SETUP.md
 
+.claude/worktrees
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

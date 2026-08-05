@@ -30,4 +30,5 @@ Other scripts:
 ```bash
 npm run build       # tsc -b && vite build
 npm run lint         # eslint .
+npm run test         # vitest run
 ```
