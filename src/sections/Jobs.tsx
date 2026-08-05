@@ -342,7 +342,7 @@ export default function Jobs() {
   if (loading) {
     return (
       <section id="jobs" className={sectionClass} style={sectionStyle}>
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <JobsSkeleton />
         </div>
       </section>
@@ -352,7 +352,7 @@ export default function Jobs() {
   if (error) {
     return (
       <section id="jobs" className={sectionClass} style={sectionStyle}>
-        <div className="max-w-5xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           <div
             className="glass-surface-soft rounded-lg p-8 text-center text-red-100"
             style={{ borderColor: 'rgba(248, 113, 113, 0.30)' }}
@@ -368,7 +368,7 @@ export default function Jobs() {
 
   return (
     <section ref={sectionRef} id="jobs" className={sectionClass} style={sectionStyle}>
-      <div ref={wrapperRef} className="relative w-full max-w-5xl mx-auto">
+      <div ref={wrapperRef} className="relative w-full max-w-6xl mx-auto">
         {/* Desktop file-switch hint: sits in the margin to the left of the
             editor window, arrow pointing right at the next job's row. */}
         <HintTooltip
