@@ -378,7 +378,7 @@ export default function Jobs() {
           className="hidden md:block right-full mr-3"
           style={{ top: hintTop ?? 16 }}
         >
-          Click to switch roles
+          Switch roles
         </HintTooltip>
 
         {/* Mobile file-switch hint: sits above the editor window, no pointer. */}
