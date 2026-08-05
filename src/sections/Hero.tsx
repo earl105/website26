@@ -56,8 +56,8 @@ export default function Hero() {
           <div
             className="rounded-xl overflow-hidden"
             style={{
-              width: 'min(480px, 90vw)',
-              height: 'min(480px, 90vw)',
+              width: 'min(600px, 92vw)',
+              height: 'min(600px, 92vw)',
               background: 'var(--bg-alt)'
             }}
           >

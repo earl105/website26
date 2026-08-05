@@ -83,7 +83,7 @@ export default function LaptopScene() {
   }, [isMobile])
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '650px', background: 'var(--bg-alt)', position: 'relative', touchAction: 'pan-y' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '812px', background: 'var(--bg-alt)', position: 'relative', touchAction: 'pan-y' }}>
       <Canvas
         camera={{ position: [1.4, 0.5, 1.4], fov }}
         gl={{ antialias: true, alpha: true }}
