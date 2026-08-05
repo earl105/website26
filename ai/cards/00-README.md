@@ -19,7 +19,7 @@ Cards are filed into subdirectories by status, so status is visible from the fol
 - **Summary / Instructions / Acceptance criteria / Nuances & considerations / Files likely touched**
 
 ## Global constraints (apply to every card)
-- **All implementation must be FOSS** — free, non-deprecated, open source. No cloud databases. No external services beyond what's already in use (Vercel, GitHub API, Gmail SMTP).
+- **All implementation must be FOSS** — free, non-deprecated, open source. No cloud databases. No external services beyond what's already in use (Vercel, GitHub API). No contact form — `mailto:`/`tel:` links only, by design.
 - **Design language:** dark-mode only, alternating section colors. Avoid distracting add-ins (cursor-following spotlights, interactive backgrounds).
 - **Data layer:** Already migrated to `public/data/projects.json` and `public/data/jobs.json` (fetched at runtime).
 

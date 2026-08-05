@@ -1,192 +1,58 @@
-# Portfolio Features Roadmap
+# Portfolio Features
 
 > All features must use free, non-deprecated, open source software.
 > No cloud databases. No external services beyond what's already in use.
+> No contact form — `mailto:`/`tel:` links only. This is a deliberate design choice, not a gap.
 
 ---
 
-## 🛠️ Confirmed Tech Stack
+## 🛠️ Tech Stack
 
-### Frontend (existing — no changes)
-- React + TypeScript + Tailwind CSS
-- Deployed on Vercel
+- **Vite 7 + React 19 + TypeScript**, compiled with SWC
+- **Tailwind CSS 4**
+- **three.js** (`@react-three/fiber` + `@react-three/drei`) — animated 3D laptop hero
+- **framer-motion** + **gsap** — scroll/interaction animation
+- **Vercel** — hosting + serverless functions
 
 ### Data Layer
-- **Currently:** `const projects: Project[] = [...]` and `const jobs: Job[] = [...]` as TypeScript constants in source files
-- **Migration target:** Two JSON files — `public/data/projects.json` and `public/data/jobs.json`
-- **Why JSON over YAML:** Native to TypeScript/React (`fetch('/data/projects.json')` just works), no parser dependency, easiest for the GitHub API write layer to manipulate programmatically, and trivially typed with your existing `Project[]` / `Job[]` interfaces
-- Frontend fetches these at runtime → enables skeleton loaders and keeps data separate from code
+Job and project content lives in `public/data/jobs.json` / `public/data/projects.json`, fetched at runtime (`useEffect` + `useState`) rather than hardcoded as TS constants. Keeps content separate from component code and enables the skeleton-loader states below.
 
-### Backend (Phase 2 — Vercel Serverless Functions)
-- `/api` folder in existing repo — Vercel auto-deploys, no new hosting
+`public/data/jobs.json` fields: `id`, `company`, `role`, `start_date`, `end_date`, `summary`, `icon`, `color`, `file`, `bullets[]`, `logo_url`, `category`, `sort_order`
 
-
-### JSON Schema
-
-`public/data/projects.json`
-```json
-[
-  {
-    "id": 1,
-    "title": "Java Tag Cloud Generator",
-    "description": "Developed a Java Tag Cloud Generator...",
-    "tags": ["Java", "HTML", "CSS"],
-    "github_url": "https://github.com/...",
-    "demo_url": null,
-    "screenshot_url": null,
-    "clickable": true,
-    "clickable_override": false,
-    "sort_order": 0
-  }
-]
-```
-
-`public/data/jobs.json`
-```json
-[
-  {
-    "id": 1,
-    "company": "CoverMyMeds",
-    "role": "Technology Intern",
-    "start_date": "June 2026",
-    "end_date": "August 2026",
-    "bullets": [
-      "Supporting analysis, design, documentation...",
-      "Collaborating with cross-functional engineers..."
-    ],
-    "logo_url": "/logos/covermymeds.png",
-    "sort_order": 0
-  }
-]
-```
+`public/data/projects.json` fields: `id`, `title`, `description`, `tags[]`, `github_url`, `demo_url`, `screenshot_url`, `clickable`, `clickable_override`, `sort_order`
 
 ---
 
-## 📊 Logging Plan
+## 📊 Logging
 
-### Primary: Vercel Built-in (deferred, free, already available)
-- Function logs, deployment logs, and error traces visible in the Vercel dashboard
-- Sufficient for a portfolio — no setup required
+**Current:** Vercel built-in — function logs, deployment logs, and error traces in the Vercel dashboard. No custom logging built; sufficient for a portfolio's traffic level.
 
-
-
-- **Option A — Append to `logs/traffic.json` in repo via GitHub API**
-  - Batch writes (e.g. flush every N visits or on a schedule via Vercel Cron)
-  - Not per-request (too many commits); works for low-traffic portfolio use
-  - Log file lives in the repo, fully owned, no external service
-
-- **Option B — Vercel Analytics** (free tier)
-  - One `npm install @vercel/analytics` and a single component wrapper
-  - Page views, referrers, countries — no cookies, GDPR-friendly
-  - Stays within the Vercel ecosystem, no new account
-
-- **Option C — Plausible / Umami self-hosted**
-  - Umami is open source and can be self-hosted on a free tier (Railway, Render)
-  - Only viable if a backend is already being deployed for another reason
+**If ever needed:** Vercel Analytics free tier (`@vercel/analytics`, already installed) is the next step before reaching for anything self-hosted (Umami/Plausible) or repo-committed (`logs/traffic.json` via GitHub API, batched). See [`ai/cards/done/017-data-logging.md`](ai/cards/done/017-data-logging.md).
 
 ---
 
-## 🗺️ Implementation Phases
+## ✅ Implemented
 
-### Phase 1 — Frontend (current focus)
-Pure frontend work. No backend required. Implement in this order:
+- **3D laptop hero** — interactive three.js scene via `@react-three/fiber`; screen opens/closes on scroll
+- **Typewriter effect** on the terminal (Home)
+- **Jobs as a file explorer** — VS Code–style file tree/editor rather than a card carousel (superseded an earlier vertical-carousel approach)
+- **Project carousel** — 3D coverflow-style stage (framer-motion: position/scale/rotateY/blur per card), slide/fade transitions between cards
+- **Screenshot thumbnails** — rendered when `screenshot_url` is set; card layout adapts when it's `null`
+- **Clickable project cards** — linked only when a valid `github_url`/`demo_url` exists, with a per-project `clickable_override` to force-disable
+- **Tag chips** — each project's `tags[]` rendered as pills on the card (informational; no filter/sort UI — see Not implemented)
+- **Skeleton loaders** — shimmer placeholders (`JobsSkeleton`, `ProjectCardSkeleton`) while data fetches
+- **Liquid glass / transparency** — `backdrop-filter` blur + saturation + layered highlight/shadow, centralized in `src/index.css` (`.glass-surface`, `-soft`, `-strong`)
+- **Background** — single global subtle gradient + hairline texture + vignette (`src/components/Background.tsx`); simpler than the originally considered spotlight/particle/per-section options
+- **Tech marquee** — auto-scrolling icon row (`TechCarousel`) on About; single row, not yet grouped by category
+- **Smooth scroll + active nav highlighting**
+- **Clickable `mailto:`/`tel:` links** (Contact) — no form, by design
+- **SEO metadata** — meta description, OG/Twitter card tags, canonical link, generated preview image ([CARD-020](ai/cards/done/020-seo-metadata.md))
 
-1. **Data migration** — move TS constants → `projects.json` + `jobs.json`, update fetch logic, add TypeScript interfaces
-2. **Liquid glass / transparency** — foundational visual layer; affects cards, nav, modals globally
-3. **Backgrounds** — texture, spotlight/vignette, or interactive; set the tone for everything else
-4. **Skeleton loaders** — now that data is fetched at runtime, skeletons fill the gap
-5. **Carousel UI/UX revamp** — redesign cards, controls, dot indicators, mobile swipe
-6. **Slide-in / fade-out carousel animations** — layer on after revamp is stable
-7. **Screenshot thumbnails + clickable cards** — conditional display and link behavior
-8. **Filter / sort by tech stack tags** — tag pills, multi-select, animated transitions
-9. **Fade-in / slide-up scroll animations** — global pass across all sections
-10. **Group tech icons by category** — three labeled rows on About page
+## 🚧 Not implemented (still open)
 
-### Phase 2 — Backend
-Implement after Phase 1 is complete and deployed:
-
-1. **Vercel Serverless Functions setup** — `/api` scaffolding, shared middleware
-
-3. **Logging** — revisit based on need at that point
-
----
-
-## 🎨 Phase 1 Feature Details
-
-### 1. Data Migration (prerequisite for skeletons)
-- Move `const projects: Project[] = [...]` → `public/data/projects.json`
-- Move `const jobs: Job[] = [...]` → `public/data/jobs.json`
-- Update components to `fetch('/data/projects.json')` with `useEffect` + `useState`
-- Keep existing TypeScript interfaces — just remove the `const` declarations
-
-### 2. Liquid Glass / Transparency
-- `backdrop-filter: blur(12px)` + `bg-white/5` or `bg-black/30` on cards, nav, modals
-- Subtle inner border: `border border-white/10`
-- Layered depth via stacked semi-transparent panels
-- Maintain accessible contrast ratios (check with browser devtools)
-
-### 3. Backgrounds
-Choose one or combine — implement as a global `<Background />` component:
-- **Texture overlay** — SVG noise filter or CSS `background-image` dot/grid pattern
-- **Spotlight / Vignette** — `mousemove` listener → CSS `radial-gradient` follows cursor
-- **Particle field** — lightweight `<canvas>` element, cursor-reactive dots/lines
-- **Per-section** — each section div gets its own subtle `background` variant
-
-### 4. Skeleton Loaders
-- Pure CSS shimmer animation (`@keyframes shimmer` with gradient sweep)
-- `<ProjectCardSkeleton />` and `<JobCardSkeleton />` components matching card dimensions
-- Show while `loading === true`, swap for real content on resolve
-
-### 5. Carousel UI/UX Revamp
-- Card redesign: gradient top border (unique color per card), tilt on hover (`transform: perspective rotateX/Y` on `mousemove`), deeper shadow
-- Controls: larger/cleaner arrow buttons, dot indicator row below cards, keyboard arrow support
-- Mobile: swipe gesture support via `touchstart` / `touchend` delta
-
-### 6. Slide-in / Fade-out Carousel Animations
-- Track `direction` (left | right) and `animating` state
-- Outgoing card: `translateX` + `opacity: 0` in exit direction
-- Incoming card: enters from opposite side, settles to center
-- CSS `transition` handles easing — no animation library needed
-
-### 7. Screenshot Thumbnails + Clickable Cards
-- If `screenshot_url !== null`: render `<img>` at top of card with `object-cover` aspect ratio
-- If null: card renders as normal, no empty image container
-- If `clickable === true && clickable_override === false && (github_url || demo_url)`: wrap card in `<a>` with hover lift + glow
-- Otherwise: plain `<div>`, `cursor-default`, no hover affordance
-
-### 8. Filter / Sort by Tech Stack Tags
-- Collect all unique tags from loaded projects
-- Render as pill buttons above carousel; selected pills highlight
-- Filter logic: `projects.filter(p => selectedTags.length === 0 || p.tags.some(t => selectedTags.includes(t)))`
-- On filter change, animate card list transition (fade + slight translate)
-
-### 9. Fade-in / Slide-up Scroll Animations
-- `IntersectionObserver` watching elements with a `data-animate` attribute
-- On intersection: add class that transitions `opacity: 0 → 1` and `translateY(20px) → 0`
-- Stagger delay for groups of cards via CSS `transition-delay`
-- One global hook: `useScrollAnimation()` applied once at the app level
-
-### 10. Group Tech Icons by Category
-- Define three arrays: `languages[]`, `frameworks[]`, `tools[]`
-- Render three separate auto-scrolling marquee rows, each with a small label
-- Existing marquee component reused — just called three times with different data
-
----
-
-## 🔐 Phase 2 Feature Details
-
-### Contact Form (Nodemailer + Gmail SMTP)
-- Fields: Name, Email, Message
-- `POST /api/contact` → Nodemailer sends to your Gmail
-- In-memory rate limiter (per IP, sliding window) in the serverless function
-- Inline success/error state in the UI
-
----
-
-## ✅ Already Implemented (Reference)
-
-- Typewriter effect on terminal (Home)
-- Laptop screen opens/closes on scroll
-- Auto-scrolling tech icon marquee (About)
-- Clickable `mailto:` and `tel:` links (Contact)
-- Smooth scroll + active nav section highlighting
+- **Filter/sort projects by tag** — tags display as chips but there's no pill-based multi-select filter above the carousel yet
+- **Global scroll-reveal animations** — no `IntersectionObserver`/`whileInView` fade-in/slide-up pass exists across sections (the one `IntersectionObserver` in the codebase is scoped to the Jobs file-switch hint tooltip, not a general scroll-reveal system)
+- **Tech icons grouped by category** — currently one flat marquee row; not split into labeled language/framework/tool rows
+- **Section backgrounds beyond the current global gradient** — see [`ai/cards/discarded/007-backgrounds.md`](ai/cards/discarded/007-backgrounds.md) (superseded by the simpler global `Background` component actually shipped)
+- **Accessibility: keyboard nav + `prefers-reduced-motion`** — see [`ai/cards/ready/023-accessibility-reduced-motion.md`](ai/cards/ready/023-accessibility-reduced-motion.md)
+- **Automated tests** — none exist yet; see [`ai/cards/ready/022-tests-data-driven-sections.md`](ai/cards/ready/022-tests-data-driven-sections.md)
