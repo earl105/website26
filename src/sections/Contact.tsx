@@ -1,12 +1,60 @@
+import { useEffect, useRef, useState } from "react";
 import linkedinLogo from "../assets/buttons/linkedinLogo.png";
 import githubLogo from "../assets/buttons/githubLogo.png";
 import emailLogo from "../assets/buttons/emailLogo.png";
 import headshot from "../assets/headshot.jpg";
 import { trackEvent } from "../utils/analytics";
 
+// Comic speech bubble that pops over the headshot on desktop. Change
+// SPEECH_BUBBLE_TEXT to whatever you like (e.g. "Hello world!" once you're no
+// longer job-hunting). Flip SHOW_SPEECH_BUBBLE to `false` to hide it entirely.
+// Shows once when the section first scrolls into view.
+const SHOW_SPEECH_BUBBLE = true;
+const SPEECH_BUBBLE_TEXT = "Hire me!";
+// How long to wait after the section comes into view before showing the bubble (ms).
+const SPEECH_BUBBLE_DELAY_MS = 1000;
+// How long the bubble stays up before fading out (ms).
+const SPEECH_BUBBLE_MS = 4000;
+
 export default function Contact() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+
+  // Show the bubble the first time the Contact section scrolls into view, then
+  // auto-hide it after a few seconds. Fires at most once per page load.
+  useEffect(() => {
+    if (!SHOW_SPEECH_BUBBLE) return;
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+
+    let showTimer: ReturnType<typeof setTimeout>;
+    let hideTimer: ReturnType<typeof setTimeout>;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            showTimer = setTimeout(() => {
+              setBubbleVisible(true);
+              hideTimer = setTimeout(() => setBubbleVisible(false), SPEECH_BUBBLE_MS);
+            }, SPEECH_BUBBLE_DELAY_MS);
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.4 }
+    );
+
+    obs.observe(el);
+    return () => {
+      obs.disconnect();
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
   return (
-    <section id="contact" className="relative overflow-hidden px-8 pt-0 md:pt-16 flex items-center justify-center" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+    <section ref={sectionRef} id="contact" className="relative overflow-hidden px-8 pt-0 md:pt-16 flex items-center justify-center" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
       {/* Ordered-dither dissolve anchored to the very bottom of the page */}
       <div aria-hidden="true" className="dither pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[28vh]">
         <div className="d-a" />
@@ -69,7 +117,12 @@ I look forward to hearing from you.
             </div>
           </div>
 
-          <div className="col-span-1 p-0 hidden md:flex items-stretch">
+          <div className="col-span-1 p-0 hidden md:flex items-stretch relative">
+            {SHOW_SPEECH_BUBBLE && (
+              <div className={`speech-bubble${bubbleVisible ? ' is-visible' : ''}`} aria-hidden={!bubbleVisible}>
+                {SPEECH_BUBBLE_TEXT}
+              </div>
+            )}
             <div className="w-full h-full bg-[var(--muted)] flex items-center justify-center text-[var(--text)] rounded-lg overflow-hidden">
               <img src={headshot} alt="Headshot" className="w-full h-full object-cover" />
             </div>
