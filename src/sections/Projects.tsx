@@ -49,6 +49,24 @@ type Project = {
 const isValidUrl = (url: string | null): url is string =>
 	!!url && url.trim() !== '' && url.trim() !== '#';
 
+// Parse "#rrggbb" (or shorthand "#rgb") into an [r, g, b] tuple.
+const hexToRgb = (hex: string): [number, number, number] => {
+	const h = hex.replace('#', '').trim();
+	const full = h.length >= 6 ? h : h.split('').map((c) => c + c).join('');
+	return [
+		parseInt(full.slice(0, 2), 16) || 0,
+		parseInt(full.slice(2, 4), 16) || 0,
+		parseInt(full.slice(4, 6), 16) || 0,
+	];
+};
+
+// Straight-line distance in RGB space. Two colors closer than COLOR_MIN_DIST
+// are treated as "too similar" to sit next to each other (e.g. the two reds
+// in the palette). Tuned so distinct hues pass but near-duplicates don't.
+const rgbDist = (a: [number, number, number], b: [number, number, number]) =>
+	Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const COLOR_MIN_DIST = 65;
+
 const ArrowLeft = ({ className = "" }: { className?: string }) => (
 	<svg
 		className={className}
@@ -193,6 +211,50 @@ export default function Projects() {
 		return result;
 	}, [colors.length, n]);
 
+	// Final per-card color assignment. Walks the ring and, for each card, picks a
+	// color that isn't too close to the previous card's color — and, for the last
+	// card, also not too close to the first (the carousel wraps, so they touch).
+	// The shuffled order sets each card's *preferred* color; we only deviate when
+	// that would cause an adjacent clash.
+	const cardColors = useMemo(() => {
+		if (!colors.length || n === 0) return [];
+		const rgb = colors.map(hexToRgb);
+		const order = shuffledIndices.length
+			? shuffledIndices
+			: Array.from({ length: colors.length }, (_, k) => k);
+
+		const assigned: number[] = [];
+		for (let i = 0; i < n; i++) {
+			const prev = i > 0 ? assigned[i - 1] : -1;
+			const isLast = n > 1 && i === n - 1;
+			const first = assigned[0];
+
+			// Preference: the card's shuffled color first, then every other color.
+			const preferred = order[i % order.length] % colors.length;
+			const candidates = [preferred];
+			for (let c = 0; c < colors.length; c++) if (c !== preferred) candidates.push(c);
+
+			let best = preferred;
+			let bestScore = -1;
+			for (const c of candidates) {
+				const dPrev = prev < 0 ? Infinity : rgbDist(rgb[c], rgb[prev]);
+				const dFirst = isLast ? rgbDist(rgb[c], rgb[first]) : Infinity;
+				if (dPrev >= COLOR_MIN_DIST && dFirst >= COLOR_MIN_DIST) {
+					best = c;
+					break;
+				}
+				// No conflict-free option yet — keep the most-different fallback.
+				const score = Math.min(dPrev, dFirst);
+				if (score > bestScore) {
+					bestScore = score;
+					best = c;
+				}
+			}
+			assigned.push(best);
+		}
+		return assigned.map((c) => colors[c]);
+	}, [colors, shuffledIndices, n]);
+
 	const goTo = (next: number) => {
 		if (n === 0) return;
 		setIndex(((next % n) + n) % n);
@@ -232,10 +294,8 @@ export default function Projects() {
 	const cfg = isMobile ? COVERFLOW.mobile : COVERFLOW.desktop;
 
 	const cardColor = (actualIndex: number) => {
-		if (!colors.length) return '#e24646';
-		const order = shuffledIndices.length ? shuffledIndices : Array.from({ length: colors.length }, (_, k) => k);
-		const colorIndex = order[actualIndex % order.length] % colors.length;
-		return colors[colorIndex];
+		if (!cardColors.length) return '#e24646';
+		return cardColors[((actualIndex % n) + n) % n];
 	};
 
 	if (loading) {
