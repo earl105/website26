@@ -22,7 +22,7 @@ export default function LaptopModel({ scrollProgress = 0, isMobile = false }: Pr
   const screenMeshRef = useRef<Group | Mesh | null>(null)
   const baseRotationRef = useRef<number | null>(null)
   
-  const typedText = useTypewriter('> Dylan Earl\n\n> Computer Science and Engineering\n\n> Student @ The Ohio State University', {
+  const typedText = useTypewriter('> Dylan Earl\n\n> Full-Stack Web Developer\n\n> Student @ The Ohio State University', {
     speed: 100,
     deleteSpeed: 50,
     pauseDuration: 4000
