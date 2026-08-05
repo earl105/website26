@@ -36,13 +36,13 @@ export default function TechCarousel({
         className={`conveyor relative whitespace-nowrap flex items-center gap-6 py-2 md:py-4 h-14 md:h-20`}
         // set CSS variable for duration which our index.css reads
         style={{
-          ["--conveyor-duration" as any]: `${duration}s`,
+          "--conveyor-duration": `${duration}s`,
           // keep mask on the non-moving container so fades remain anchored to viewport
           WebkitMaskImage:
             "linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 6%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 94%, rgba(0,0,0,0) 100%)",
           maskImage:
             "linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 6%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 94%, rgba(0,0,0,0) 100%)",
-        }}
+        } as React.CSSProperties}
         // when user prefers reduced motion the animation will be disabled via CSS
       >
         <div

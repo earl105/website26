@@ -17,7 +17,7 @@ const isAdmin = path === '/admin' || path.startsWith('/admin/')
 if (typeof window !== 'undefined' && 'scrollRestoration' in history) {
   try {
     history.scrollRestoration = 'manual'
-  } catch (e) {
+  } catch {
     // ignore in case browser restricts access
   }
 }

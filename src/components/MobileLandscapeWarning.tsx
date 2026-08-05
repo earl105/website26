@@ -10,7 +10,7 @@ function isLikelyMobile(): boolean {
   // fallback: touch device with small viewport
   // treat widths <= 1024 as mobile/tablet
   if (typeof window !== "undefined") {
-    if ((navigator as any).maxTouchPoints > 0 && window.innerWidth <= 1024) return true;
+    if (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024) return true;
   }
   return false;
 }
@@ -20,7 +20,7 @@ function isLandscape(): boolean {
   if (window.matchMedia) {
     try {
       return window.matchMedia("(orientation: landscape)").matches;
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -54,7 +54,7 @@ export default function MobileLandscapeWarning() {
   function dismiss() {
     try {
       localStorage.setItem(STORAGE_KEY, "true");
-    } catch (e) {
+    } catch {
       // ignore storage errors
     }
     setVisible(false);

@@ -32,7 +32,7 @@ export default function LaptopScene() {
       mql.addEventListener('change', handleChange as EventListener)
     } else {
       // older browsers
-      // @ts-ignore - fallback for older lib typings
+      // @ts-expect-error - fallback for older lib typings
       mql.addListener(handleChange)
     }
 
@@ -40,7 +40,7 @@ export default function LaptopScene() {
       if ('removeEventListener' in mql) {
         mql.removeEventListener('change', handleChange as EventListener)
       } else {
-        // @ts-ignore
+        // @ts-expect-error - fallback for older lib typings
         mql.removeListener(handleChange)
       }
     }
@@ -63,7 +63,7 @@ export default function LaptopScene() {
   }, [])
 
   useEffect(() => {
-    if (!isMobile) return setScrollProgress(0)
+    if (!isMobile) return
     let raf = 0
     const onScroll = () => {
       if (raf) cancelAnimationFrame(raf)
@@ -79,6 +79,7 @@ export default function LaptopScene() {
     return () => {
       window.removeEventListener('scroll', onScroll)
       if (raf) cancelAnimationFrame(raf)
+      setScrollProgress(0)
     }
   }, [isMobile])
 

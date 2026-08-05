@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const items = [
+  { id: "hero", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "projects", label: "Projects" },
+  { id: "jobs", label: "Jobs" },
+  { id: "contact", label: "Contact" },
+];
 
 export default function Navbar() {
-  const items = [
-    { id: "hero", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "projects", label: "Projects" },
-    { id: "jobs", label: "Jobs" },
-    { id: "contact", label: "Contact" },
-  ];
-
   const [activeId, setActiveId] = useState<string>(items[0].id);
   const navRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0, top: 0, height: 0 });
   const isProgrammaticScroll = useRef(false);
   const programmaticScrollTimer = useRef<number | null>(null);
-  const programmaticScrollListener = useRef<((this: Window, ev: Event) => any) | null>(null);
+  const programmaticScrollListener = useRef<((this: Window, ev: Event) => void) | null>(null);
   const lastActiveRef = useRef(activeId);
 
   const setActive = (id: string) => {
@@ -23,7 +23,7 @@ export default function Navbar() {
     lastActiveRef.current = id;
   };
 
-  const handleClick = (id: string) => (e: any) => {
+  const handleClick = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     if (isProgrammaticScroll.current) {
       if (programmaticScrollTimer.current) {
@@ -42,7 +42,7 @@ export default function Navbar() {
     attachProgrammaticScrollEndListener(id);
   };
 
-  const updateIndicator = () => {
+  const updateIndicator = useCallback(() => {
     const el = itemRefs.current[activeId];
     const nav = navRef.current;
     if (!el || !nav) return;
@@ -61,7 +61,7 @@ export default function Navbar() {
       top,
       height,
     });
-  };
+  }, [activeId]);
 
   const updateIndicatorForId = (id: string) => {
     const el = itemRefs.current[id];
@@ -127,13 +127,13 @@ export default function Navbar() {
 
   useEffect(() => {
     updateIndicator();
-  }, [activeId]);
+  }, [updateIndicator]);
 
   useEffect(() => {
     const onResize = () => updateIndicator();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [updateIndicator]);
 
   useEffect(() => {
     // Use a scroll-center detector instead of IntersectionObserver.
