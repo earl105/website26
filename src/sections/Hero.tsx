@@ -20,7 +20,7 @@ export default function Hero() {
 
       {/* Left Content */}
       <div className="relative z-10 md:col-start-2 md:col-span-2 flex flex-col items-center md:items-start">
-        <h1 className="hero-name text-6xl md:text-8xl text-white text-center md:text-left hover:scale-105 transition-transform duration-150">
+        <h1 className="hero-name text-5xl md:text-7xl text-white text-center md:text-left hover:scale-105 transition-transform duration-150">
           Dylan Earl
         </h1>
 
