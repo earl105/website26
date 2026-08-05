@@ -7,20 +7,21 @@ export default function About() {
     <section id="about" className="px-8 pt-0 md:pt-16 flex flex-col items-center justify-center pb-20 md:pb-0" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
       <div className="flex flex-col space-y-6 md:space-y-0 md:grid md:grid-cols-6 md:grid-rows-2 md:gap-4">
         {/* Left: Name block (2x2) */}
-        <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-2xl glass-surface text-[var(--text)] p-3 md:p-4 mb-6 md:mb-0 transition-transform duration-200 hover:scale-102 flex flex-col md:justify-between">
+        <div className="col-start-1 col-span-2 row-start-1 row-span-2 rounded-2xl glass-surface text-[var(--text)] p-3 md:p-4 mb-6 md:mb-0 transition-transform duration-200 hover:scale-102 flex flex-col">
           <h2 className="text-xl font-bold mb-0 md:mb-2 ">Dylan Earl</h2>
           <ul className="list-disc ml-5">
-            <li>Software Developer</li>
-            <li>Computer Science and Engineering</li>
-            <li>The Ohio State University</li>
+            <li>Software Engineer</li>
+            <li>Web Developer</li>
+            <li>Student at The Ohio State University</li>
+            <li>B.S. Computer Science and Engineering</li>
             <li>Looking for post-graduation employment</li>
-            <li>Eagle Scout</li>
+            <li>Eagle Scout, Order of the Arrow Brotherhood</li>
           </ul>
 
           <img
             src={osucoeLogo}
             alt="The Ohio State University College of Engineering Logo"
-            className="w-3/4 max-w-[300px] self-center mt-4 md:mt-0"
+            className="w-3/4 max-w-[300px] self-center mt-4 md:mt-auto"
           />
         </div>
 
@@ -63,11 +64,10 @@ export default function About() {
             As a fourth-year student at The Ohio State University majoring in
             Computer Science and Engineering, I am currently completing a Summer
             2026 internship at CoverMyMeds and am seeking post-graduation job
-            opportunities beginning Summer 2027.
+            opportunities beginning Summer 2027.<br></br><br></br>
 
-            I am well-versed in software such as Git, Autodesk Inventor, Fusion
-            360, and Onshape. Outside of tech, I enjoy camping,
-            kayaking, canoeing, rock climbing, and sharpshooting.
+            I am well-versed in software such as React, Typescript, Java, and C. 
+            Outside of tech, I enjoy camping, kayaking, canoeing, rock climbing, and sharpshooting.
           </p>
         </div>
       </div>
