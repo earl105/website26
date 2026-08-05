@@ -51,7 +51,7 @@ const normalizeCategory = (category: string) =>
 
 const accentColors: Record<string, string> = {
   'CoverMyMeds': '#e8106a',
-  "Lowe's Home Improvement": '#283061',
+  "Lowe's Home Improvement": '#5b6ab8',
   'GOJO Industries Inc.': '#027cb7',
   'Dicks Sporting Goods': '#006753',
 };
