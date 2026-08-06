@@ -5,6 +5,7 @@ import JobsSkeleton from '../components/JobsSkeleton';
 import HintTooltip from '../components/HintTooltip';
 import { devLoadDelay } from '../utils/devLoadDelay';
 import { trackEvent } from '../utils/analytics';
+import { holdsViewport, isTypingTarget } from '../utils/sectionFocus';
 
 // Session flag so the "click to switch roles" nudge shows at most once per
 // browsing session (matches the file-explorer discovery hint, CARD-018).
@@ -280,6 +281,28 @@ export default function Jobs() {
     },
     [dismissHint, jobs]
   );
+
+  // Left/Right cycle the job tabs while this section holds the viewport, so the
+  // sidebar/tab strip is reachable without a pointer. Wraps at both ends, and
+  // counts as a hint dismissal like any other selection (via selectJob).
+  useEffect(() => {
+    const count = jobs.length;
+    if (count === 0) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (isTypingTarget()) return;
+      if (!holdsViewport(sectionRef.current)) return;
+
+      const step = e.key === 'ArrowLeft' ? -1 : 1;
+      e.preventDefault();
+      selectJob(((selectedIndex + step) % count + count) % count);
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [jobs.length, selectedIndex, selectJob]);
 
   // Fire the hint once the section enters the viewport (not on mount — Jobs is
   // below the fold and may render before it's ever seen). Skipped entirely if

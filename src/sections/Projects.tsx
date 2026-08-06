@@ -3,6 +3,7 @@ import { motion, useReducedMotion, type PanInfo } from "framer-motion";
 import ProjectCardSkeleton from "../components/ProjectCardSkeleton";
 import { devLoadDelay } from "../utils/devLoadDelay";
 import { trackEvent } from "../utils/analytics";
+import { holdsViewport, isTypingTarget } from "../utils/sectionFocus";
 
 // Per-position visual presets, indexed by absolute distance from the centered
 // card. The middle three (offsets 0, ±1) stay crisp; ±2/±3 recede and blur so
@@ -277,12 +278,19 @@ export default function Projects() {
 	const handlePrev = () => goTo(index - 1);
 	const handleNext = () => goTo(index + 1);
 
-	// Keyboard navigation.
+	// Keyboard navigation, scoped to this section so it doesn't also fire while
+	// the user is arrowing through another section's controls.
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
 			if (n === 0) return;
-			if (e.key === 'ArrowLeft') setIndex((v) => ((v - 1) % n + n) % n);
-			else if (e.key === 'ArrowRight') setIndex((v) => ((v + 1) % n) % n);
+			if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+			if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+			if (isTypingTarget()) return;
+			if (!holdsViewport(sectionRef.current)) return;
+
+			e.preventDefault();
+			const step = e.key === 'ArrowLeft' ? -1 : 1;
+			setIndex((v) => ((v + step) % n + n) % n);
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
@@ -303,9 +311,7 @@ export default function Projects() {
 			if (active && active !== document.body && active.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
 
 			// Require the projects section to be the one on screen.
-			const rect = sectionRef.current?.getBoundingClientRect();
-			const middle = window.innerHeight / 2;
-			if (!rect || rect.top > middle || rect.bottom < middle) return;
+			if (!holdsViewport(sectionRef.current)) return;
 
 			const project = projects[((index % n) + n) % n];
 			if (!project || !isLinkable(project)) return;
