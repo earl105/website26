@@ -8,12 +8,12 @@ import Projects from "./sections/Projects";
 
 import "./App.css";
 import Contact from "./sections/Contact";
-import useSpacebarNavigation from "./hooks/useSpacebarNavigation";
+import useKeyboardNavigation from "./hooks/useKeyboardNavigation";
 import { useEffect } from 'react'
 import { enableAnchorSnap, disableAnchorSnap } from './utils/anchorSnap'
 
 function App() {
-  useSpacebarNavigation();
+  useKeyboardNavigation();
 
   useEffect(() => {
     // This runs after the component mounts and the DOM elements exist
