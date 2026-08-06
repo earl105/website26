@@ -28,11 +28,15 @@ type SpeechBubbleMessage = {
 };
 
 const SPEECH_BUBBLE_TEXTS: (string | SpeechBubbleMessage)[] = [
-  { text: "Hire me!", durationMs: 6000},
+  { text: "Hire me!", durationMs: 10000},
   { text: "Hello World!", delayMs: 2000 },
-  { text: "Hire me!", durationMs: 6000},
+  { text: "It works on my machine!"},
+  { text: "TODO: Add more messages"},
+  { text: "Go on, email me", durationMs: 6000},
   { text: "Wait, I'm goated", delayMs: 10000 },
   { text: "You're still here?", delayMs: 20000 },
+  { text: "Last message, I promise", delayMs: 30000, durationMs: 8000 },
+  
 ];
 // If true, only the first message in SPEECH_BUBBLE_TEXTS is shown and the rest are ignored.
 const SPEECH_BUBBLE_FIRST_ONLY = false;
@@ -45,13 +49,19 @@ const SPEECH_BUBBLE_RANDOM = false;
  gap instead of staying hidden once all messages have been shown. Applies to
  the single-message modes too, which just repeat that one message.
 */
-const SPEECH_BUBBLE_LOOP = false;
+const SPEECH_BUBBLE_LOOP = true;
+/* Blank time between one full pass through the queue and the restart of the
+ next (ms). Only used when SPEECH_BUBBLE_LOOP is true, and it takes over from
+ the last message's gap and the first message's delay so the pause between
+ cycles is controlled here alone.
+*/
+const SPEECH_BUBBLE_LOOP_DELAY_MS = 15000;
 // How long to wait after the section comes into view before showing the first message (ms).
 const SPEECH_BUBBLE_DELAY_MS = 1000;
 // How long each message stays up before fading out (ms).
 const SPEECH_BUBBLE_MS = 4000;
 // How long the bubble stays blank between messages (ms).
-const SPEECH_BUBBLE_GAP_MS = 1000;
+const SPEECH_BUBBLE_GAP_MS = 3000;
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -102,9 +112,9 @@ export default function Contact() {
       if (next < messages.length) {
         timer = setTimeout(() => showMessage(next), messages[next].delayMs ?? gap);
       } else if (SPEECH_BUBBLE_LOOP) {
-        // Pick the next cycle up front so its first message can override the wait, exactly like a mid-sequence message does.
+        // Between-cycle pause is SPEECH_BUBBLE_LOOP_DELAY_MS alone, so a first message's delay override stays a one-time, page-load thing.
         messages = cycleMessages();
-        timer = setTimeout(() => showMessage(0), messages[0].delayMs ?? gap);
+        timer = setTimeout(() => showMessage(0), SPEECH_BUBBLE_LOOP_DELAY_MS);
       }
     };
 
@@ -196,9 +206,12 @@ I look forward to hearing from you.
           </div>
 
           <div className="col-span-1 p-0 hidden md:flex items-stretch relative">
-            {SHOW_SPEECH_BUBBLE && bubbleText !== null && (
+            {/* Mounted from the start (empty and fully transparent) so the
+                first message animates in: the browser needs to have painted
+                the hidden state before `is-visible` can transition from it. */}
+            {SHOW_SPEECH_BUBBLE && (
               <div className={`speech-bubble${bubbleVisible ? ' is-visible' : ''}`} aria-hidden={!bubbleVisible}>
-                {bubbleText}
+                {bubbleText ?? ""}
               </div>
             )}
             <div className="w-full h-full bg-[var(--muted)] flex items-center justify-center text-[var(--text)] rounded-lg overflow-hidden">
