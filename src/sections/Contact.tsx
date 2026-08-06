@@ -7,11 +7,13 @@ import { trackEvent } from "../utils/analytics";
 
 // Comic speech bubble that pops over the headshot on desktop. Add as many
 // strings as you like to SPEECH_BUBBLE_TEXTS and they'll be displayed one at
-// a time, in order, then stay hidden (no looping). Flip SHOW_SPEECH_BUBBLE to
-// `false` to hide it entirely. Sequence starts once when the section first
-// scrolls into view.
+// a time, in order. Flip SHOW_SPEECH_BUBBLE to `false` to hide it entirely.
+// Sequence starts once when the section first scrolls into view.
 const SHOW_SPEECH_BUBBLE = true;
 const SPEECH_BUBBLE_TEXTS = ["Hire me!"];
+// If true, the sequence restarts from the first message after the last one's
+// gap instead of staying hidden once all messages have been shown.
+const SPEECH_BUBBLE_LOOP = false;
 // How long to wait after the section comes into view before showing the first message (ms).
 const SPEECH_BUBBLE_DELAY_MS = 1000;
 // How long each message stays up before fading out (ms).
@@ -27,35 +29,36 @@ export default function Contact() {
   // Show the bubble messages in sequence the first time the Contact section
   // scrolls into view: each message displays for SPEECH_BUBBLE_MS, then a
   // SPEECH_BUBBLE_GAP_MS blank gap before the next one. Fires at most once
-  // per page load and does not loop once all messages have been shown.
+  // per page load; loops back to the first message if SPEECH_BUBBLE_LOOP is
+  // true, otherwise stays hidden once all messages have been shown.
   useEffect(() => {
     if (!SHOW_SPEECH_BUBBLE || SPEECH_BUBBLE_TEXTS.length === 0) return;
     const el = sectionRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
 
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const schedule = (fn: () => void, delay: number) => {
-      timers.push(setTimeout(fn, delay));
+    let timer: ReturnType<typeof setTimeout>;
+
+    const showMessage = (index: number) => {
+      setBubbleIndex(index);
+      setBubbleVisible(true);
+      timer = setTimeout(() => hideMessage(index), SPEECH_BUBBLE_MS);
     };
 
-    const runSequence = () => {
-      let elapsed = SPEECH_BUBBLE_DELAY_MS;
-      SPEECH_BUBBLE_TEXTS.forEach((_, index) => {
-        schedule(() => {
-          setBubbleIndex(index);
-          setBubbleVisible(true);
-        }, elapsed);
-        elapsed += SPEECH_BUBBLE_MS;
-        schedule(() => setBubbleVisible(false), elapsed);
-        elapsed += SPEECH_BUBBLE_GAP_MS;
-      });
+    const hideMessage = (index: number) => {
+      setBubbleVisible(false);
+      const next = index + 1;
+      if (next < SPEECH_BUBBLE_TEXTS.length) {
+        timer = setTimeout(() => showMessage(next), SPEECH_BUBBLE_GAP_MS);
+      } else if (SPEECH_BUBBLE_LOOP) {
+        timer = setTimeout(() => showMessage(0), SPEECH_BUBBLE_GAP_MS);
+      }
     };
 
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            runSequence();
+            timer = setTimeout(() => showMessage(0), SPEECH_BUBBLE_DELAY_MS);
             obs.disconnect();
             break;
           }
@@ -67,7 +70,7 @@ export default function Contact() {
     obs.observe(el);
     return () => {
       obs.disconnect();
-      timers.forEach(clearTimeout);
+      clearTimeout(timer);
     };
   }, []);
 
