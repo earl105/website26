@@ -5,38 +5,57 @@ import emailLogo from "../assets/buttons/emailLogo.png";
 import headshot from "../assets/headshot.jpg";
 import { trackEvent } from "../utils/analytics";
 
-// Comic speech bubble that pops over the headshot on desktop. Change
-// SPEECH_BUBBLE_TEXT to whatever you like (e.g. "Hello world!" once you're no
-// longer job-hunting). Flip SHOW_SPEECH_BUBBLE to `false` to hide it entirely.
-// Shows once when the section first scrolls into view.
+// Comic speech bubble that pops over the headshot on desktop. Add as many
+// strings as you like to SPEECH_BUBBLE_TEXTS and they'll be displayed one at
+// a time, in order, then stay hidden (no looping). Flip SHOW_SPEECH_BUBBLE to
+// `false` to hide it entirely. Sequence starts once when the section first
+// scrolls into view.
 const SHOW_SPEECH_BUBBLE = true;
-const SPEECH_BUBBLE_TEXT = "Hire me!";
-// How long to wait after the section comes into view before showing the bubble (ms).
+const SPEECH_BUBBLE_TEXTS = ["Hire me!"];
+// How long to wait after the section comes into view before showing the first message (ms).
 const SPEECH_BUBBLE_DELAY_MS = 1000;
-// How long the bubble stays up before fading out (ms).
+// How long each message stays up before fading out (ms).
 const SPEECH_BUBBLE_MS = 4000;
+// How long the bubble stays blank between messages (ms).
+const SPEECH_BUBBLE_GAP_MS = 1000;
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [bubbleIndex, setBubbleIndex] = useState(-1);
   const [bubbleVisible, setBubbleVisible] = useState(false);
 
-  // Show the bubble the first time the Contact section scrolls into view, then
-  // auto-hide it after a few seconds. Fires at most once per page load.
+  // Show the bubble messages in sequence the first time the Contact section
+  // scrolls into view: each message displays for SPEECH_BUBBLE_MS, then a
+  // SPEECH_BUBBLE_GAP_MS blank gap before the next one. Fires at most once
+  // per page load and does not loop once all messages have been shown.
   useEffect(() => {
-    if (!SHOW_SPEECH_BUBBLE) return;
+    if (!SHOW_SPEECH_BUBBLE || SPEECH_BUBBLE_TEXTS.length === 0) return;
     const el = sectionRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
 
-    let showTimer: ReturnType<typeof setTimeout>;
-    let hideTimer: ReturnType<typeof setTimeout>;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const schedule = (fn: () => void, delay: number) => {
+      timers.push(setTimeout(fn, delay));
+    };
+
+    const runSequence = () => {
+      let elapsed = SPEECH_BUBBLE_DELAY_MS;
+      SPEECH_BUBBLE_TEXTS.forEach((_, index) => {
+        schedule(() => {
+          setBubbleIndex(index);
+          setBubbleVisible(true);
+        }, elapsed);
+        elapsed += SPEECH_BUBBLE_MS;
+        schedule(() => setBubbleVisible(false), elapsed);
+        elapsed += SPEECH_BUBBLE_GAP_MS;
+      });
+    };
+
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            showTimer = setTimeout(() => {
-              setBubbleVisible(true);
-              hideTimer = setTimeout(() => setBubbleVisible(false), SPEECH_BUBBLE_MS);
-            }, SPEECH_BUBBLE_DELAY_MS);
+            runSequence();
             obs.disconnect();
             break;
           }
@@ -48,8 +67,7 @@ export default function Contact() {
     obs.observe(el);
     return () => {
       obs.disconnect();
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
+      timers.forEach(clearTimeout);
     };
   }, []);
 
@@ -118,9 +136,9 @@ I look forward to hearing from you.
           </div>
 
           <div className="col-span-1 p-0 hidden md:flex items-stretch relative">
-            {SHOW_SPEECH_BUBBLE && (
+            {SHOW_SPEECH_BUBBLE && bubbleIndex >= 0 && (
               <div className={`speech-bubble${bubbleVisible ? ' is-visible' : ''}`} aria-hidden={!bubbleVisible}>
-                {SPEECH_BUBBLE_TEXT}
+                {SPEECH_BUBBLE_TEXTS[bubbleIndex]}
               </div>
             )}
             <div className="w-full h-full bg-[var(--muted)] flex items-center justify-center text-[var(--text)] rounded-lg overflow-hidden">
