@@ -49,6 +49,19 @@ type Project = {
 const isValidUrl = (url: string | null): url is string =>
 	!!url && url.trim() !== '' && url.trim() !== '#';
 
+// The destination a card points at: prefer github, fall back to demo, and only
+// count real URLs. Null means the card isn't a link.
+const projectLink = (project: Project): string | null =>
+	isValidUrl(project.github_url)
+		? project.github_url
+		: isValidUrl(project.demo_url)
+			? project.demo_url
+			: null;
+
+// A card only opens if it has a destination and neither flag disables it.
+const isLinkable = (project: Project): boolean =>
+	project.clickable && !project.clickable_override && projectLink(project) !== null;
+
 // Parse "#rrggbb" (or shorthand "#rgb") into an [r, g, b] tuple.
 const hexToRgb = (hex: string): [number, number, number] => {
 	const h = hex.replace('#', '').trim();
@@ -108,6 +121,7 @@ export default function Projects() {
 	// Set while a drag exceeds the tap threshold, so the release doesn't also
 	// fire a card click (navigation / focus).
 	const draggedRef = useRef(false);
+	const sectionRef = useRef<HTMLElement | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -274,6 +288,38 @@ export default function Projects() {
 		return () => window.removeEventListener('keydown', onKey);
 	}, [n]);
 
+	// Enter opens the centered card's link, so arrow-key browsing doesn't require
+	// tabbing onto the card first. Only fires while this section holds the
+	// viewport, and never when a focusable element already handles Enter itself.
+	useEffect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key !== 'Enter' || e.repeat) return;
+			if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+			if (n === 0) return;
+
+			// Something focused (the card link itself, a dot, an arrow button) gets
+			// the native Enter behavior instead.
+			const active = document.activeElement;
+			if (active && active !== document.body && active.closest('a, button, input, textarea, select, [contenteditable="true"]')) return;
+
+			// Require the projects section to be the one on screen.
+			const rect = sectionRef.current?.getBoundingClientRect();
+			const middle = window.innerHeight / 2;
+			if (!rect || rect.top > middle || rect.bottom < middle) return;
+
+			const project = projects[((index % n) + n) % n];
+			if (!project || !isLinkable(project)) return;
+			const url = projectLink(project);
+			if (!url) return;
+
+			e.preventDefault();
+			trackEvent('project_open', { project: project.title, destination: isValidUrl(project.github_url) ? 'github' : 'demo' });
+			window.open(url, '_blank', 'noopener,noreferrer');
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, [projects, index, n]);
+
 	// Shortest signed circular distance from the centered card to project i.
 	const circularOffset = (i: number) => {
 		let off = ((i - index) % n + n) % n;
@@ -329,7 +375,7 @@ export default function Projects() {
 	}
 
 	return (
-		<section id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+		<section ref={sectionRef} id="projects" className="flex flex-col items-center justify-center py-8 md:py-12" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
 			<div className="max-w-6xl mx-auto px-4 transform -translate-y-8 md:translate-y-0 w-full">
 				<div className="relative">
 					<button
@@ -372,13 +418,8 @@ export default function Projects() {
 							const isCenter = off === 0;
 							const bg = cardColor(i);
 
-							// Prefer github, fall back to demo — but only real URLs count.
-							const linkUrl = isValidUrl(project.github_url)
-								? project.github_url
-								: isValidUrl(project.demo_url)
-									? project.demo_url
-									: null;
-							const canLink = isCenter && project.clickable && !project.clickable_override && linkUrl !== null;
+							const linkUrl = projectLink(project);
+							const canLink = isCenter && isLinkable(project);
 
 							const cardContent = (
 								<article className={`relative overflow-hidden rounded-lg p-6 flex flex-col h-96 w-64 glass-surface${canLink ? ' transition-transform duration-150 group-hover:scale-[1.03]' : ''}`}>
